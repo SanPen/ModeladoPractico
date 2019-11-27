@@ -8,11 +8,11 @@ Inyecciones de potencia, correinte y admitancia
 Inyecciones de potencia en forma compleja:
 
 .. math::
-	[S_{l} ]= [load_S] \cdot [C_{bus,load}]
+	[S_{l} ]= [C_{bus,load}] \times [load_S]
 
 
 .. math::
-	[S_{g}]= [generation_S] \cdot [C_{bus, gen}]
+	[S_{g}]= [C_{bus, gen}] \times [generation_S]
 
 
 .. math::
@@ -21,7 +21,7 @@ Inyecciones de potencia en forma compleja:
 Inyecciones de corriente en forma compleja:
 
 .. math::
-	[I_{bus}] = - [load_I] \cdot [C_{bus, load}]
+	[I_{bus}] = - [C_{bus, load}] \times [load_I]
 
 
 Dónde:

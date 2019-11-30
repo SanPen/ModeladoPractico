@@ -1,83 +1,33 @@
-5 Modelo topológico
+Modelo topológico
 ===============================
 
+El motor de topología de un programa de cálculo eléctrico es una de las partes menos explicadas y más importantes.
+Este capítulo explica el motor topológico desarrollado para el software `GridCal <https://github.com/SanPen/GridCal>`_.
 
-Inyecciones de potencia, correinte y admitancia
-------------------------------------------------------------------
+De forma general, un motor de topología se encarga de preparar los datos para que puedan
+ser usados en la :ref:`system_equation`. Los pasos necesarios para conseguirlo son:
 
-Inyecciones de potencia en forma compleja:
+- Convertir los datos de los activos a vectores de inyección de potencia, corriente y admitancia.
 
-.. math::
-	[S_{l} ]= [C_{bus,load}] \times [load_S]
+- Calcular las matrices de admitancia.
 
+- Detectar las islas, determinando los índices de los buses y las ramas pertenecientes a cada isla.
 
-.. math::
-	[S_{g}]= [C_{bus, gen}] \times [generation_S]
-
-
-.. math::
-	[S_{bus}] = [S_{g}]  - [S_{l}]
-
-Inyecciones de corriente en forma compleja:
-
-.. math::
-	[I_{bus}] = - [C_{bus, load}] \times [load_I]
+- Separar los vectores de inyección y las matrices de admitancia de acuerdo a sus islas. Este paso es necesario poque
+  si existen islas, una matriz de admitancia que represnete más de una isla es singular (no tiene inversa) y por tanto
+  no podrá ofrecer una solución de cálculo. La solución es particionar la matriz y los vectores asociados.
 
 
-Dónde:
+Matriz de admitancia  (Y)
+---------------------------------
 
-.. list-table::
-   :widths: 25 20 80
-   :header-rows: 1
-
-   * - Magnitud
-     - Dimensiones
-     - Descripción
-
-   * - :math:`[S_{l}]`
-     - #bus, 1
-     - Conjunto de inyecciones de potencia complejas debido a la carga (tendrá un signo negativo).
-       Tamaño: número de buses.
-
-   * - :math:`[C_{bus, load}]`
-     - #load, #bus
-     - Conectividad de cargas y buses.
-
-   * - :math:`[load_S]`
-     - #load, 1
-     - Conjunto de valores complejos de potencia de carga
-
-   * - :math:`[S_{g}]`
-     - #bus, 1
-     - Conjunto de inyecciones de potencia complejas debido a los generadores (tendrá un signo positivo).
-       Tamaño: número de buses.
-
-   * - :math:`[C_{bus, gen}]`
-     - #generators, #bus
-     - Conectividad de generadores y buses.
-
-   * - :math:`[generation_S]`
-     - #generators, #1
-     - Vector de inyecciones de energía de los generadores.
-
-   * - :math:`[S_{bus}]`
-     - #bus, 1
-     - Vector de inyecciones de energía nodal (positiva: generación, negativa: carga).
-
-   * - :math:`[load_I]`
-     - #load, 1
-     - Vector de valores complejos de corriente de carga
-
-   * - :math:`[I_{bus}]`
-     - #bus, 1
-     - Vector de inyecciones de corriente nodal (positiva: generación, negativa: carga).
+Esta sección integra la formación de la matriz de admitancia partiendo de la definición general da rama
+data en el capítulo :ref:`pi_model`. El cálculo de la matriz de admitancia en se puede vectorizar completamente
+de la siguiente manera;
 
 
-Matriz de admitancia
-----------------------------
-
-
-El cálculo de la matriz de admitancia en se puede vectorizar completamente de la siguiente manera:
+Primero se forma los vectores que representan la admitancias serie (:math:`Ys`), admitancia shunt (:math:`GBc`)
+y los valores complejos de desfase (:math:`tap`).
 
 .. math::
     [Ys] = \frac{1}{[R] + j \cdot [X]}
@@ -87,6 +37,10 @@ El cálculo de la matriz de admitancia en se puede vectorizar completamente de l
 
 .. math::
     [tap] = [tap_{module}] \cdot e^{j \cdot [tap_{angle}]}
+
+Luego se forman los vectores primitivos que servirán para formar la matriz de amitancia. Estos vectores se multiplicarán
+después por las matrices de conectividad :math:`C_f` y :math:`C_t` para dar origen a las admitancias
+:math:`Y_f` e :math:`Y_t` las cuales tienen utilidad para el cálculo de el flujo de potencia.
 
 .. math::
 
@@ -101,9 +55,15 @@ El cálculo de la matriz de admitancia en se puede vectorizar completamente de l
 .. math::
     [Y_{tf}] = - \frac{Ys}{[tap_t] \cdot [tap_f] \cdot [tap]}
 
+Adicionalmente se compone el vector de admitancias debidas a los dispositivos shunt y componente de impedancia
+de las cargas tipo ZIP. Este vector se añade a la diagonal de la matriz de admitancia.
 
 .. math::
-    [Y_{sh}]= [shunt_Y] \cdot [C_{bus, shunt}] + [load_Y] \cdot [C_{bus, load}]
+    [Y_{sh}]= [C_{bus, shunt}] \times [shunt_Y] + [C_{bus, load}] \times [load_Y]
+
+
+Ahora se componen las matrices de conectividad modificadas con los estados de las ramas. Esto permite dejar fuera del
+cálculo aquellas ramas que tienen un estado desconectado.
 
 .. math::
 
@@ -113,6 +73,9 @@ El cálculo de la matriz de admitancia en se puede vectorizar completamente de l
 
     [C_t] = diag([estados\:de\:las\:ramas]) \times [C_{branch, bus\:t}]
 
+
+En el paso final componemos las matrices de admitancia vistas des de el primario (:math:`Y_f`) el secundario
+(:math:`Y_t`) además de la matriz de admitancia final a usar en los cálculos (:math:`Y_{bus}`).
 
 .. math::
     [Y_f] = diag([Y_{ff}]) \times [C_f] + diag([Y_{ft}]) \times [C_t]
@@ -207,20 +170,26 @@ Dónde:
 
 
 
-Matriz de adyacencia
----------------------------
+Matriz de adyacencia (A)
+--------------------------------
 
-El cálculo de la matriz de adyacencia de circuitos a partir de las matrices que necesitamos de todos modos
-para el cálculo de la matriz de admitancia es una forma muy eficiente de tratar con el
-cálculo topológico. Primero establecemos la matriz de conectividad total del bus bifurcado:
+La matriz de adyacencia sirve para determinar la conectividad del circuito, y por tanto
+llegar a calcular las islas que están presentes en él. El cálculo de la matriz de adyacencia se hace a partir de
+las matrices de conectividad bus-rama que ya tenemos de cálculos anteriores.
+
+Primero calculamos la matriz de conectividad total entre buses y ramas:
 
 .. math::
+
     [C_{branch,bus}] = [C_f] + [C_t]
 
-Luego calculamos la matriz de conectividad bus-bus, que es la matriz de adyacencia de gráficos:
+Luego calculamos la matriz de conectividad bus-bus, que es la matriz de adyacencia de los nudos de grafo que representa
+la red:
 
 .. math::
-        [A] = [C_{branch,bus}]^\top \times [C_{branch,bus}]
+
+    [A] = [C_{branch,bus}]^\top \times [C_{branch,bus}]
+
 
 Detección de islas
 ----------------------
@@ -322,3 +291,82 @@ matriz de gráficos)
             island.sort()
 
         return islands
+
+
+
+Inyecciones de potencia, correinte y admitancia
+------------------------------------------------------------------
+
+Inyecciones de potencia en forma compleja:
+
+.. math::
+	[S_{l} ]= [C_{bus,load}] \times [load_S]
+
+
+.. math::
+	[S_{g}]= [C_{bus, gen}] \times [generation_S]
+
+
+.. math::
+	[S_{bus}] = [S_{g}]  - [S_{l}]
+
+Inyecciones de corriente en forma compleja:
+
+.. math::
+	[I_{bus}] = - [C_{bus, load}] \times [load_I]
+
+
+Dónde:
+
+.. list-table::
+   :widths: 25 20 80
+   :header-rows: 1
+
+   * - Magnitud
+     - Dimensiones
+     - Descripción
+
+   * - :math:`[S_{l}]`
+     - #bus, 1
+     - Conjunto de inyecciones de potencia complejas debido a la carga (tendrá un signo negativo).
+       Tamaño: número de buses.
+
+   * - :math:`[C_{bus, load}]`
+     - #bus x #load
+     - Conectividad de cargas y buses.
+
+   * - :math:`[load_S]`
+     - #load, 1
+     - Conjunto de valores complejos de potencia de carga
+
+   * - :math:`[S_{g}]`
+     - #bus, 1
+     - Conjunto de inyecciones de potencia complejas debido a los generadores (tendrá un signo positivo).
+       Tamaño: número de buses.
+
+   * - :math:`[C_{bus, gen}]`
+     - #bus x #generators
+     - Conectividad de generadores y buses.
+
+   * - :math:`[generation_S]`
+     - #generators, #1
+     - Vector de inyecciones de energía de los generadores.
+
+   * - :math:`[S_{bus}]`
+     - #bus, 1
+     - Vector de inyecciones de energía nodal (positiva: generación, negativa: carga).
+
+   * - :math:`[load_I]`
+     - #load, 1
+     - Vector de valores complejos de corriente de carga
+
+   * - :math:`[I_{bus}]`
+     - #bus, 1
+     - Vector de inyecciones de corriente nodal (positiva: generación, negativa: carga).
+
+
+
+
+Integración de series temporales
+--------------------------------------
+

@@ -20,6 +20,8 @@ Modelado práctico de red
 
    chapter_5_topological_model.rst
 
+   sparse_matrices.rst
+
 
 Indices and tables
 ==================

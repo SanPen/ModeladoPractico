@@ -1,4 +1,4 @@
-3.	Unidades, sistema por unidad y transformaciones
+Unidades, sistema por unidad y transformaciones
 =======================================================
 
 La red eléctrica suele funcionar en corriente alterna. Las magnitudes de la corriente alterna, se representan siempre
@@ -9,49 +9,86 @@ Las unidades en la red eléctrica son:
 
 .. _`tabla unidades`:
 
-+---------------------+-------------------------------+--------------------+
-| Magnitud            | Unidad                        | Unidad recomendada |
-+---------------------+-------------------------------+--------------------+
-| Tensión (o voltaje) | V (Voltio)                    | kV                 |
-+---------------------+-------------------------------+--------------------+
-| Corriente           | A (Amperio)                   | kA                 |
-+---------------------+-------------------------------+--------------------+
-| Potencia            | VA (Voltio-Amperio)           | MVA                |
-+---------------------+-------------------------------+--------------------+
-| Potencia activa     | W (Vatio)                     | MW                 |
-+---------------------+-------------------------------+--------------------+
-| Potencia reactiva   | Var (Voltio-Amperio reactivo) | MVAr               |
-+---------------------+-------------------------------+--------------------+
-| Impedancia          | Ω (Ohmio)                     | Ω                  |
-+---------------------+-------------------------------+--------------------+
-| Admitancia          | S (Siemens)                   | S                  |
-+---------------------+-------------------------------+--------------------+
+.. list-table::
+   :widths: 25 40 60
+   :header-rows: 1
+
+   * - Magnitud
+     - Unidad
+     - Unidad recomendada
+
+   * - Tensión (o Voltaje)
+     - V (Voltio)
+     - kV (kilo-Voltio)
+
+   * - Corriente
+     - A (Amperio)
+     - kA (kilo-Amperio)
+
+   * - Potencia
+     - VA (Voltio-Amperio)
+     - MVA (Mega-Voltio-Amperio)
+
+   * - Potencia activa
+     - W (Vatio)
+     - MW (Mega-Vatio)
+
+   * - Potencia reactiva
+     - Var (Voltio-Amperio reactivo)
+     - MVAr (Mega-Voltio-Amperio reactivo)
+
+   * - Impedancia
+     - :math:`\Omega` (Ohmio)
+     - :math:`\Omega` (Ohmio)
+
+   * - Admitancia
+     - S (Siemens)
+     - S (Siemens)
 
 
 Cada una de las unidades expersada en sus componentes rectangulares complejas queda de la siguiente forma:
 
-+----------------+---------------------+---------------------------+
-| Magnitud       | Real                | Imaginario                |
-+----------------+---------------------+---------------------------+
-| S (Potencia)   | P (potencia activa) | Q (potencia reactiva)     |
-+----------------+---------------------+---------------------------+
-| V (Tensión)    | Vr (tensión real)   | Vi (tensión imaginaria)   |
-+----------------+---------------------+---------------------------+
-| I (Corriente)  | Ir (corriente real) | Ii (Corriente imaginaria) |
-+----------------+---------------------+---------------------------+
-| Z (Impedancia) | R (Resistencia)     | X (reactancia)            |
-+----------------+---------------------+---------------------------+
-| Y (Admitancia) | G (Conductancia)    | B (Susceptancia)          |
-+----------------+---------------------+---------------------------+
+.. list-table::
+   :widths: 25 40 60
+   :header-rows: 1
 
+   * - Magnitud
+     - Real
+     - Imaginario
+
+   * - S (Potencia)
+     - P (potencia activa)
+     - Q (potencia reactiva)
+
+   * - V (Tensión)
+     - Vr (tensión real)
+     - Vi (tensión imaginaria)
+
+   * - I (Corriente)
+     - Ir (corriente real)
+     - Ii (Corriente imaginaria)
+
+   * - Z (Impedancia)
+     - R (Resistencia)
+     - X (reactancia)
+
+   * - Y (Admitancia)
+     - G (Conductancia)
+     - B (Susceptancia)
 
 Alternativamente la tensión suele representarse en coordenadas polares en lugar de coordenadas rectangulares:
 
-+-------------+-------------------------+-----------------------+
-| Magnitud    | Módulo                  | Angulo                |
-+-------------+-------------------------+-----------------------+
-| V (Tensión) | |V| (Módulo de tensión) | δ (Angulo de tensión) |
-+-------------+-------------------------+-----------------------+
+.. list-table::
+   :widths: 25 40 60
+   :header-rows: 1
+
+   * - Magnitud
+     - Módulo
+     - Angulo
+
+   * - V (Tensión)
+     - :math:`|V|` (Módulo de tensión)
+     - :math:`\delta` (Angulo de tensión)
 
 La relación entre componentes rectangulares y polares de la tensión es:
 
@@ -60,7 +97,7 @@ La relación entre componentes rectangulares y polares de la tensión es:
     V_r + j \cdot V_i = |V| \cdot e^{-j \delta} = |V| \cdot cos(\delta) + j \cdot |V| \cdot sen(\delta)
 
 
-3.1	El sistema por unidad
+El sistema por unidad
 ----------------------------------
 
 En la red hay varios niveles de tensión, esto hace especialmente ineficiente el cálculo numérico. Por ello los
@@ -70,19 +107,28 @@ de las variables. Esta normalización de las variables “suaviza” las diferen
 hace factible el cálculo numérico.
 Para pasar a valores por unidad, hay que elegir una potencia base. Normalmente se elige 100 MVA.
 
-+----------------+----------------------------------------+
-| Magnitud       | Base                                   |
-+----------------+----------------------------------------+
-| S (Potencia)   | Sbase = 100 MVA                        |
-+----------------+----------------------------------------+
-| V (Tensión)    | Vbase = Tensión nominal del componente |
-+----------------+----------------------------------------+
-| I (Corriente)  | Ibase = Sbase / (Vbase⋅√3)             |
-+----------------+----------------------------------------+
-| Z (Impedancia) | Zbase = Vbase^2/Sbase                  |
-+----------------+----------------------------------------+
-| Y (Admitancia) | Ybase = 1 / Zbase                      |
-+----------------+----------------------------------------+
+
+.. list-table::
+   :widths: 25 60
+   :header-rows: 1
+
+   * - Magnitud
+     - Base
+
+   * - S (Potencia)
+     - Sbase = 100 MVA
+
+   * - V (Tensión)
+     - Vbase = Tensión nominal del componente
+
+   * - I (Corriente)
+     - :math:`Ibase = Sbase / (Vbase \cdot \sqrt{3})`
+
+   * - Z (Impedancia)
+     - :math:`Zbase = Vbase^2/Sbase`
+
+   * - Y (Admitancia)
+     - Ybase = 1 / Zbase
 
 Para simplificar los cálculos y evitar confusiones, a efectos de cálculo las unidades deben ser las unidades
 recomendadas, indicadas en la `tabla unidades`_.
@@ -99,15 +145,20 @@ Datos:
 
 *Impedancia*
 
-Z=0.03+j0.2 Ω
+.. math::
+
+    Z=0.03+j0.2 \Omega
 
 *Potencia base del circuito*
 
-Sbase=100 MVA
+.. math::
+    Sbase=100 \: MVA
 
 *Tensión nominal de la línea*
 
-Vbase=20 kV
+.. math::
+
+    Vbase=20 \: kV
 
 
 Cálculos:
@@ -125,7 +176,7 @@ Impedancia por unidad
     Zpu=\frac{Z}{Zbase} = \frac{0.03+j0.2}{4} = 0.0075+j0.05 \quad p.u.
 
 
-3.2	Transformaciones Estrella-Delta
+Transformaciones Estrella-Delta
 ------------------------------------------
 
 A efectos de cálculo todos los elementos conectados a un nudo (cargas y generadores), han de estar en estrella.
@@ -160,7 +211,7 @@ estrella-triangulo no se puede deshacer a menos que el triángulo sea equiláter
 
 
 
-3.3 Redes de secuencia
+Redes de secuencia
 ---------------------------
 
 Charles L. Fortescue presenta en 1918 su artículo [1] en el que describe cómo expresar una red trifásica en

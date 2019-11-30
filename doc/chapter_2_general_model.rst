@@ -1,4 +1,4 @@
-2.	Modelo general de red
+Modelo general de red
 ================================================
 
 La red eléctrica se divide en ramas y nudos (un grafo). En los nudos se sustrae o inyecta potencia
@@ -13,7 +13,7 @@ trifásica siempre. Esto significa que los componentes deben ser especificados d
 no uno equivalente. Esto hace posible que se pueda simplificar luego si es necesario. Lo contrario es posible pero
 probablemente no se ajuste a la realidad. Es más fácil simplificar algo general, que generalizar algo simple.
 
-2.1	Supuesto de red equilibrada
+Supuesto de red equilibrada
 ----------------------------------------------------
 
 Un supuesto habitual en ingeniería eléctrica, es asumir que las redes trifásicas están equilibradas.

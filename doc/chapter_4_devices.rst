@@ -1,14 +1,24 @@
 4. Dispositivos de la red
 ================================
 
+.. _system_equation:
+
+Ecuación del sistema
+-----------------------------------------
+La ecuación que relaciona las cargas con las tensiones en estado estacionario es la siguiente:
+
+.. image:: images/CircuitEquation.png
 
 
-4.1. Ramas y el modelo  (Pi)
+.. _pi_model:
+
+Ramas y el modelo  (Pi)
 -----------------------------------------
 
 A efectos de la mayoría de cálculos que son necesarios en operación, los elementos rama de la red se representan con el
 denominado modelo PI. Para cálculos en régimen estacionario, cualquier elemento rama de la red se puede representar
 con el denominado modelo pi.
+
 
 .. image:: images/BranchModel.png
 

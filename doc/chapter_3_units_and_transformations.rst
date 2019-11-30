@@ -9,49 +9,86 @@ Las unidades en la red eléctrica son:
 
 .. _`tabla unidades`:
 
-+---------------------+-------------------------------+--------------------+
-| Magnitud            | Unidad                        | Unidad recomendada |
-+---------------------+-------------------------------+--------------------+
-| Tensión (o voltaje) | V (Voltio)                    | kV                 |
-+---------------------+-------------------------------+--------------------+
-| Corriente           | A (Amperio)                   | kA                 |
-+---------------------+-------------------------------+--------------------+
-| Potencia            | VA (Voltio-Amperio)           | MVA                |
-+---------------------+-------------------------------+--------------------+
-| Potencia activa     | W (Vatio)                     | MW                 |
-+---------------------+-------------------------------+--------------------+
-| Potencia reactiva   | Var (Voltio-Amperio reactivo) | MVAr               |
-+---------------------+-------------------------------+--------------------+
-| Impedancia          | Ω (Ohmio)                     | Ω                  |
-+---------------------+-------------------------------+--------------------+
-| Admitancia          | S (Siemens)                   | S                  |
-+---------------------+-------------------------------+--------------------+
+.. list-table::
+   :widths: 25 40 60
+   :header-rows: 1
+
+   * - Magnitud
+     - Unidad
+     - Unidad recomendada
+
+   * - Tensión (o Voltaje)
+     - V (Voltio)
+     - kV (kilo-Voltio)
+
+   * - Corriente
+     - A (Amperio)
+     - kA (kilo-Amperio)
+
+   * - Potencia
+     - VA (Voltio-Amperio)
+     - MVA (Mega-Voltio-Amperio)
+
+   * - Potencia activa
+     - W (Vatio)
+     - MW (Mega-Vatio)
+
+   * - Potencia reactiva
+     - Var (Voltio-Amperio reactivo)
+     - MVAr (Mega-Voltio-Amperio reactivo)
+
+   * - Impedancia
+     - :math:`\Omega` (Ohmio)
+     - :math:`\Omega` (Ohmio)
+
+   * - Admitancia
+     - S (Siemens)
+     - S (Siemens)
 
 
 Cada una de las unidades expersada en sus componentes rectangulares complejas queda de la siguiente forma:
 
-+----------------+---------------------+---------------------------+
-| Magnitud       | Real                | Imaginario                |
-+----------------+---------------------+---------------------------+
-| S (Potencia)   | P (potencia activa) | Q (potencia reactiva)     |
-+----------------+---------------------+---------------------------+
-| V (Tensión)    | Vr (tensión real)   | Vi (tensión imaginaria)   |
-+----------------+---------------------+---------------------------+
-| I (Corriente)  | Ir (corriente real) | Ii (Corriente imaginaria) |
-+----------------+---------------------+---------------------------+
-| Z (Impedancia) | R (Resistencia)     | X (reactancia)            |
-+----------------+---------------------+---------------------------+
-| Y (Admitancia) | G (Conductancia)    | B (Susceptancia)          |
-+----------------+---------------------+---------------------------+
+.. list-table::
+   :widths: 25 40 60
+   :header-rows: 1
 
+   * - Magnitud
+     - Real
+     - Imaginario
+
+   * - S (Potencia)
+     - P (potencia activa)
+     - Q (potencia reactiva)
+
+   * - V (Tensión)
+     - Vr (tensión real)
+     - Vi (tensión imaginaria)
+
+   * - I (Corriente)
+     - Ir (corriente real)
+     - Ii (Corriente imaginaria)
+
+   * - Z (Impedancia)
+     - R (Resistencia)
+     - X (reactancia)
+
+   * - Y (Admitancia)
+     - G (Conductancia)
+     - B (Susceptancia)
 
 Alternativamente la tensión suele representarse en coordenadas polares en lugar de coordenadas rectangulares:
 
-+-------------+-------------------------+-----------------------+
-| Magnitud    | Módulo                  | Angulo                |
-+-------------+-------------------------+-----------------------+
-| V (Tensión) | |V| (Módulo de tensión) | δ (Angulo de tensión) |
-+-------------+-------------------------+-----------------------+
+.. list-table::
+   :widths: 25 40 60
+   :header-rows: 1
+
+   * - Magnitud
+     - Módulo
+     - Angulo
+
+   * - V (Tensión)
+     - :math:`|V|` (Módulo de tensión)
+     - :math:`\delta` (Angulo de tensión)
 
 La relación entre componentes rectangulares y polares de la tensión es:
 

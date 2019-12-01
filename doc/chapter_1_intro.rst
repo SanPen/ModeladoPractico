@@ -28,32 +28,33 @@ Notación
 	
 - :math:`[A]^{\top}\rightarrow` Transpuesta de la matriz o vector.
 	
-- :math:`[A]^{-1} \times [b] \rightarrow` Resulver el sistema de ecuaciones lineal descrito por la matriz de
+- :math:`[A]^{-1} \times [b] \rightarrow` Resolver el sistema de ecuaciones lineal descrito por la matriz de
   coeficientes `[A]` y el vector de términos independientes `[b]`. Nunca se ha de realizar la inversa de `[A]`
   para luego multiplicar la inversa por `[b]`. En su lugar, usar la factorización LU o similar.
 	
-- :math:`[A]_{(rows, :)} \rightarrow` From the matrix `[A]`, pick the rows which indices are contained in the vector `rows`.
+- :math:`[A]_{(rows, :)} \rightarrow` De la matriz `[A]`, tomar las filas dadas por los valores del vector `rows`.
 
-- :math:`[A]_{(:, cols)} \rightarrow` From the matrix `[A]`, pick the columns which indices are contained in the vector  `cols`.
+- :math:`[A]_{(:, cols)} \rightarrow` De la matriz `[A]`, tomar las columnas dadas por los valores del vector  `cols`.
 	
-- :math:`[A]_{(rows, cols)} \rightarrow` From the matrix `[A]`, pick the rows which indices are contained in the vector  `rows` and the columns which indices are contained in the vector  `cols`.
+- :math:`[A]_{(rows, cols)} \rightarrow` De la matriz `[A]`, tomar las filas dadas por los valores del vector  `rows` y
+    las columnas dadas por el vector `cols`.
 	
-- :math:`[b]_{(rows)} \rightarrow` From the vector `[b]`, pick the elements contained in the vector or list `rows`.
+- :math:`[b]_{(rows)} \rightarrow` Del vector `[b]`, tomar los elementos en las posiciones indicadas por el vector `rows`.
 	
-- :math:`diag([b]) \rightarrow` Convert the vector `[b]` into a diagonal matrix.
+- :math:`diag([b]) \rightarrow` Convertir el vector`[b]` en una matriz diagonal.
 
-- :math:`diag([A]) \rightarrow` Extract the diagonal of the matrix `[A]` as a vector.
+- :math:`diag([A]) \rightarrow` Extraer la diagonal de la matriz `[A]` como un vector.
 	
-- :math:`Re\{ [A] \} \rightarrow` Extract the real part of `[A]`.
+- :math:`Re\{ [A] \} \rightarrow` Extraer la parte real `[A]` si es de tipo complejo.
 	
-- :math:`Im \{ [A] \} \rightarrow` Extract the imaginary part of `[A]`.
+- :math:`Im \{ [A] \} \rightarrow` Extraer la parte imaginaria `[A]` si es de tipo complejo.
 	
-- :math:`max([b]) \rightarrow` Maximum value of the vector `[b]`.
+- :math:`max([b]) \rightarrow` Máximo valor del vector `[b]`.
 	
-- :math:`max(c, d) \rightarrow` Pick the greater value between `c` and `d`.
+- :math:`max(c, d) \rightarrow` Tomar el mayor valor entre `c` y `d`.
 	
-- :math:`[1]  \rightarrow` Matrix of ones.
+- :math:`[1]  \rightarrow` Matriz con unos en todos los valores.
 
-- :math:`[0]  \rightarrow` Matrix of zeros.
+- :math:`[0]  \rightarrow` Matriz con cero en todos los valores.
 	
-- :math:`[Idn]  \rightarrow` Identity matrix: Matrix of zeros with ones in the diagonal.
+- :math:`[Idn]  \rightarrow` Matriz indentidad (Aquella con unos en la diagonal y ceros en el resto).

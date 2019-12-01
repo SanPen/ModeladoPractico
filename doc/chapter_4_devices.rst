@@ -1,6 +1,33 @@
 Dispositivos de la red
 ================================
 
+
+
+El circuito como gestor de activos
+-------------------------------------------------
+
+En este documento se presenta un arreglo de la información de la red que resuta ser eficiente y mantenible para su
+implementación en un programa de ordenador. El concepto principal es la agregación de los dispositivos de acuerdo
+a su agregación natural. Es decir, si una carga se modela conectada a un bus, es natural que en el bus haya una lista
+con las cargas conectasdas, en lugar de que ambos dispositivos se almacenen de forma independiente. Esta agregación
+hace que añadir y borrar elementos sea muy sencillo. Además el procesado y acceso a la información se produce de
+forma inmediata.
+
+Los conceptos son los siguientes:
+
+- El circuito es el gestor de activos principal. Es la "caja" dónde se encuentra todo.
+
+- El circuito sólo almacena buses y ramas.
+
+- Los dispositivos de inyeccion tales como generadores y cargas se almacenan dentro del bus al que están conectados.
+
+- Los interruptores se almacenan dentro de la rama a la que afectan.
+
+
+El la sección ":ref:`compiling_the_asset_manager`" vemos cómo se convierte la información del gestor de activos, a
+vectores y matrices que están preparadas para el cálculo.
+
+
 .. _system_equation:
 
 Ecuación del sistema
@@ -24,7 +51,7 @@ de la matriz de admitancia :math:`Y`. Las ramas generales componen la matriz de 
 
 .. _pi_model:
 
-Ramas y el modelo  (:math:`\Pi`)
+Ramas y el modelo  (Pi)
 -----------------------------------------
 
 A efectos de la mayoría de cálculos en estado estacionario, los elementos rama de la red se representan con el
@@ -113,8 +140,4 @@ Por ejemplo en la imagen anterior, tenemos una línea con dos interruptores. Uno
 al bus 2 está abierto, provocando que la línea esté desconectada. Entoncen a la hora de componer las matrices de
 admitancia (en el siguiente capítulo) simplemente le asignamos el estado *0* a la línea. Si estuviese conectada le
 asignamos el estado *1*.
-
-
-El circuito como gestor de activos
--------------------------------------------------
 

@@ -18,6 +18,15 @@ ser usados en la :ref:`system_equation`. Los pasos necesarios para conseguirlo s
   no podrá ofrecer una solución de cálculo. La solución es particionar la matriz y los vectores asociados.
 
 
+.. _compiling_the_asset_manager:
+
+Compilando la información del gestor de activos
+-------------------------------------------------------------
+
+
+
+
+
 Matriz de admitancia  (Y)
 ---------------------------------
 
@@ -47,18 +56,22 @@ después por las matrices de conectividad :math:`C_f` y :math:`C_t` para dar ori
     [Y_{tt}] = \frac{[Ys] + [GBc]}{2 \cdot [tap_t] \cdot [tap_t]}
 
 .. math::
+
     [Y_{ff}] = \frac{[Ys] + [GBc]}{2 \cdot [tap_f] \cdot [tap_f] \cdot [tap] \cdot [tap]^*}
 
 .. math::
+
     [Y_{ft}] = - \frac{Ys}{[tap_f] \cdot [tap_t] \cdot [tap]^*}
 
 .. math::
+
     [Y_{tf}] = - \frac{Ys}{[tap_t] \cdot [tap_f] \cdot [tap]}
 
 Adicionalmente se compone el vector de admitancias debidas a los dispositivos shunt y componente de impedancia
 de las cargas tipo ZIP. Este vector se añade a la diagonal de la matriz de admitancia.
 
 .. math::
+
     [Y_{sh}]= [C_{bus, shunt}] \times [shunt_Y] + [C_{bus, load}] \times [load_Y]
 
 
@@ -78,12 +91,15 @@ En el paso final componemos las matrices de admitancia vistas des de el primario
 (:math:`Y_t`) además de la matriz de admitancia final a usar en los cálculos (:math:`Y_{bus}`).
 
 .. math::
+
     [Y_f] = diag([Y_{ff}]) \times [C_f] + diag([Y_{ft}]) \times [C_t]
 
 .. math::
+
     [Y_t] = diag([Y_{tf}]) \times [C_f] + diag([Y_{tt}]) \times [C_t]
 
 .. math::
+
     [Y_{bus}] = [C_f]^\top \times [Y_f] + [C_t]^\top \times Y_t + diag([Y_{sh}])
 
 
@@ -293,9 +309,38 @@ matriz de gráficos)
         return islands
 
 
-
-Inyecciones de potencia, correinte y admitancia
+Topología variable con el tiempo
 ------------------------------------------------------------------
+
+¿Que ocurre si queremos que los estados de las ramas varíen con el tiempo?
+
+Si queremos un motor de topología dónde el tiempo sea una dimensión integrada, debemos procesar todos los estados
+de conectividad de la red. Esos estados vienen dados por los estados de las ramas (los cuales pueden venir dados
+por los estados de los interruptores)
+
+La tarea se puede dividir en dos etapas; La primera es detectar cuantos estados de conectividad diferentes existen.
+Para ellos nos ayudamos del perfil temporal de estados de las ramas, dónde cada fila representa un estado.
+Después de esto, debemos evaluar el número de islas que aparecen en cada estado, segmentando las matrices de admitancia
+y los vectores de inyecciones para cada isla y cada estado.
+
+.. image:: images/variable_topology.png
+
+Al final de este proceso, obtenemos un set de islas por cada estado de la red. A la hora de simular los estados
+temporales, utilizamos la isla del estado correspondiente a cada punto temporal. Así nos aseguramos de estar
+representando la topología de la red adecuadamente en cada momento.
+
+
+Inyecciones de potencia, corriente y admitancia
+------------------------------------------------------------------
+
+En el motor de topología, es necesario computar los consumos y generaciones por nudo de la red.
+Para ello tenemos que tomar los valores de consumo y generación especificados por dispositivo y agregarlos por nudo.
+Para ello, debemos haber construido previamente las matrices de conectividad de cada elemento de generación y consumo
+con los buses a los que están conectados. Entonces, para obtener las magnitudes por bus simplemente se trata de
+multiplicar la matriz de conectividad correspondiente por el vectos de valores del elemento.
+
+.. image:: images/connectivity_elm.png
+    :height: 200px
 
 Inyecciones de potencia en forma compleja:
 
@@ -370,3 +415,29 @@ Dónde:
 Integración de series temporales
 --------------------------------------
 
+Podemos extender el cómputo de las inyecciones por bus con perfiles temporales de las magnitudes.
+Esto permite que el análisis temporal sea un "ciudadano de primera" en nuestro motor de cálculo,
+porque de otro modo el análisis temporal se limita a ejecutar el motor de topologia muchas veces.
+Si embargo extendiendo el cálculo al manejo de perfiles obtenemos las variables por bus de forma
+inmediata.
+
+
+.. image:: images/connectivity_ts.png
+
+Inyecciones de potencia en forma compleja:
+
+.. math::
+	[S_{l \: prof} ]= [C_{bus,load}] \times [load_{S \: prof}]
+
+
+.. math::
+	[S_{g \: prof}]= [C_{bus, gen}] \times [generation_{S \: prof}]
+
+
+.. math::
+	[S_{bus \: prof}] = [S_{g \: prof}]  - [S_{l \: prof}]
+
+Inyecciones de corriente en forma compleja:
+
+.. math::
+	[I_{bus \: prof}] = - [C_{bus, load}] \times [load_{I \: prof}]

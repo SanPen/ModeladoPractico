@@ -23,6 +23,8 @@ copyright = '2019, Santiago Peñate Vera, MIT License'
 author = 'Santiago Peñate Vera'
 release = '9.0'
 
+master_doc = 'index'
+
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be

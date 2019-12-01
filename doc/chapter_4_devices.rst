@@ -36,7 +36,7 @@ La ecuación que relaciona las cargas con las tensiones en estado estacionario e
 
 .. math::
 
-    [S] = [V] \cdot \left( [Y] \times [V] + [I] \right)
+    [S] = [V] \cdot \left( [Y] \times [V] - [I] \right)
 
 La influencia de cada dispositivo sobre la ecuación es tal que las cargas tipo ZIP afectan al vector de potencia
 compleja :math:`S`, el vector de correinte compleja :math:`I`, y la diagonal de la matriz de admitancia :math:`Y`.
@@ -109,17 +109,127 @@ capítulo.
 Generadores de tensión controlada
 -----------------------------------------
 
+El generador controlado es una entelequia numérica que a efectos de cálculo sólo necesita que se especifiquen la
+potencia activa (P) y el módulo de la tensión (:math:`|V|`).
+La ventaja es que en el nodo en el que está conectado el generador, se mantiene el módulo de la tensión se
+mantienen constante.
+
+.. list-table::
+   :widths: 55 20
+   :header-rows: 1
+
+   * - Valor
+     - Unidades
+
+   * - Potencia activa
+     - MW
+
+   * - Impedancia
+     - :math:`\Omega`
+
+   * - Tensión de control :math:`|V|`
+     - p.u.
+
+   * - Máxima potencia reactiva
+     - MVAr
+
+   * - Mínima potencia reactiva
+     - MVAr
+
+
+El valor de tensión de control se especifica en valores por unidad con respecto a la tensión nominal del nodo.
+La potencia activa especificada y la impedancia se han de pasar a valores por unidad. Adicionalmente se calcula la
+potencia reactiva del generador. Si esta potencia reactiva calculada en valores por unidad excede los límites del
+generador, en el proceso de cálculo se toman medidas como dejar de controlar la tensión en el nodo.
 
 Baterías
 -----------------------------------------
+
+La betería es un elemento que sustrae o inyecta potencia en cada momento. En la literatura reciente y círculos
+especializados, se sugiere que las baterías sean simuladas como generadores controlados dónde la potencia activa
+P puede ser positiva o negativa, dependiendo de si se inyecta o sustrae potencia de la red. En este documento vamos
+a aceptar esa sugerencia de modelado.
+
+
+.. list-table::
+   :widths: 55 20
+   :header-rows: 1
+
+   * - Valor
+     - Unidades
+
+   * - Potencia activa
+     - MW
+
+   * - Impedancia
+     - :math:`\Omega`
+
+   * - Capacidad
+     - MWh
+
+   * - Estado de carga
+     - p.u.
+
+   * - Voltage de set point
+     - p.u.
+
+   * - Máxima potencia reactiva
+     - MVAr
+
+   * - Mínima potencia reactiva
+     - MVAr
+
+Al modelar la batería como un tipo especial de generador controlado, asumimos lo mismo que ya se ha asumido en éste.
+Adicionalmente incluimos el parámetro de la capacidad de almacenaje de la batería que nos permitirá determinar el
+nivel de descarga () de ésta en simulaciones tiempo-dependientes.
 
 
 Cargas: Modelo general ZIP
 -----------------------------------------
 
+Para modelar una carga de una red eléctrica, se utiliza el denominado modelo ZIP. El modelo  está compuesto por una
+impedancia (Z), una corriente (I) y una potencia (P). Estrictamente las siglas ZIP no representan las magnitudes.
+La potencia es un valor complejo (S) de potencia activa y reactiva. La corriente es un valor complejo con corriente
+activa y reactiva y la impedancia es efectivamente una impedancia compleja con valores real e imaginario.
+
+
+
+.. list-table::
+   :widths: 40 40
+   :header-rows: 1
+
+   * - Valor
+     - Unidades
+
+   * - Potencia activa
+     - MW + jMVAr
+
+   * - Admitancia a V=1.pu.
+     - MW + jMVAr
+
+   * - Corriente a V=1.pu.
+     - MW + jMVAr
+
+
+Todas las magnitudes se han de pasar a valores por unidad.
 
 Elementos shunt
 -----------------------------------------
+
+Los elementos shunt son admitancias de la red. A decir verdad el modelo ZIP ya cubre una impendancia general.
+No obstante es conveniente incluir los shunt como dispositivos generales porque se puede incluir un cambiador de tomas
+variable para cambiar la impedancia en el "bucle exterior" del flujo de potencia, al igual que in cambiador de tomas de
+un transformador.
+
+.. list-table::
+   :widths: 40 40
+   :header-rows: 1
+
+   * - Valor
+     - Unidades
+
+   * - Admitancia a V=1.pu.
+     - MW + jMVAr
 
 
 ¿Qué hacemos con los interruptores?

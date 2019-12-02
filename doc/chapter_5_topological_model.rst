@@ -23,7 +23,110 @@ ser usados en la :ref:`system_equation`. Los pasos necesarios para conseguirlo s
 Compilando la información del gestor de activos
 -------------------------------------------------------------
 
+En la sección :ref:`circuit_as_asset_manager` se menciona la estructura anidada de objectos que componen la estructura
+de la red. Esta estructura ha sido refinada con experiencia en diseño de simuladores eléctricos de forma que el paso
+de la información en objetos a vectores y matrices sea eficiente y sencillo de comprender y mantener.
 
+El siguiente psuedo-código ilustra la función de compilación de objetos a vectores y matrices.
+
+.. code:: text
+
+    n = circuit.buses.size()
+    m = circuit.branches.size()
+    bus_dict = dictionary<int, Bus>
+
+    // contar los elementos, esto es bastante rápido
+    nl = 0  // número de cargas
+    ng = 0  // número de generadores
+    nb = 0  // número de baterías
+    ns = 0  // número de shunts
+
+    for i=0:n
+        nl += circuit.buses[i].loads.size()
+        ng += circuit.buses[i].generators.size()
+        nb += circuit.buses[i].batteries.size()
+        ns += circuit.buses[i].shunts.size()
+
+    // declarar arrays numéricos
+
+    // cargas
+    Pl = zeros(nl)
+    Ql = zeros(nl)
+    Irl = zeros(nl)
+    Iil = zeros(nl)
+    Gl = zeros(nl)
+    Bl = zeros(nl)
+    C_bus_load = zeros(n, nl)
+
+    // Generadores
+    Pg = zeros(ng)
+    Vg = ones(ng)
+    C_bus_gen = zeros(n, ng)
+
+    // baterías
+    Pb = zeros(nb)
+    Vb = ones(nb)
+    C_bus_batt = zeros(n, nb)
+
+    // shunts
+    Gs = zeros(ns)
+    Bs = zeros(ns)
+    C_bus_shunt = zeros(n, ns)
+
+    il = 0, ig = 0, ib = 0, is = 0
+    for i=0:n
+
+        for k=0:circuit.buses[i].loads.size()  // recoger los valores de las cargas
+            Pl[il] = circuit.buses[i].loads[k].Pl
+            Ql[il] = circuit.buses[i].loads[k].Ql
+            Irl[il] = circuit.buses[i].loads[k].Ir
+            Iil[il] = circuit.buses[i].loads[k].Ii
+            Gl[il] = circuit.buses[i].loads[k].Gl
+            Bl[il] = circuit.buses[i].loads[k].Bl
+            C_bus_load[i, il] = 1
+            il += 1
+
+        for k=0:circuit.buses[i].generators.size()  // recoger los valores de los generadores
+            Pg[ig] = circuit.buses[i].generators[k].P
+            Vg[ig] = circuit.buses[i].generators[k].V
+            C_bus_gen[i, ig] = 1
+            ig += 1
+
+        for k=0:circuit.buses[i].batteries.size()  // recoger los valores de las baterías
+            Pb[ib] = circuit.buses[i].batteries[k].P
+            Vb[ib] = circuit.buses[i].batteries[k].V
+            C_bus_batt[i, ib] = 1
+            ib += 1
+
+        for k=0:circuit.buses[i].shunts.size()  // recoger los valores de los shunts
+            Gs[is] = circuit.buses[i].shunts[k].G
+            Bs[is] = circuit.buses[i].shunts[k].B
+            C_bus_shunt[i, is] = 1
+            is += 1
+
+    // recorer las ramas de la red
+
+    r = zeros(m)
+    x = zeros(m)
+    g = zeros(m)
+    b = zeros(m)
+    rate = zeros(m)
+    C_bus_branch_f = zeros(n, m)
+    C_bus_branch_t = zeros(n, m)
+
+    for i=0: circuit.branches.size()
+        // Obtener los índices de los dos buses de la rama
+        b1 = bus_dict[circuit.branches[i].bus1]
+        b2 = bus_dict[circuit.branches[i].bus2]
+
+        // copiar la información a los arrays
+        r[i] = circuit.branches[i].r
+        x[i] = circuit.branches[i].x
+        g[i] = circuit.branches[i].g
+        b[i] = circuit.branches[i].b
+        rate[i] = circuit.branches[i].rate
+        C_bus_branch_f[b1, i] = 1
+        C_bus_branch_t[b2, i] = 1
 
 
 
@@ -345,20 +448,24 @@ multiplicar la matriz de conectividad correspondiente por el vectos de valores d
 Inyecciones de potencia en forma compleja:
 
 .. math::
-	[S_{l} ]= [C_{bus,load}] \times [load_S]
+
+    [S_{l} ]= [C_{bus,load}] \times [load_S]
 
 
 .. math::
-	[S_{g}]= [C_{bus, gen}] \times [generation_S]
+
+    [S_{g}]= [C_{bus, gen}] \times [generation_S]
 
 
 .. math::
-	[S_{bus}] = [S_{g}]  - [S_{l}]
+
+    [S_{bus}] = [S_{g}]  - [S_{l}]
 
 Inyecciones de corriente en forma compleja:
 
 .. math::
-	[I_{bus}] = - [C_{bus, load}] \times [load_I]
+
+    [I_{bus}] = - [C_{bus, load}] \times [load_I]
 
 
 Dónde:

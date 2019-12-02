@@ -2,6 +2,7 @@ Dispositivos de la red
 ================================
 
 
+.. _circuit_as_asset_manager:
 
 El circuito como gestor de activos
 -------------------------------------------------
@@ -23,6 +24,8 @@ Los conceptos son los siguientes:
 
 - Los interruptores se almacenan dentro de la rama a la que afectan.
 
+.. image:: images/assets_diagram.png
+   :height: 500px
 
 El la sección ":ref:`compiling_the_asset_manager`" vemos cómo se convierte la información del gestor de activos, a
 vectores y matrices que están preparadas para el cálculo.
@@ -49,9 +52,27 @@ de la matriz de admitancia :math:`Y`. Las ramas generales componen la matriz de 
    :height: 400px
 
 
+
+Bus
+---------
+
+El bus es el lugar topológico de conexión de los elementos de la red eléctrica. Tal como se propuso en
+:ref:`circuit_as_asset_manager`, el Bus es un contenedor para los elementos de generación y carga de la red.
+
+.. list-table::
+   :widths: 55 20
+   :header-rows: 1
+
+   * - Valor
+     - Unidades
+
+   * - Tensión nominal
+     - kV
+
+
 .. _pi_model:
 
-Ramas y el modelo  (Pi)
+Modelo general de rama  (Pi)
 -----------------------------------------
 
 A efectos de la mayoría de cálculos en estado estacionario, los elementos rama de la red se representan con el
@@ -104,6 +125,31 @@ La gran mayoría de algoritmos de cálculo, especialmente aquellos que son compe
 de una matriz de admitancias entre los nudos de la red. Hallando el modelo Pi correspondiente para cada rama, es
 inmediata la formación de la matriz de admitancia de un circuito. Esto se discute detalladamente en el siguiente
 capítulo.
+
+.. list-table::
+   :widths: 55 20
+   :header-rows: 1
+
+   * - Valor
+     - Unidades
+
+   * - Bus 1
+     - Bus
+
+   * - Bus 2
+     - Bus
+
+   * - Resistencia serie (:math:`r`)
+     - p.u.
+
+   * - Reactancia serie (:math:`x`)
+     - p.u.
+
+   * - Conductancia shunt (:math:`g`)
+     - p.u.
+
+   * - Susceptancia shunt (:math:`b`)
+     - p.u.
 
 
 Generadores de tensión controlada

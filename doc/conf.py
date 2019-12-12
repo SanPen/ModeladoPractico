@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.join(os.path.abspath('..'), 'src'))
 project = 'Modelado Práctico de red'
 copyright = '2019, Santiago Peñate Vera, MIT License'
 author = 'Santiago Peñate Vera'
-release = '9.0'
+release = '1.0'
 
 master_doc = 'index'
 

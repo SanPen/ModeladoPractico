@@ -20,7 +20,13 @@ Modelado práctico de red
 
    chapter_5_topological_model.rst
 
+   chapter_6_power_flow.rst
+
+   ptdf_otdf.rst
+
    sparse_matrices.rst
+
+   derivatives.rst
 
 
 Indices and tables

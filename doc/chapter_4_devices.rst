@@ -301,3 +301,162 @@ asignamos el estado *1*.
 De forma general podemos decir que el estado de una línea es el producto de los estados binarios de los interruptores
 que le afectan. En nuestro ejemplo el estado es el producto de 1 x 0 = 0, es decir que el estado de la rama es
 desconectado.
+
+
+Voltage source converter (VSC)
+------------------------------------------
+
+Se puede pensar en este dispositivo como una "rama" que convierte AC en DC.
+El siguiente modelo de convertidor de fuente de tensión (o VSC) viene referenciado de [ACHA1]_.
+
+.. image:: images/VSC.png
+   :height: 250px
+
+La función de transferencia es la siguiente:
+
+.. math::
+
+    \begin{bmatrix}
+    I_{ac}\\
+    I_{dc}
+    \end{bmatrix}
+    =\begin{bmatrix}
+    Y_{1} & -m \cdot e^{j \phi} \cdot Y_1 \\
+    -m \cdot e^{-j \phi} \cdot Y_1 & G_{sw} + m^2 \cdot (Y_{1} + jB_{eq})
+    \end{bmatrix}
+    \times
+    \begin{bmatrix}
+    V_{ac}\\
+    V_{dc}
+    \end{bmatrix}
+
+Dónde:
+
+.. list-table::
+   :widths: 10 70
+   :header-rows: 1
+
+   * - Variable
+     - Significado
+
+   * - :math:`R_1`
+     - Pérdidas resistivas.
+
+   * - :math:`X_1`
+     - Pérdidas por interferencias magnéticas del convertidor.
+
+   * - :math:`m`
+     - Toma virtual. Equivale a :math:`\sqrt 3 / 2` veces la amplitud de modulación del convertidor.
+       El rango de valores va de 0 a :math:`\sqrt 3 / 2`, aunque un límite inferior realista es 0,5.
+
+   * - :math:`\phi`
+     - Ángulo de disparo del convertidor.
+
+   * - :math:`G_{sw}`
+     - Pérdidas de operación del inversor.
+
+
+.. math::
+
+    Y_1 = \frac{1}{R_{1} + j X_{1}}
+
+
+Alta tensión en corriente continua (HVDC)
+------------------------------------------------------
+
+High Voltage Direct Current o HVDC es un término utilizado para referirse a la transmisión en alta tensión y corriente
+continua. Este método abarata costes para transmisión a muy larga distancia y también se usa para acoplar systemas
+eléctricos con diferente base de fecuencia o que por distintas razones, su acople en AC es inestable. [ACHA2]_ provee
+un marco de referencia unificado para incorporar los convertidores y las redes en DC en los flujos de potencia tipo
+Newton-Raphson.
+
+.. image:: images/HVDC.png
+   :height: 500px
+
+En [ACHA2]_ se proveen dos ecuaciones de transferencia que vamos a tener que unir. Estas son, la ecuación de
+transferencia del transformador:
+
+.. math::
+
+    \begin{bmatrix}
+    I_{AC}\\
+    I_{vi}
+    \end{bmatrix}
+    =\begin{bmatrix}
+    Y_{T} & a \cdot Y_{T}\\
+    -a \cdot Y_{T} & a^2 \cdot Y_{T}
+    \end{bmatrix}
+    \times
+    \begin{bmatrix}
+    V_{AC}\\
+    V_{vi}
+    \end{bmatrix}
+
+Y la ecuación de transferencia del convertidor VSC:
+
+.. math::
+
+    \begin{bmatrix}
+    I_{vi}\\
+    I_{DC}
+    \end{bmatrix}
+    =\begin{bmatrix}
+    Y_{vi, vi} & Y_{vi, i}^{\phi}\\
+     Y_{vi, i}^{-\phi} & Y_{i, i}
+    \end{bmatrix}
+    \times
+    \begin{bmatrix}
+    V_{vi}\\
+    V_{DC}
+    \end{bmatrix}
+
+Dónde:
+
+.. math::
+
+    Y_{vi, vi} = \frac{Y_{filter} + Y_1 \cdot Y_{reac}}{Y_1 + Y_{reac}}
+
+.. math::
+
+    Y_{vi, i} = \frac{-k_1 \cdot m \cdot  Y_1 \cdot Y_{reac}}{Y_1 + Y_{reac}}
+
+.. math::
+
+    Y_{i, i} = \frac{G_{sw} + j \cdot k_1^2 \cdot m^2 \cdot B_{eq} + k_1^2 \cdot m^2 \cdot Y_1 \cdot Y_{reac}}{Y_1 + Y_{reac}}
+
+
+.. math::
+
+    G_{sw} = G_0 \cdot \left( \frac{|I_{ti}|}{I_{nom}} \right)^2
+
+
+Como necesitamos una función de transferencia de la parte AC a la parte DC, necesitamos unir ambas funciones de
+transferencia y eliminar las referencias a :math:`I_{vi}` y :math:`V_{vi}`.
+
+
+.. math::
+
+    \begin{bmatrix}
+    I_{AC}\\
+    I_{DC}\\
+    I_{vi}
+    \end{bmatrix}
+    =\begin{bmatrix}
+    Y_{T}          & 0                & -a \cdot Y_{T}\\
+    -a \cdot Y_{T} & Y_{vi, i}^{\phi} & a^2 \cdot Y_{T} + Y_{vi, vi}\\
+    0              & Y_{i, i}         & Y_{vi, i}^{-\phi}
+    \end{bmatrix}
+    \times
+    \begin{bmatrix}
+    V_{AC}\\
+    V_{DC}\\
+    V_{vi}
+    \end{bmatrix}
+
+
+Referencias
+---------------
+
+.. [ACHA1] A New STATCOM Model for Power Flows Using the Newton-Raphson Method. Enrique Acha, Behzad Kazemtabrizi.
+
+.. [ACHA2] A generalized frame or reference for the incorporation of multi-terminal VSC-HVDC systems in power flow solutions. Enrique Acha, Luis M. Castro.

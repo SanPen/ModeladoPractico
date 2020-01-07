@@ -3,12 +3,14 @@ Introducción
 
 Este documento explica cómo se modela una red eléctrica de manera clara, práctica y orientada a la implementación,
 de tal forma que el lector se pueda familiarizar con un campo que se suele presentar de forma confusa y llena de
-secretismo. El documento está orientado a realizar cálculos en una red trifásica desequilibrada o equilibrada con los
-mismos modelos eléctricos, o con cambios mínimos.
+secretismo. El documento está orientado a realizar cálculos en una red trifásica equilibrada.
 
 
 Notación
 ---------------
+
+En este documento se hace uso extensivo de operaciones matriciales y vectoriales. Por ello es
+importante definir de forma clara la notación que se va a seguir.
 
 - :math:`[A] \times [B] \rightarrow` Multiplicación matricial. El resultado es una matriz.
 	
@@ -30,7 +32,7 @@ Notación
 	
 - :math:`[A]^{-1} \times [b] \rightarrow` Resolver el sistema de ecuaciones lineal descrito por la matriz de
   coeficientes `[A]` y el vector de términos independientes `[b]`. Nunca se ha de realizar la inversa de `[A]`
-  para luego multiplicar la inversa por `[b]`. En su lugar, usar la factorización LU o similar.
+  para luego multiplicar la inversa por `[b]`. En su lugar, usar la factorización LU, QR o similar.
 	
 - :math:`[A]_{(rows, :)} \rightarrow` De la matriz `[A]`, tomar las filas dadas por los valores del vector `rows`.
 
@@ -53,8 +55,8 @@ Notación
 	
 - :math:`max(c, d) \rightarrow` Tomar el mayor valor entre `c` y `d`.
 	
-- :math:`[1]  \rightarrow` Matriz con unos en todos los valores.
+- :math:`[1]  \rightarrow` Matriz con unos en todas las posiciones.
 
-- :math:`[0]  \rightarrow` Matriz con cero en todos los valores.
+- :math:`[0]  \rightarrow` Matriz con cero en todas las posiciones.
 	
 - :math:`[Idn]  \rightarrow` Matriz indentidad (Aquella con unos en la diagonal y ceros en el resto).

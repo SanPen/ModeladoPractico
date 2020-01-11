@@ -176,7 +176,7 @@ Impedancia por unidad
     Zpu=\frac{Z}{Zbase} = \frac{0.03+j0.2}{4} = 0.0075+j0.05 \quad p.u.
 
 
-Transformaciones Estrella-Delta
+Transformaciones Estrella-Triangulo
 ------------------------------------------
 
 A efectos de cálculo todos los elementos conectados a un nudo (cargas y generadores), han de estar en estrella.
@@ -186,7 +186,7 @@ en delta se han de pasar a estrella.
 Las tensiones fase-fase de la conexión en Delta se denominan tensiones de línea (:math:`V_{AB}`, :math:`V_{AC}`, :math:`V_{BC}`).
 Las tensiones fase-neutro de la conexión en estrella se denominan tensiones de fase (:math:`V_A`, :math:`V_B`, :math:`V_C`).
 
-Podemos definir la matriz D de transformación de estrella a delta como:
+Podemos definir la matriz D de transformación de estrella a triangulo como:
 
 .. math::
 
@@ -196,7 +196,7 @@ Podemos definir la matriz D de transformación de estrella a delta como:
         -1 & 0 & 1
         \end{pmatrix}
 
-La matriz de transformación inversa (de delta a estrella) es:
+La matriz de transformación inversa (de triangulo a estrella) es:
 
 .. math::
 

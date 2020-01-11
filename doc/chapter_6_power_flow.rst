@@ -165,6 +165,52 @@ En forma matricial tenemos:
 Esta ecuación se resuelve de forma recursiva hasta obtener una norma infinito del vector :math:`{S}_0 - {S}_{calc}`
 menor que la tolerancia.
 
+El algoritmo general es:
+
+
+- :math:`j1=0`
+- :math:`j2=npv+npq`
+- :math:`j3=j2+npq`
+- :math:`Vm = |V|`
+- :math:`Va = angle(V)`
+- :math:`dVm = zeros(n)`
+- :math:`dVa = zeros(n)`
+
+- Calcular :math:`f`:
+
+    - :math:`Scalc = V \cdot (Y \times V - I)^*`
+    - :math:`dS = Scalc - S_0`
+    - :math:`\Delta P = Re\{dS_{pvpq}\}`
+    - :math:`\Delta Q = Im\{dS_{pq}\}`
+    - :math:`f = [\Delta P, \Delta Q]`
+
+- Calcular el error: :math:`error=\frac{1}{2} \cdot f \times f^\top`
+
+- Mientras el error sea mayor que la tolerancia:
+
+    - Calcular el jacobiano: :math:`J=Jacobiano(Y, V, I, pvpq, pq)`
+
+    - Resolver el sistema lineal: :math:`dx = solve(J, f)`
+
+    - Actualizar el valor de la tensión:
+
+        - :math:`\mu=1`
+        - :math:`dVa_{pvpq} = dx_{j1:j2}`
+        - :math:`dVm_{pq} = dx_{j2:j3}`
+        - :math:`Vm = Vm -  \mu \cdot dVm`
+        - :math:`Va = Va - \mu \cdot dVa`
+        - :math:`Vnew = Vm \cdot e^{j \cdot Va}`
+
+    - Calcular :math:`f`:
+
+        - :math:`Scalc = V \cdot (Y \times V - I)^*`
+        - :math:`dS = Scalc - S_0`
+        - :math:`\Delta P = Re\{dS_{pvpq}\}`
+        - :math:`\Delta Q = Im\{dS_{pq}\}`
+        - :math:`f = [\Delta P, \Delta Q]`
+
+    - Calcular el error: :math:`error=\frac{1}{2} \cdot f \times f^\top`
+
 
 .. _jacobian:
 

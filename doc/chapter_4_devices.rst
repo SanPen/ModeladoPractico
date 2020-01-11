@@ -10,7 +10,7 @@ El circuito como gestor de activos
 En este documento se presenta un arreglo de la información de la red que resuta ser eficiente y mantenible para su
 implementación en un programa de ordenador. El concepto principal es la agregación de los dispositivos de acuerdo
 a su agregación natural. Es decir, si una carga se modela conectada a un bus, es natural que en el bus haya una lista
-con las cargas conectasdas, en lugar de que ambos dispositivos se almacenen de forma independiente. Esta agregación
+con las cargas conectadas, en lugar de que ambos dispositivos se almacenen de forma independiente. Esta agregación
 hace que añadir y borrar elementos sea muy sencillo. Además el procesado y acceso a la información se produce de
 forma inmediata.
 
@@ -66,7 +66,7 @@ El bus es el lugar topológico de conexión de los elementos de la red eléctric
    * - Valor
      - Unidades
 
-   * - Tensión nominal
+   * - Tensión nominal (:math:`V_{nom}`)
      - kV
 
 
@@ -167,19 +167,19 @@ mantienen constante.
    * - Valor
      - Unidades
 
-   * - Potencia activa
+   * - Potencia activa  (:math:`P_{set}`)
      - MW
 
    * - Impedancia
      - :math:`\Omega`
 
-   * - Tensión de control :math:`|V|`
+   * - Tensión de control (:math:`V_{set}`)
      - p.u.
 
-   * - Máxima potencia reactiva
+   * - Máxima potencia reactiva  (:math:`Q_{max}`)
      - MVAr
 
-   * - Mínima potencia reactiva
+   * - Mínima potencia reactiva  (:math:`Q_{min}`)
      - MVAr
 
 
@@ -204,30 +204,30 @@ a aceptar esa sugerencia de modelado.
    * - Valor
      - Unidades
 
-   * - Potencia activa
+   * - Potencia activa  (:math:`P_{set}`)
      - MW
 
    * - Impedancia
      - :math:`\Omega`
 
-   * - Capacidad
+   * - Capacidad  (:math:`E`)
      - MWh
 
-   * - Estado de carga
+   * - Estado de carga  (:math:`SoC`)
      - p.u.
 
-   * - Voltage de set point
+   * - Tensión de control  (:math:`V_{set}`)
      - p.u.
 
-   * - Máxima potencia reactiva
+   * - Máxima potencia reactiva  (:math:`Q_{max}`)
      - MVAr
 
-   * - Mínima potencia reactiva
+   * - Mínima potencia reactiva  (:math:`Q_{min}`)
      - MVAr
 
 Al modelar la batería como un tipo especial de generador controlado, asumimos lo mismo que ya se ha asumido en éste.
 Adicionalmente incluimos el parámetro de la capacidad de almacenaje de la batería que nos permitirá determinar el
-nivel de descarga () de ésta en simulaciones tiempo-dependientes.
+nivel de descarga (:math:`SoC`) de ésta en simulaciones tiempo-dependientes.
 
 
 Cargas: Modelo general ZIP
@@ -247,13 +247,13 @@ activa y reactiva y la impedancia es efectivamente una impedancia compleja con v
    * - Valor
      - Unidades
 
-   * - Potencia activa
+   * - Potencia (:math:`P + jQ`)
      - MW + jMVAr
 
-   * - Admitancia a V=1.pu.
+   * - Admitancia a V=1.pu.  (:math:`G + jB`)
      - MW + jMVAr
 
-   * - Corriente a V=1.pu.
+   * - Corriente a V=1.pu.  (:math:`Ir + jIi`)
      - MW + jMVAr
 
 
@@ -274,7 +274,7 @@ un transformador.
    * - Valor
      - Unidades
 
-   * - Admitancia a V=1.pu.
+   * - Admitancia a V=1.pu. (:math:`G + jB`)
      - MW + jMVAr
 
 
@@ -282,18 +282,181 @@ un transformador.
 -----------------------------------------
 
 Los interruptores son una parte fundamental de las redes eléctricas. Sin embargo su modelado numérico
-es problemático. Si modelásemos los interruptores como una rama entre dis buses, estaríamos metiendo ramas de impedancia
-muy baja en comparación con las demás ramas. En la práctica esto produce admitancias enormes que al ser insertadas
-en la matriz de admitancia producen lo que se denomiona *mal condicionamiento* de la matriz.
-Esto produce que el problema numérico no tenga solución.
+es problemático. Si modelásemos los interruptores como una rama con impedancia zero o *infinita* entre dos buses,
+estaríamos metiendo ramas de impedancia muy baja o muy alta en comparación con las demás ramas. En la práctica esto
+produce admitancias que al ser insertadas en la matriz de admitancia producen lo que se denomina como
+*mal condicionamiento* de la matriz. Esto produce que el problema numérico no tenga solución al tender a la divergencia.
 
 .. image:: images/branch_w_switches.png
    :height: 300px
 
 Para evitar este problema los interruptores se han de pre-processar como los estados de las ramas a las que afectan.
+Esto hace que la rama esté activada o desactivada evitando los problemas numericos por completo.
 
 Por ejemplo en la imagen anterior, tenemos una línea con dos interruptores. Uno en cada cabecera. El interruptor unido
 al bus 2 está abierto, provocando que la línea esté desconectada. Entoncen a la hora de componer las matrices de
 admitancia (en el siguiente capítulo) simplemente le asignamos el estado *0* a la línea. Si estuviese conectada le
 asignamos el estado *1*.
 
+De forma general podemos decir que el estado de una línea es el producto de los estados binarios de los interruptores
+que le afectan. En nuestro ejemplo el estado es el producto de 1 x 0 = 0, es decir que el estado de la rama es
+desconectado.
+
+
+Voltage source converter (VSC)
+------------------------------------------
+
+Se puede pensar en este dispositivo como una "rama" que convierte AC en DC.
+El siguiente modelo de convertidor de fuente de tensión (o VSC) viene referenciado de [ACHA1]_.
+
+.. image:: images/VSC.png
+   :height: 250px
+
+La función de transferencia es la siguiente:
+
+.. math::
+
+    \begin{bmatrix}
+    I_{ac}\\
+    I_{dc}
+    \end{bmatrix}
+    =\begin{bmatrix}
+    Y_{1} & -m \cdot e^{j \phi} \cdot Y_1 \\
+    -m \cdot e^{-j \phi} \cdot Y_1 & G_{sw} + m^2 \cdot (Y_{1} + jB_{eq})
+    \end{bmatrix}
+    \times
+    \begin{bmatrix}
+    V_{ac}\\
+    V_{dc}
+    \end{bmatrix}
+
+Dónde:
+
+.. list-table::
+   :widths: 10 70
+   :header-rows: 1
+
+   * - Variable
+     - Significado
+
+   * - :math:`R_1`
+     - Pérdidas resistivas.
+
+   * - :math:`X_1`
+     - Pérdidas por interferencias magnéticas del convertidor.
+
+   * - :math:`m`
+     - Toma virtual. Equivale a :math:`\sqrt 3 / 2` veces la amplitud de modulación del convertidor.
+       El rango de valores va de 0 a :math:`\sqrt 3 / 2`, aunque un límite inferior realista es 0,5.
+
+   * - :math:`\phi`
+     - Ángulo de disparo del convertidor.
+
+   * - :math:`G_{sw}`
+     - Pérdidas de operación del inversor.
+
+
+.. math::
+
+    Y_1 = \frac{1}{R_{1} + j X_{1}}
+
+
+Alta tensión en corriente continua (HVDC)
+------------------------------------------------------
+
+High Voltage Direct Current o HVDC es un término utilizado para referirse a la transmisión en alta tensión y corriente
+continua. Este método abarata costes para transmisión a muy larga distancia y también se usa para acoplar systemas
+eléctricos con diferente base de fecuencia o que por distintas razones, su acople en AC es inestable. [ACHA2]_ provee
+un marco de referencia unificado para incorporar los convertidores y las redes en DC en los flujos de potencia tipo
+Newton-Raphson.
+
+.. image:: images/HVDC.png
+   :height: 500px
+
+En [ACHA2]_ se proveen dos ecuaciones de transferencia que vamos a tener que unir. Estas son, la ecuación de
+transferencia del transformador:
+
+.. math::
+
+    \begin{bmatrix}
+    I_{AC}\\
+    I_{vi}
+    \end{bmatrix}
+    =\begin{bmatrix}
+    Y_{T} & a \cdot Y_{T}\\
+    -a \cdot Y_{T} & a^2 \cdot Y_{T}
+    \end{bmatrix}
+    \times
+    \begin{bmatrix}
+    V_{AC}\\
+    V_{vi}
+    \end{bmatrix}
+
+Y la ecuación de transferencia del convertidor VSC:
+
+.. math::
+
+    \begin{bmatrix}
+    I_{vi}\\
+    I_{DC}
+    \end{bmatrix}
+    =\begin{bmatrix}
+    Y_{vi, vi} & Y_{vi, i}^{\phi}\\
+     Y_{vi, i}^{-\phi} & Y_{i, i}
+    \end{bmatrix}
+    \times
+    \begin{bmatrix}
+    V_{vi}\\
+    V_{DC}
+    \end{bmatrix}
+
+Dónde:
+
+.. math::
+
+    Y_{vi, vi} = \frac{Y_{filter} + Y_1 \cdot Y_{reac}}{Y_1 + Y_{reac}}
+
+.. math::
+
+    Y_{vi, i} = \frac{-k_1 \cdot m \cdot  Y_1 \cdot Y_{reac}}{Y_1 + Y_{reac}}
+
+.. math::
+
+    Y_{i, i} = \frac{G_{sw} + j \cdot k_1^2 \cdot m^2 \cdot B_{eq} + k_1^2 \cdot m^2 \cdot Y_1 \cdot Y_{reac}}{Y_1 + Y_{reac}}
+
+
+.. math::
+
+    G_{sw} = G_0 \cdot \left( \frac{|I_{ti}|}{I_{nom}} \right)^2
+
+
+Como necesitamos una función de transferencia de la parte AC a la parte DC, necesitamos unir ambas funciones de
+transferencia y eliminar las referencias a :math:`I_{vi}` y :math:`V_{vi}`.
+
+
+.. math::
+
+    \begin{bmatrix}
+    I_{AC}\\
+    I_{DC}\\
+    I_{vi}
+    \end{bmatrix}
+    =\begin{bmatrix}
+    Y_{T}          & 0                & -a \cdot Y_{T}\\
+    -a \cdot Y_{T} & Y_{vi, i}^{\phi} & a^2 \cdot Y_{T} + Y_{vi, vi}\\
+    0              & Y_{i, i}         & Y_{vi, i}^{-\phi}
+    \end{bmatrix}
+    \times
+    \begin{bmatrix}
+    V_{AC}\\
+    V_{DC}\\
+    V_{vi}
+    \end{bmatrix}
+
+
+Referencias
+---------------
+
+.. [ACHA1] A New STATCOM Model for Power Flows Using the Newton-Raphson Method. Enrique Acha, Behzad Kazemtabrizi.
+
+.. [ACHA2] A generalized frame or reference for the incorporation of multi-terminal VSC-HVDC systems in power flow solutions. Enrique Acha, Luis M. Castro.

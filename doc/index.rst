@@ -28,8 +28,6 @@ Modelado práctico de red
 
    derivatives.rst
 
-   acdc_power_flow_derivatives.rst
-
 
 Indices and tables
 ==================

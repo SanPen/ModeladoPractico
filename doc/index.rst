@@ -28,6 +28,8 @@ Modelado práctico de red
 
    derivatives.rst
 
+   ac_dc_derivatives.rst
+
 
 Indices and tables
 ==================

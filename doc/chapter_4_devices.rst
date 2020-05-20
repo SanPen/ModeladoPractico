@@ -434,24 +434,29 @@ Como necesitamos una función de transferencia de la parte AC a la parte DC, nec
 transferencia y eliminar las referencias a :math:`I_{vi}` y :math:`V_{vi}`.
 
 
+
 .. math::
 
-    \begin{bmatrix}
-    I_{AC}\\
-    I_{DC}\\
-    I_{vi}
-    \end{bmatrix}
-    =\begin{bmatrix}
-    Y_{T}          & 0                & -a \cdot Y_{T}\\
-    -a \cdot Y_{T} & Y_{vi, i}^{\phi} & a^2 \cdot Y_{T} + Y_{vi, vi}\\
-    0              & Y_{i, i}         & Y_{vi, i}^{-\phi}
-    \end{bmatrix}
-    \times
-    \begin{bmatrix}
-    V_{AC}\\
-    V_{DC}\\
-    V_{vi}
-    \end{bmatrix}
+    Y_{Bus} = \left(\begin{array}{cccc} Y_{1} & -Y_{1}\,{tap}_{1} & 0 & 0\\
+                -Y_{1}\,{tap}_{1} & \left(Y_{1}+B_{1}\,j\right)\,{m_{1}}^2+G_{1}+{ydc} & -{ydc} & 0\\
+                0 & -{ydc} & \left(Y_{2}+B_{2}\,j\right)\,{m_{2}}^2+G_{2}+{ydc} & -Y_{2}\,{tap}_{2}\\
+                0 & 0 & -Y_{2}\,{tap}_{2} & Y_{2} \end{array}\right)
+
+
+Ahora podemos efectuar la reducción de los dos nudos interiores (2 y 3) con la siguiente operación:
+
+
+
+.. math::
+
+    denominator = G_{1}\,{ydc}\,j+G_{2}\,{ydc}\,j+G_{1}\,G_{2}\,j-B_{1}\,G_{2}\,{m_{1}}^2-B_{2}\,G_{1}\,{m_{2}}^2+G_{2}\,Y_{1}\,{m_{1}}^2\,j+G_{1}\,Y_{2}\,{m_{2}}^2\,j-B_{1}\,{m_{1}}^2\,{ydc}-B_{2}\,{m_{2}}^2\,{ydc}+Y_{1}\,{m_{1}}^2\,{ydc}\,j+Y_{2}\,{m_{2}}^2\,{ydc}\,j-B_{1}\,B_{2}\,{m_{1}}^2\,{m_{2}}^2\,j-B_{1}\,Y_{2}\,{m_{1}}^2\,{m_{2}}^2-B_{2}\,Y_{1}\,{m_{1}}^2\,{m_{2}}^2+Y_{1}\,Y_{2}\,{m_{1}}^2\,{m_{2}}^2\,1{}{i}
+
+    demominator2 = G_{1}\,{ydc}+G_{2}\,{ydc}+G_{1}\,G_{2}+B_{2}\,G_{1}\,{m_{2}}^2\,j+G_{2}\,Y_{1}\,{m_{1}}^2+G_{1}\,Y_{2}\,{m_{2}}^2+B_{2}\,{m_{2}}^2\,{ydc}\,j+Y_{1}\,{m_{1}}^2\,{ydc}+Y_{2}\,{m_{2}}^2\,{ydc}-B_{1}\,B_{2}\,{m_{1}}^2\,{m_{2}}^2+B_{2}\,Y_{1}\,{m_{1}}^2\,{m_{2}}^2\,j+Y_{1}\,Y_{2}\,{m_{1}}^2\,{m_{2}}^2+B_{1}\,{m_{1}}^2\,{ydc}\,j+B_{1}\,G_{2}\,{m_{1}}^2\,j+B_{1}\,Y_{2}\,{m_{1}}^2\,{m_{2}}^2\,j
+
+    Y_{bus} = \left(\begin{array}{cc}
+                Y_{1}-\frac{{Y_{1}}^2\,{{tap}_{1}}^2\,\left(G_{2}\,j+{ydc}\,j-B_{2}\,{m_{2}}^2+Y_{2}\,{m_{2}}^2\,j\right)}{denominator} & -\frac{Y_{1}\,Y_{2}\,{tap}_{1}\,{tap}_{2}\,{ydc}}{denominator2}\\
+                -\frac{Y_{1}\,Y_{2}\,{tap}_{1}\,{tap}_{2}\,{ydc}\,j}{denominator} & Y_{2}-\frac{Y_{2}\,{tap}_{2}\,\left(G_{1}\,Y_{2}\,{tap}_{2}\,j+Y_{2}\,{tap}_{2}\,{ydc}\,j-B_{1}\,Y_{2}\,{m_{1}}^2\,{tap}_{2}+Y_{1}\,Y_{2}\,{m_{1}}^2\,{tap}_{2}\,j\right)}{denominator}
+                \end{array}\right)
 
 
 Referencias

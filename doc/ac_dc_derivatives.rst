@@ -1,8 +1,14 @@
 
 .. _ac_dc_derivatives:
 
-Derivadas AC/DC
-======================
+Flujo de potencia AC/DC unificado
+===================================
+
+En esta sección vamos a desarrollar el flujo de potencia unificado AC/DC.
+
+Las referencias que se han utilizado son [TYL1]_: Excelente artículo para comprender cómo componer el problema.
+[ARR1]_ Libro de referencia del que se sacan las ecuaciones y se componen a la manera descrita por Tylavsky, pero
+realizando las derivadas en forma matricial como se describe en [MAT1]_.
 
 Ecuaciones del modelo
 ------------------------------
@@ -134,7 +140,7 @@ Depende de :math:`(\theta, |V|, I_d)`
 
 .. math::
 
-    \frac{\partial S}{\partial |V|} =  [V] \cdot \left( Y \times [E] \right)^* - [I] \cdot [E]
+    \frac{\partial S}{\partial |V|} =  [V] \cdot \left( Y \times [E] \right)^* + [I]^* \cdot [E] = [E] \cdot \left( Y \times [V] + [I] \right)^*
 
 
 .. math::
@@ -345,3 +351,64 @@ Derivadas de la ecuación R7
 .. math::
 
     \frac{\partial R7}{\partial a} = [1]
+
+
+
+
+Sistema de ecuaciones iterativo
+-----------------------------------------
+
+Abajo tenemos el sistema de ecuaciones que hay que resolver iterativamente para resolver una Red AC/DC.
+
+Nótese que las derivadas en las posiciones 11, 12, 21 y 22 son el tradicional jacobiano AC con alguna modificación.
+El resto son magnitudes de los convertidores.
+
+.. math::
+
+    \begin{bmatrix}
+    Re \left( \frac{\partial B1}{\partial \theta} \right) & 	Re \left( \frac{\partial B1}{\partial |V|} \right) & 	0 & 	Re \left( \frac{\partial B1}{\partial I_d} \right)& 	0 & 	0 & 	\\
+    Im \left( \frac{\partial B1}{\partial \theta} \right) & 	Im \left( \frac{\partial B1}{\partial |V|} \right) & 	0 & 	Im \left( \frac{\partial B1}{\partial I_d} \right) & 	0 & 	0 & 	\\
+    0 & 	0 & 	\frac{\partial B2}{\partial V_d} & 	\frac{\partial B2}{\partial I_d} & 	0 & 	0 & 	\\
+    \frac{\partial R1}{\partial \theta} & 	\frac{\partial R1}{\partial |V|} & 	\frac{\partial R1}{\partial V_d} & 	0 & 	0 & 	\frac{\partial R1}{\partial a} & 	\\
+    0 & 	\frac{\partial R2}{\partial |V|} & 	\frac{\partial R2}{\partial V_d} & 	\frac{\partial R2}{\partial I_d} & 	\frac{\partial R2}{\partial cos(\alpha)} & 	\frac{\partial R2}{\partial a} & 	\\
+    0 & 	0 & 	\frac{\partial R3}{\partial V_d} & 	\frac{\partial R3}{\partial I_d} & 	0 & 	0 & 	\\
+    0 & 	0 & 	\frac{\partial R4}{\partial V_d} & 	0 & 	0 & 	0 & 	\\
+    0 & 	0 & 	0 & 	\frac{\partial R5}{\partial I_d} & 	0 & 	0 & 	\\
+    0 & 	0 & 	0 & 	0 & 	\frac{\partial R6}{\partial cos(\alpha)} & 	0 & 	\\
+    0 & 	0 & 	0 & 	0 & 	0 & 	\frac{\partial R7}{\partial a} &
+    \end{bmatrix} \times \begin{bmatrix}
+    \theta \quad \forall pqpv\\
+    |V| \quad \forall pq\\
+    V_d \quad \forall dc\\
+    I_d \\
+    cos(\alpha) \\
+    a
+    \end{bmatrix} = \begin{bmatrix}
+    \Delta P \quad \forall pqpv\\
+    \Delta Q \quad \forall pv\\
+    \Delta B2 \quad \forall dc \\
+    \Delta R1 \\
+    \Delta R2 \\
+    \Delta R3 \\
+    \Delta R4 \\
+    \Delta R5 \\
+    \Delta R6 \\
+    \Delta R7
+    \end{bmatrix}
+
+
+Aquñi viene la parte realmente interesante de este problema; Ves que el Jacobiano tiene 6 columnas y 10 filas?
+Esto puede llevar a confusiones. Una vez compuesto el Jacobiano, este tendrá el mismo número de filas que de columnas
+pero durante su composición no todas las ecuaciones se aplican a todos los dispositivos.
+Las ecuaciones R3, R4, R5, R6 y R7 son
+ecuaciones opcionales de control y sólo una de ellas aplica por cada convertidor. Entonces, dependiendo del tipo
+de control, se elige una de las ecuaciones. No obstante, para mantener la cordura, agruparemos por bloques como
+hemos definido.
+
+
+Referencias
+-------------------
+
+.. [ARR1] : Computer Analysis of power systems, Jos Arrillaga and C.P Arnold. Wyley 1990.
+.. [TYL1] : A Simple Approach to the Solution of the ac-dc Power Flow Problem, Daniel Tylavsky, IEEE TRANSACTIONS ON EDUCATION, VOL. E-27, NO. 1, FEBRUARY 1984
+.. [MAT1] : AC Power Flows, Generalized OPF Costs and their Derivatives using Complex Matrix Notation. Ray D. Zimmerman.

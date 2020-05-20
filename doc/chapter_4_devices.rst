@@ -2,6 +2,7 @@ Dispositivos de la red
 ================================
 
 
+.. _circuit_as_asset_manager:
 
 El circuito como gestor de activos
 -------------------------------------------------
@@ -9,7 +10,7 @@ El circuito como gestor de activos
 En este documento se presenta un arreglo de la información de la red que resuta ser eficiente y mantenible para su
 implementación en un programa de ordenador. El concepto principal es la agregación de los dispositivos de acuerdo
 a su agregación natural. Es decir, si una carga se modela conectada a un bus, es natural que en el bus haya una lista
-con las cargas conectasdas, en lugar de que ambos dispositivos se almacenen de forma independiente. Esta agregación
+con las cargas conectadas, en lugar de que ambos dispositivos se almacenen de forma independiente. Esta agregación
 hace que añadir y borrar elementos sea muy sencillo. Además el procesado y acceso a la información se produce de
 forma inmediata.
 
@@ -23,6 +24,8 @@ Los conceptos son los siguientes:
 
 - Los interruptores se almacenan dentro de la rama a la que afectan.
 
+.. image:: images/assets_diagram.png
+   :height: 500px
 
 El la sección ":ref:`compiling_the_asset_manager`" vemos cómo se convierte la información del gestor de activos, a
 vectores y matrices que están preparadas para el cálculo.
@@ -49,9 +52,27 @@ de la matriz de admitancia :math:`Y`. Las ramas generales componen la matriz de 
    :height: 400px
 
 
+
+Bus
+---------
+
+El bus es el lugar topológico de conexión de los elementos de la red eléctrica. Tal como se propuso en
+:ref:`circuit_as_asset_manager`, el Bus es un contenedor para los elementos de generación y carga de la red.
+
+.. list-table::
+   :widths: 55 20
+   :header-rows: 1
+
+   * - Valor
+     - Unidades
+
+   * - Tensión nominal (:math:`V_{nom}`)
+     - kV
+
+
 .. _pi_model:
 
-Ramas y el modelo  (Pi)
+Modelo general de rama  (Pi)
 -----------------------------------------
 
 A efectos de la mayoría de cálculos en estado estacionario, los elementos rama de la red se representan con el
@@ -105,6 +126,31 @@ de una matriz de admitancias entre los nudos de la red. Hallando el modelo Pi co
 inmediata la formación de la matriz de admitancia de un circuito. Esto se discute detalladamente en el siguiente
 capítulo.
 
+.. list-table::
+   :widths: 55 20
+   :header-rows: 1
+
+   * - Valor
+     - Unidades
+
+   * - Bus 1
+     - Bus
+
+   * - Bus 2
+     - Bus
+
+   * - Resistencia serie (:math:`r`)
+     - p.u.
+
+   * - Reactancia serie (:math:`x`)
+     - p.u.
+
+   * - Conductancia shunt (:math:`g`)
+     - p.u.
+
+   * - Susceptancia shunt (:math:`b`)
+     - p.u.
+
 
 Generadores de tensión controlada
 -----------------------------------------
@@ -121,19 +167,19 @@ mantienen constante.
    * - Valor
      - Unidades
 
-   * - Potencia activa
+   * - Potencia activa  (:math:`P_{set}`)
      - MW
 
    * - Impedancia
      - :math:`\Omega`
 
-   * - Tensión de control :math:`|V|`
+   * - Tensión de control (:math:`V_{set}`)
      - p.u.
 
-   * - Máxima potencia reactiva
+   * - Máxima potencia reactiva  (:math:`Q_{max}`)
      - MVAr
 
-   * - Mínima potencia reactiva
+   * - Mínima potencia reactiva  (:math:`Q_{min}`)
      - MVAr
 
 
@@ -158,30 +204,30 @@ a aceptar esa sugerencia de modelado.
    * - Valor
      - Unidades
 
-   * - Potencia activa
+   * - Potencia activa  (:math:`P_{set}`)
      - MW
 
    * - Impedancia
      - :math:`\Omega`
 
-   * - Capacidad
+   * - Capacidad  (:math:`E`)
      - MWh
 
-   * - Estado de carga
+   * - Estado de carga  (:math:`SoC`)
      - p.u.
 
-   * - Voltage de set point
+   * - Tensión de control  (:math:`V_{set}`)
      - p.u.
 
-   * - Máxima potencia reactiva
+   * - Máxima potencia reactiva  (:math:`Q_{max}`)
      - MVAr
 
-   * - Mínima potencia reactiva
+   * - Mínima potencia reactiva  (:math:`Q_{min}`)
      - MVAr
 
 Al modelar la batería como un tipo especial de generador controlado, asumimos lo mismo que ya se ha asumido en éste.
 Adicionalmente incluimos el parámetro de la capacidad de almacenaje de la batería que nos permitirá determinar el
-nivel de descarga () de ésta en simulaciones tiempo-dependientes.
+nivel de descarga (:math:`SoC`) de ésta en simulaciones tiempo-dependientes.
 
 
 Cargas: Modelo general ZIP
@@ -201,13 +247,13 @@ activa y reactiva y la impedancia es efectivamente una impedancia compleja con v
    * - Valor
      - Unidades
 
-   * - Potencia activa
+   * - Potencia (:math:`P + jQ`)
      - MW + jMVAr
 
-   * - Admitancia a V=1.pu.
+   * - Admitancia a V=1.pu.  (:math:`G + jB`)
      - MW + jMVAr
 
-   * - Corriente a V=1.pu.
+   * - Corriente a V=1.pu.  (:math:`Ir + jIi`)
      - MW + jMVAr
 
 
@@ -228,7 +274,7 @@ un transformador.
    * - Valor
      - Unidades
 
-   * - Admitancia a V=1.pu.
+   * - Admitancia a V=1.pu. (:math:`G + jB`)
      - MW + jMVAr
 
 
@@ -236,18 +282,22 @@ un transformador.
 -----------------------------------------
 
 Los interruptores son una parte fundamental de las redes eléctricas. Sin embargo su modelado numérico
-es problemático. Si modelásemos los interruptores como una rama entre dis buses, estaríamos metiendo ramas de impedancia
-muy baja en comparación con las demás ramas. En la práctica esto produce admitancias enormes que al ser insertadas
-en la matriz de admitancia producen lo que se denomiona *mal condicionamiento* de la matriz.
-Esto produce que el problema numérico no tenga solución.
+es problemático. Si modelásemos los interruptores como una rama con impedancia zero o *infinita* entre dos buses,
+estaríamos metiendo ramas de impedancia muy baja o muy alta en comparación con las demás ramas. En la práctica esto
+produce admitancias que al ser insertadas en la matriz de admitancia producen lo que se denomina como
+*mal condicionamiento* de la matriz. Esto produce que el problema numérico no tenga solución al tender a la divergencia.
 
 .. image:: images/branch_w_switches.png
    :height: 300px
 
 Para evitar este problema los interruptores se han de pre-processar como los estados de las ramas a las que afectan.
+Esto hace que la rama esté activada o desactivada evitando los problemas numericos por completo.
 
 Por ejemplo en la imagen anterior, tenemos una línea con dos interruptores. Uno en cada cabecera. El interruptor unido
 al bus 2 está abierto, provocando que la línea esté desconectada. Entoncen a la hora de componer las matrices de
 admitancia (en el siguiente capítulo) simplemente le asignamos el estado *0* a la línea. Si estuviese conectada le
 asignamos el estado *1*.
 
+De forma general podemos decir que el estado de una línea es el producto de los estados binarios de los interruptores
+que le afectan. En nuestro ejemplo el estado es el producto de 1 x 0 = 0, es decir que el estado de la rama es
+desconectado.

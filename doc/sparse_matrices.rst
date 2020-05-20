@@ -12,7 +12,7 @@ CSC
 -------------
 
 Existen varios formatos de almacenaje de matrices sparse. De entre ellos el Formato CSC (Compressed Sparse Column) y su
-análogo en CSR (Compressed Sparse Row) son los más extendidos por su eficiencia computacional.
+análogo CSR (Compressed Sparse Row) son los más extendidos por su eficiencia computacional.
 
 El formato CSC, tiene un vector de datos (`data`), un vector de punteros de columna (`indptr`) y un vector (`indices`)
 que indica el índice de las filas .

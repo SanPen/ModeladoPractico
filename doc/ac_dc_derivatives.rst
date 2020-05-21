@@ -10,6 +10,11 @@ Las referencias que se han utilizado son [TYL1]_: Excelente artículo para compr
 [ARR1]_ Libro de referencia del que se sacan las ecuaciones y se componen a la manera descrita por Tylavsky, pero
 realizando las derivadas en forma matricial como se describe en [MAT1]_.
 
+El modelo de convertidor que seguiremos es este:
+
+.. image:: images/converter.png
+   :height: 150px
+
 Ecuaciones del modelo
 ------------------------------
 
@@ -66,6 +71,92 @@ R7) Ecuación de control del tap de los convertidores:
 .. math::
 
     R7 = a - a^{sp}
+
+.. list-table::
+   :widths: 15 15 80
+   :header-rows: 1
+
+   * - Magnitud
+     - Unidades
+     - Descripción
+
+   * - :math:`S`
+     - p.u.
+     - Vector de potencias complejas
+
+   * - :math:`V`
+     - p.u.
+     - Vector de tensiones complejas
+
+   * - :math:`|V|`
+     - p.u.
+     - Vector de módulos de tensiones
+
+   * - :math:`\theta`
+     - radianes
+     - Vector de angulos de las tensiones
+
+   * - :math:`Y`
+     - p.u.
+     - Matriz de admitancia AC
+
+   * - :math:`I`
+     - p.u.
+     - Vector de inyecciones de corriente complejas
+
+   * - :math:`E`
+     - p.u.
+     - Vector unitario de tensiones complejas
+
+   * - :math:`I_d`
+     - p.u.
+     - Vector de corrientes de los convertidores
+
+   * - :math:`I_d^{sp}`
+     - p.u.
+     - Vector de corrientes especificadas de los convertidores
+
+   * - :math:`V_d`
+     - p.u.
+     - Vector de tensiones en los nudos DC
+
+   * - :math:`V_d^{sp}`
+     - p.u.
+     - Vector de tensiones de control en los nudos DC
+
+   * - :math:`G`
+     - p.u.
+     - Matriz de consuctancias en los nudos DC
+
+   * - :math:`k_1`
+     - p.u.
+     - Vector de parámetros de los convertidores
+
+   * - :math:`a`
+     - p.u.
+     - Vector de módulos de tap en los convertidores
+
+   * - :math:`a^{sp}`
+     - p.u.
+     - Vector de módulos de tap de control en los convertidores
+
+   * - :math:`cos(\alpha)`
+     - p.u.
+     - Vector de coseno del ángulo de disparo en los convertidores. Se toma todo junto como una variable.
+
+   * - :math:`cos(\alpha_{min})`
+     - p.u.
+     - Vector de coseno del ángulo de disparo de control en los convertidores
+
+   * - :math:`X_c`
+     - p.u.
+     - Vector de reactancias en los convertidores
+
+   * - :math:`P^{sp}`
+     - p.u.
+     - Vector de potencias de control en los convertidores
+
+
 
 
 Variables del modelo
@@ -296,13 +387,15 @@ Depende de :math:`(V_d, I_d)`
 
     \frac{\partial R3}{\partial V_d} = \frac{\partial P^{sp}}{\partial V_d}
                                        - \left( \frac{\partial V_d}{\partial V_d} \cdot I_d
-                                              + V_d \cdot \frac{\partial I_d}{\partial V_d} \right) \\ = -[I_d]
+                                              + V_d \cdot \frac{\partial I_d}{\partial V_d} \right) \\
+                                    = -[I_d]
 
 .. math::
 
     \frac{\partial R3}{\partial I_d} = \frac{\partial P^{sp}}{\partial I_d}
                                        - \left( \frac{\partial V_d}{\partial I_d} \cdot I_d
-                                              + V_d \cdot \frac{\partial I_d}{\partial I_d} \right) \\ = -[V_d]
+                                              + V_d \cdot \frac{\partial I_d}{\partial I_d} \right) \\
+                                    = -[V_d]
 
 
 Derivadas de la ecuación R4
@@ -361,12 +454,12 @@ Sistema de ecuaciones iterativo
 Abajo tenemos el sistema de ecuaciones que hay que resolver iterativamente para resolver una Red AC/DC.
 
 Nótese que las derivadas en las posiciones 11, 12, 21 y 22 son el tradicional jacobiano AC con alguna modificación.
-El resto son magnitudes de los convertidores.
+El resto representa el flujo de potencia DC y derivadas concernientes a los convertidores.
 
 .. math::
 
     \begin{bmatrix}
-    Re \left( \frac{\partial B1}{\partial \theta} \right) & 	Re \left( \frac{\partial B1}{\partial |V|} \right) & 	0 & 	Re \left( \frac{\partial B1}{\partial I_d} \right)& 	0 & 	0 & 	\\
+    Re \left( \frac{\partial B1}{\partial \theta} \right) & 	Re \left( \frac{\partial B1}{\partial |V|} \right) & 	0 & 	Re \left( \frac{\partial B1}{\partial I_d} \right) & 	0 & 	0 & 	\\
     Im \left( \frac{\partial B1}{\partial \theta} \right) & 	Im \left( \frac{\partial B1}{\partial |V|} \right) & 	0 & 	Im \left( \frac{\partial B1}{\partial I_d} \right) & 	0 & 	0 & 	\\
     0 & 	0 & 	\frac{\partial B2}{\partial V_d} & 	\frac{\partial B2}{\partial I_d} & 	0 & 	0 & 	\\
     \frac{\partial R1}{\partial \theta} & 	\frac{\partial R1}{\partial |V|} & 	\frac{\partial R1}{\partial V_d} & 	0 & 	0 & 	\frac{\partial R1}{\partial a} & 	\\
@@ -377,16 +470,16 @@ El resto son magnitudes de los convertidores.
     0 & 	0 & 	0 & 	0 & 	\frac{\partial R6}{\partial cos(\alpha)} & 	0 & 	\\
     0 & 	0 & 	0 & 	0 & 	0 & 	\frac{\partial R7}{\partial a} &
     \end{bmatrix} \times \begin{bmatrix}
-    \theta \quad \forall pqpv\\
-    |V| \quad \forall pq\\
-    V_d \quad \forall dc\\
+    \theta \\
+    |V| \\
+    V_d \\
     I_d \\
     cos(\alpha) \\
     a
     \end{bmatrix} = \begin{bmatrix}
-    \Delta P \quad \forall pqpv\\
-    \Delta Q \quad \forall pv\\
-    \Delta B2 \quad \forall dc \\
+    \Delta P \\
+    \Delta Q \\
+    \Delta P_d \\
     \Delta R1 \\
     \Delta R2 \\
     \Delta R3 \\
@@ -397,13 +490,138 @@ El resto son magnitudes de los convertidores.
     \end{bmatrix}
 
 
-Aquñi viene la parte realmente interesante de este problema; Ves que el Jacobiano tiene 6 columnas y 10 filas?
+Aquí viene la parte realmente interesante de este problema; Ves que el Jacobiano tiene 6 columnas y 10 filas?
 Esto puede llevar a confusiones. Una vez compuesto el Jacobiano, este tendrá el mismo número de filas que de columnas
 pero durante su composición no todas las ecuaciones se aplican a todos los dispositivos.
 Las ecuaciones R3, R4, R5, R6 y R7 son
 ecuaciones opcionales de control y sólo una de ellas aplica por cada convertidor. Entonces, dependiendo del tipo
 de control, se elige una de las ecuaciones. No obstante, para mantener la cordura, agruparemos por bloques como
 hemos definido.
+
+
+.. list-table::
+   :widths: 15 40 35 20
+   :header-rows: 1
+
+   * - Derivada
+     - Valor
+     - Filas
+     - columnas
+
+   * - :math:`Re \left( \frac{\partial B1}{\partial \theta} \right)`
+     - :math:`j \cdot [V] \cdot \left( I - Y \times [V] \right) ^* - j \cdot [I_d] \cdot  [E]`
+     - :math:`\Delta P` (pqpv)
+     - :math:`\theta` (pqpv)
+
+   * - :math:`Re \left( \frac{\partial B1}{\partial |V|} \right)`
+     - :math:`[E] \cdot \left( Y \times [V] + [I] \right)^*`
+     - :math:`\Delta P` (pqpv)
+     - :math:`|V|` (pq)
+
+   * - :math:`Re \left( \frac{\partial B1}{\partial I_d} \right)`
+     - :math:`[E]`
+     - :math:`\Delta P` (pqpv)
+     - :math:`I_d` (conv)
+
+   * - :math:`Im \left( \frac{\partial B1}{\partial \theta} \right)`
+     - :math:`j \cdot [V] \cdot \left( I - Y \times [V] \right) ^* - j \cdot [I_d] \cdot  [E]`
+     - :math:`\Delta Q` (pq)
+     - :math:`\theta` (pqpv)
+
+   * - :math:`Im \left( \frac{\partial B1}{\partial |V|} \right)`
+     - :math:`[E] \cdot \left( Y \times [V] + [I] \right)^*`
+     - :math:`\Delta Q` (pq)
+     - :math:`|V|` (pq)
+
+   * - :math:`Im \left( \frac{\partial B1}{\partial I_d} \right)`
+     - :math:`[E]`
+     - :math:`\Delta Q` (pq)
+     - :math:`I_d` (conv)
+
+   * - :math:`\frac{\partial B2}{\partial V_d}`
+     - :math:`[V_d] \times G + G \times [V_d] - [I_d]`
+     - :math:`P_d` (dc)
+     - :math:`V_d` (dc)
+
+   * - :math:`\frac{\partial B2}{\partial I_d}`
+     - :math:`-[V_d]`
+     - :math:`P_d` (dc)
+     - :math:`I_d` (conv)
+
+   * - :math:`\frac{\partial R1}{\partial \theta}`
+     - :math:`[k_1 \cdot a] \cdot Im\{[E] \}`
+     - :math:`R1` (conv)
+     - :math:`\theta` (conv-ac)
+
+   * - :math:`\frac{\partial R1}{\partial |V|}`
+     - :math:`-[k_1 \cdot a] \cdot Re \{ [E] \}`
+     - :math:`R1` (conv)
+     - :math:`|V|` (conv-ac)
+
+   * - :math:`\frac{\partial R1}{\partial V_d}`
+     - :math:`[1] \rightarrow C_t`
+     - :math:`R1` (conv)
+     - :math:`V_d` (conv)
+
+   * - :math:`\frac{\partial R1}{\partial a}`
+     - :math:`k_1 \cdot |V| \cdot Re\{[V] \}`
+     - :math:`R1` (conv)
+     - :math:`a` (conv)
+
+   * - :math:`\frac{\partial R2}{\partial |V|}`
+     - :math:`-k_1 \cdot a \cdot cos(\alpha)`
+     - :math:`R2` (conv)
+     - :math:`|V|` (conv-ac)
+
+   * - :math:`\frac{\partial R2}{\partial V_d}`
+     - :math:`[1] \rightarrow C_t`
+     - :math:`R2` (conv)
+     - :math:`V_d` (conv)
+
+   * - :math:`\frac{\partial R2}{\partial I_d}`
+     - :math:`\frac{3}{\pi} \cdot X_c`
+     - :math:`R2` (conv)
+     - :math:`V_d` (conv)
+
+   * - :math:`\frac{\partial R2}{\partial cos(\alpha)}`
+     - :math:`-k_1 \cdot a \cdot |V|`
+     - :math:`R2` (conv)
+     - :math:`cos(\alpha)` (conv)
+
+   * - :math:`\frac{\partial R2}{\partial a}`
+     - :math:`-k_1 \cdot |V| \cdot cos(\alpha)`
+     - :math:`R2` (conv)
+     - :math:`a` (conv)
+
+   * - :math:`\frac{\partial R3}{\partial V_d}`
+     - :math:`-[I_d]`
+     - :math:`R3` (conv con control de :math:`P_d`)
+     - :math:`V_d` (conv)
+
+   * - :math:`\frac{\partial R3}{\partial I_d}`
+     - :math:`-[V_d]`
+     - :math:`R3` (conv con control de :math:`P_d`)
+     - :math:`I_d` (conv)
+
+   * - :math:`\frac{\partial R4}{\partial V_d}`
+     - :math:`[1]`
+     - :math:`R4` (conv con control de :math:`V_d`)
+     - :math:`V_d` (conv)
+
+   * - :math:`\frac{\partial R5}{\partial I_d}`
+     - :math:`[1]`
+     - :math:`R5` (conv con control de :math:`I_d`)
+     - :math:`I_d` (conv)
+
+   * - :math:`\frac{\partial R6}{\partial cos(\alpha)}`
+     - :math:`[1]`
+     - :math:`R6` (conv con control de :math:`cos(\alpha)`)
+     - :math:`cos(\alpha)` (conv)
+
+   * - :math:`\frac{\partial R7}{\partial a}`
+     - :math:`[1]`
+     - :math:`R7` (conv, con control de :math:`a`)
+     - :math:`a` (conv)
 
 
 Referencias

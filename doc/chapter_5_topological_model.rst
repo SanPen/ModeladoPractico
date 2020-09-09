@@ -548,3 +548,368 @@ Inyecciones de corriente en forma compleja:
 
 .. math::
 	[I_{bus \: prof}] = - [C_{bus, load}] \times [load_{I \: prof}]
+
+
+Procesado topológico avanzado: Reducción de subestaciones y líneas con múltiples secciones
+----------------------------------------------------------------------------------------------------
+
+La formulación nodal de las ecuaciones de Kirchoff (ecuaciones de inyecciones de corriente) no admite
+ramas de resistencia cero. Esto es así porque estas ramas hacen la matriz de admitancia singular.
+
+Por tanto, tenemos un problema con los interruptores y trozos de conexión muy cortos que se
+utilizan en las subestaciones; No podemos incluir la topología de las subestaciones en el modelo
+de red a simular porque esto nos impediría simular la red con las ecuaciones nodales.
+
+La solución es efectuar una reducción topológica de los interruptores y las ramas de conexión cortas de las
+subestaciones hasta conseguir la expresión de cálculo; Es decir, a los nudos y ramas que realmente tienen una
+impedancia significativa.
+
+A continuación vamos a describir mediante un ejemplo el algorítmo desarrollado por un servidor para
+reducir las subestaciones. Para ello se asume la suiguiente manera de conectar elementos:
+
+- El elemento general de conecividad es la **terminal** (ó connectivity node en CIM)
+- Todas las ramas se conectan a dos terminales.
+- Las barras o buses de la subestación son un elemento más y no representan un nodo topológico a priori.
+
+Observemos el siguiente ejemplo:
+
+.. image:: images/SE_Diagram1.png
+
+
+- Los terminales de conectividad se denotan con T.
+- Las barras de la subestación se denotan con B.
+- Los interruptores o seccionadores se denotan con SW.
+- Las rammas con impedancia significativa (ej. líneas) se denotan con L.
+
+Ahora el lector podría pensar que existe una duplicidad de elementos de conexión, ¿Por qué existen barras y terminales?
+La respuesta es que las barras son un elemento físico. Comúnmente se llaman barras (o buses) a los nudos de cáclculo de
+un model de simulación. No obstante, dificilmente serán embarrados reales. Por contrario serán los nudos de cálculo
+resultantes de la reducción. Aquí es dónde entran en juego las terminales. Las terminales son un elemento ficticio
+de conexión, por tanto nos permiten unit cualquier cosa con cualquier cosa:
+dos líneas, una línea con un interruptor, etc.
+
+
+**1. Sustitución**
+
+Como existen dos elementos de conexión, sólo debe quedar uno, y no va a ser ni la barra ni la terminal. Será
+el nudo de cálculo. El primer paso del algorítmo será sustituir las barras y los terminales por unos
+nudos de cálculo iniciales, que más tarde reduciremos para obtener la red de cálculo.
+El proceso de sustitución es:
+
+- Cada barra se convierte en un nudo de cálculo.
+- Las terminales asociadas a una barra desaparecen, recorando a qué nudo de cálculo quedan vinculados.
+- Las terminales que no están asociadas a una barra, se convierten en nudos de cálculo adicionales.
+
+Entonces, la sustitución de barras y terminales por nudos de cálculo (N) queda de la siguiente manera:
+
+.. image:: images/SE_Diagram2.png
+
+
+Ahora queda la tarea de quitar los interruptores y determinar qué nudos de cálculo son en realidad el mismo,
+fruto del estado (abierto / cerrado) los interruptores.
+
+**2. Matriz de adyacencia de interruptores**
+
+Ahora formamos la matriz de adyacencia (C) de los nudos de cálculo con los interruptores.
+
+- Dimensionamos una matriz M de número de nudos por número de interruptores.
+- Para cada interruptor k
+    - Obtenemos los índices de los nudos de los extremos (f, t)
+    - M[f, k] = 1 si el interruptor está cerrado, 0 si está abierto.
+    - M[t, k] = 1 si el interruptor está cerrado, 0 si está abierto.
+- Calculamos :math:`C = M \times M^t`
+
+La matriz de conectividad nudos-interruptores es:
+
+.. code:: text
+
+         SW1  SW2  SW3  SW4  SW5  SW6  SW7
+    N1     1    1    0    0    0    0    0
+    N2     1    0    1    1    0    0    0
+    N3     0    0    0    0    1    0    0
+    N4     0    0    0    0    0    1    1
+    N5     0    0    0    0    0    0    0
+    N6     0    1    0    0    0    0    0
+    N7     0    0    1    0    0    0    0
+    N8     0    0    0    1    0    0    0
+    N9     0    0    0    0    1    0    0
+    N10    0    0    0    0    0    1    0
+    N11    0    0    0    0    0    0    1
+
+La matriz C queda como:
+
+.. code:: text
+
+         N1  N2  N3  N4  N5  N6  N7  N8  N9  N10  N11
+    N1    2   1   0   0   0   1   0   0   0    0    0
+    N2    1   3   0   0   0   0   1   1   0    0    0
+    N3    0   0   1   0   0   0   0   0   1    0    0
+    N4    0   0   0   2   0   0   0   0   0    1    1
+    N5    0   0   0   0   0   0   0   0   0    0    0
+    N6    1   0   0   0   0   1   0   0   0    0    0
+    N7    0   1   0   0   0   0   1   0   0    0    0
+    N8    0   1   0   0   0   0   0   1   0    0    0
+    N9    0   0   1   0   0   0   0   0   1    0    0
+    N10   0   0   0   1   0   0   0   0   0    1    0
+    N11   0   0   0   1   0   0   0   0   0    0    1
+
+La matriz de adyacencia (C) nos indica qué nudos estan conectados por interruptores en primera instancia.
+No obstante, nosotros quremos saber qué nudos forman un grupo conectado al final.
+
+
+**3. Reducción de nudos**
+
+En este paso propagamos la conectividad 1-a-1 de la matriz de adyacencia inicial, hasta conseguir una matriz
+modificada que si contenga los grupos de nudos.
+
+El algoritmo de este paso es el siguiente:
+
+- recorremos cada columna de índice c.
+- Para cada columna c, recorremos las filas de c+1 a N (número de nudos)
+- Si nos encontramos con un valor mayor a cero, sumamos a fila que estamos mirando, la fila de indice c.
+- Marcamos en un vector que la file r ha sido reducida.
+
+El codigo python que recoge esto es:
+
+.. code :: python
+
+    reduced = np.zeros(n_calc_nodes, dtype=int)  # marks the buses that are to be merged
+    for c in range(n_calc_nodes):
+        for r in range(c + 1, n_calc_nodes):
+            if C[r, c] > 0:
+                C[r, :] += C[c, :]
+                reduced[r] += 1
+
+El resultado de los pasos del algoritmo se muestra a continuacion. Como hay 11 nudos en el ejemplo, hay 11 pasos,
+con 11 matrices de adyacencia modificadas.
+
+.. code:: text
+
+    C (reduced N1) @ c:0, r:1:
+
+         N1  N2  N3  N4  N5  N6  N7  N8  N9  N10  N11
+    N1    2   1   0   0   0   1   0   0   0    0    0
+    N2    3   4   0   0   0   1   1   1   0    0    0
+    N3    0   0   1   0   0   0   0   0   1    0    0
+    N4    0   0   0   2   0   0   0   0   0    1    1
+    N5    0   0   0   0   0   0   0   0   0    0    0
+    N6    1   0   0   0   0   1   0   0   0    0    0
+    N7    0   1   0   0   0   0   1   0   0    0    0
+    N8    0   1   0   0   0   0   0   1   0    0    0
+    N9    0   0   1   0   0   0   0   0   1    0    0
+    N10   0   0   0   1   0   0   0   0   0    1    0
+    N11   0   0   0   1   0   0   0   0   0    0    1
+
+    C (reduced N1) @ c:0, r:5:
+
+         N1  N2  N3  N4  N5  N6  N7  N8  N9  N10  N11
+    N1    2   1   0   0   0   1   0   0   0    0    0
+    N2    3   4   0   0   0   1   1   1   0    0    0
+    N3    0   0   1   0   0   0   0   0   1    0    0
+    N4    0   0   0   2   0   0   0   0   0    1    1
+    N5    0   0   0   0   0   0   0   0   0    0    0
+    N6    3   1   0   0   0   2   0   0   0    0    0
+    N7    0   1   0   0   0   0   1   0   0    0    0
+    N8    0   1   0   0   0   0   0   1   0    0    0
+    N9    0   0   1   0   0   0   0   0   1    0    0
+    N10   0   0   0   1   0   0   0   0   0    1    0
+    N11   0   0   0   1   0   0   0   0   0    0    1
+
+    C (reduced N2) @ c:1, r:5:
+
+         N1  N2  N3  N4  N5  N6  N7  N8  N9  N10  N11
+    N1    2   1   0   0   0   1   0   0   0    0    0
+    N2    3   4   0   0   0   1   1   1   0    0    0
+    N3    0   0   1   0   0   0   0   0   1    0    0
+    N4    0   0   0   2   0   0   0   0   0    1    1
+    N5    0   0   0   0   0   0   0   0   0    0    0
+    N6    6   5   0   0   0   3   1   1   0    0    0
+    N7    0   1   0   0   0   0   1   0   0    0    0
+    N8    0   1   0   0   0   0   0   1   0    0    0
+    N9    0   0   1   0   0   0   0   0   1    0    0
+    N10   0   0   0   1   0   0   0   0   0    1    0
+    N11   0   0   0   1   0   0   0   0   0    0    1
+
+    C (reduced N2) @ c:1, r:6:
+
+         N1  N2  N3  N4  N5  N6  N7  N8  N9  N10  N11
+    N1    2   1   0   0   0   1   0   0   0    0    0
+    N2    3   4   0   0   0   1   1   1   0    0    0
+    N3    0   0   1   0   0   0   0   0   1    0    0
+    N4    0   0   0   2   0   0   0   0   0    1    1
+    N5    0   0   0   0   0   0   0   0   0    0    0
+    N6    6   5   0   0   0   3   1   1   0    0    0
+    N7    3   5   0   0   0   1   2   1   0    0    0
+    N8    0   1   0   0   0   0   0   1   0    0    0
+    N9    0   0   1   0   0   0   0   0   1    0    0
+    N10   0   0   0   1   0   0   0   0   0    1    0
+    N11   0   0   0   1   0   0   0   0   0    0    1
+
+    C (reduced N2) @ c:1, r:7:
+
+         N1  N2  N3  N4  N5  N6  N7  N8  N9  N10  N11
+    N1    2   1   0   0   0   1   0   0   0    0    0
+    N2    3   4   0   0   0   1   1   1   0    0    0
+    N3    0   0   1   0   0   0   0   0   1    0    0
+    N4    0   0   0   2   0   0   0   0   0    1    1
+    N5    0   0   0   0   0   0   0   0   0    0    0
+    N6    6   5   0   0   0   3   1   1   0    0    0
+    N7    3   5   0   0   0   1   2   1   0    0    0
+    N8    3   5   0   0   0   1   1   2   0    0    0
+    N9    0   0   1   0   0   0   0   0   1    0    0
+    N10   0   0   0   1   0   0   0   0   0    1    0
+    N11   0   0   0   1   0   0   0   0   0    0    1
+
+    C (reduced N3) @ c:2, r:8:
+
+         N1  N2  N3  N4  N5  N6  N7  N8  N9  N10  N11
+    N1    2   1   0   0   0   1   0   0   0    0    0
+    N2    3   4   0   0   0   1   1   1   0    0    0
+    N3    0   0   1   0   0   0   0   0   1    0    0
+    N4    0   0   0   2   0   0   0   0   0    1    1
+    N5    0   0   0   0   0   0   0   0   0    0    0
+    N6    6   5   0   0   0   3   1   1   0    0    0
+    N7    3   5   0   0   0   1   2   1   0    0    0
+    N8    3   5   0   0   0   1   1   2   0    0    0
+    N9    0   0   2   0   0   0   0   0   2    0    0
+    N10   0   0   0   1   0   0   0   0   0    1    0
+    N11   0   0   0   1   0   0   0   0   0    0    1
+
+    C (reduced N4) @ c:3, r:9:
+
+         N1  N2  N3  N4  N5  N6  N7  N8  N9  N10  N11
+    N1    2   1   0   0   0   1   0   0   0    0    0
+    N2    3   4   0   0   0   1   1   1   0    0    0
+    N3    0   0   1   0   0   0   0   0   1    0    0
+    N4    0   0   0   2   0   0   0   0   0    1    1
+    N5    0   0   0   0   0   0   0   0   0    0    0
+    N6    6   5   0   0   0   3   1   1   0    0    0
+    N7    3   5   0   0   0   1   2   1   0    0    0
+    N8    3   5   0   0   0   1   1   2   0    0    0
+    N9    0   0   2   0   0   0   0   0   2    0    0
+    N10   0   0   0   3   0   0   0   0   0    2    1
+    N11   0   0   0   1   0   0   0   0   0    0    1
+
+    C (reduced N4) @ c:3, r:10:
+
+         N1  N2  N3  N4  N5  N6  N7  N8  N9  N10  N11
+    N1    2   1   0   0   0   1   0   0   0    0    0
+    N2    3   4   0   0   0   1   1   1   0    0    0
+    N3    0   0   1   0   0   0   0   0   1    0    0
+    N4    0   0   0   2   0   0   0   0   0    1    1
+    N5    0   0   0   0   0   0   0   0   0    0    0
+    N6    6   5   0   0   0   3   1   1   0    0    0
+    N7    3   5   0   0   0   1   2   1   0    0    0
+    N8    3   5   0   0   0   1   1   2   0    0    0
+    N9    0   0   2   0   0   0   0   0   2    0    0
+    N10   0   0   0   3   0   0   0   0   0    2    1
+    N11   0   0   0   3   0   0   0   0   0    1    2
+
+    C (reduced N6) @ c:5, r:6:
+
+         N1  N2  N3  N4  N5  N6  N7  N8  N9  N10  N11
+    N1    2   1   0   0   0   1   0   0   0    0    0
+    N2    3   4   0   0   0   1   1   1   0    0    0
+    N3    0   0   1   0   0   0   0   0   1    0    0
+    N4    0   0   0   2   0   0   0   0   0    1    1
+    N5    0   0   0   0   0   0   0   0   0    0    0
+    N6    6   5   0   0   0   3   1   1   0    0    0
+    N7    9  10   0   0   0   4   3   2   0    0    0
+    N8    3   5   0   0   0   1   1   2   0    0    0
+    N9    0   0   2   0   0   0   0   0   2    0    0
+    N10   0   0   0   3   0   0   0   0   0    2    1
+    N11   0   0   0   3   0   0   0   0   0    1    2
+
+    C (reduced N6) @ c:5, r:7:
+
+         N1  N2  N3  N4  N5  N6  N7  N8  N9  N10  N11
+    N1    2   1   0   0   0   1   0   0   0    0    0
+    N2    3   4   0   0   0   1   1   1   0    0    0
+    N3    0   0   1   0   0   0   0   0   1    0    0
+    N4    0   0   0   2   0   0   0   0   0    1    1
+    N5    0   0   0   0   0   0   0   0   0    0    0
+    N6    6   5   0   0   0   3   1   1   0    0    0
+    N7    9  10   0   0   0   4   3   2   0    0    0
+    N8    9  10   0   0   0   4   2   3   0    0    0
+    N9    0   0   2   0   0   0   0   0   2    0    0
+    N10   0   0   0   3   0   0   0   0   0    2    1
+    N11   0   0   0   3   0   0   0   0   0    1    2
+
+    C (reduced N7) @ c:6, r:7:
+
+         N1  N2  N3  N4  N5  N6  N7  N8  N9  N10  N11
+    N1    2   1   0   0   0   1   0   0   0    0    0
+    N2    3   4   0   0   0   1   1   1   0    0    0
+    N3    0   0   1   0   0   0   0   0   1    0    0
+    N4    0   0   0   2   0   0   0   0   0    1    1
+    N5    0   0   0   0   0   0   0   0   0    0    0
+    N6    6   5   0   0   0   3   1   1   0    0    0
+    N7    9  10   0   0   0   4   3   2   0    0    0
+    N8   18  20   0   0   0   8   5   5   0    0    0
+    N9    0   0   2   0   0   0   0   0   2    0    0
+    N10   0   0   0   3   0   0   0   0   0    2    1
+    N11   0   0   0   3   0   0   0   0   0    1    2
+
+    C (reduced N10) @ c:9, r:10:
+
+         N1  N2  N3  N4  N5  N6  N7  N8  N9  N10  N11
+    N1    2   1   0   0   0   1   0   0   0    0    0
+    N2    3   4   0   0   0   1   1   1   0    0    0
+    N3    0   0   1   0   0   0   0   0   1    0    0
+    N4    0   0   0   2   0   0   0   0   0    1    1
+    N5    0   0   0   0   0   0   0   0   0    0    0
+    N6    6   5   0   0   0   3   1   1   0    0    0
+    N7    9  10   0   0   0   4   3   2   0    0    0
+    N8   18  20   0   0   0   8   5   5   0    0    0
+    N9    0   0   2   0   0   0   0   0   2    0    0
+    N10   0   0   0   3   0   0   0   0   0    2    1
+    N11   0   0   0   6   0   0   0   0   0    3    3
+
+
+El vector de marcas de nudos reducidos se muestra a continuación. Las posiciones que tienen un cero,
+son las de los nudos que se quedan sin reducir.
+
+.. code:: text
+
+     reduced:
+     [0 1 0 0 0 2 2 3 1 1 2]
+
+**4. Buscar los grupos**
+
+En esta etapa, miramos la útima matriz de adyacencia modificada en aquellas columnas
+que se marcaron como no modificadas, es decir en las que tienen un cero en el vector "reduced"
+
+Entonces, en cada columna elegida, miramos si el elemento (r, c) para :math:`r \geq c` es mayor que cero.
+Si lo es, entonces significa que el nudo de indice "c", reduce al nudo de indice "r", por tanto
+lo incluimos en el grupo.
+
+Alternativamente, si un nudo no reduce a nadie, al menos ha de reducirse a si mismo, por tanto tendremos un grupo de
+un nudo. Esto lo hacemos para que el diccionario final contenga una representacion completa de toda la red reducida.
+
+.. code:: python
+
+    groups = dict()
+    for c in range(n_calc_nodes):
+        if reduced[c] == 0:  # the buses that were not marked as reduced are the "master buses"
+            group = list()
+            for r in range(c, n_calc_nodes):
+                if C[r, c] > 0:
+                    group.append(r)  # the group includes the master bus
+
+            if len(group) == 0:
+                group.append(c)  # if the group has no length, add the main bus, because it is not reducible
+
+            groups[j] = group
+
+
+Los grupos del ejemplo son:
+
+    - N1: N1, N2, N6, N7, N8
+    - N3: N3, N9
+    - N4: N4, N10, N11
+    - N5: N5
+
+**5. Reasignar los nudos reducidos a las ramas de cálculo**
+
+Como habíamos dicho, las ramas están asignadas a unos terminales, y lo que queremos en última instancia
+es que las ramas estén conectadas a los nudos de cálculo reducidos.

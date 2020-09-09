@@ -14,7 +14,7 @@ ser usados en la :ref:`system_equation`. Los pasos necesarios para conseguirlo s
 - Detectar las islas, determinando los índices de los buses y las ramas pertenecientes a cada isla.
 
 - Separar los vectores de inyección y las matrices de admitancia de acuerdo a sus islas. Este paso es necesario poque
-  si existen islas, una matriz de admitancia que represnete más de una isla es singular (no tiene inversa) y por tanto
+  si existen islas, una matriz de admitancia que represente más de una isla es singular (no tiene inversa) y por tanto
   no podrá ofrecer una solución de cálculo. La solución es particionar la matriz y los vectores asociados.
 
 
@@ -27,7 +27,7 @@ En la sección :ref:`circuit_as_asset_manager` se menciona la estructura anidada
 de la red. Esta estructura ha sido refinada con experiencia en diseño de simuladores eléctricos de forma que el paso
 de la información en objetos a vectores y matrices sea eficiente y sencillo de comprender y mantener.
 
-El siguiente psuedo-código ilustra la función de compilación de objetos a vectores y matrices.
+El siguiente pseudo-código ilustra la función de compilación de objetos a vectores y matrices.
 
 .. code:: text
 
@@ -133,12 +133,12 @@ El siguiente psuedo-código ilustra la función de compilación de objetos a vec
 Matriz de admitancia  (Y)
 ---------------------------------
 
-Esta sección integra la formación de la matriz de admitancia partiendo de la definición general da rama
-data en el capítulo :ref:`pi_model`. El cálculo de la matriz de admitancia en se puede vectorizar completamente
+Esta sección integra la formación de la matriz de admitancia partiendo de la definición general de rama
+data en el capítulo :ref:`pi_model`. El cálculo de la matriz de admitancia se puede vectorizar completamente
 de la siguiente manera;
 
 
-Primero se forma los vectores que representan la admitancias serie (:math:`Ys`), admitancia shunt (:math:`GBc`)
+Primero se forman los vectores que representan las admitancias serie (:math:`Ys`), la admitancia de derivación (ó shunt) (:math:`GBc`)
 y los valores complejos de desfase (:math:`tap`).
 
 .. math::
@@ -329,7 +329,7 @@ encontrar los elementos adyacentes de un nodo.
 
 La siguiente función implementa la versión no recursiva (y por lo tanto más rápida) del DFS
 que atraviesa la matriz de conectividad bus-bus (también conocida como la matriz de conectividad adyacente).
-matriz de gráficos)
+
 
 
 
@@ -440,7 +440,7 @@ En el motor de topología, es necesario computar los consumos y generaciones por
 Para ello tenemos que tomar los valores de consumo y generación especificados por dispositivo y agregarlos por nudo.
 Para ello, debemos haber construido previamente las matrices de conectividad de cada elemento de generación y consumo
 con los buses a los que están conectados. Entonces, para obtener las magnitudes por bus simplemente se trata de
-multiplicar la matriz de conectividad correspondiente por el vectos de valores del elemento.
+multiplicar la matriz de conectividad correspondiente por el vector de valores del elemento.
 
 .. image:: images/connectivity_elm.png
     :height: 200px

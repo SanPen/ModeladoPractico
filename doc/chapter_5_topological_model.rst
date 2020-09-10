@@ -600,6 +600,45 @@ El proceso de sustitución es:
 - Las terminales asociadas a una barra desaparecen, recorando a qué nudo de cálculo quedan vinculados.
 - Las terminales que no están asociadas a una barra, se convierten en nudos de cálculo adicionales.
 
+Durante este proceso, tenemos que guardar una relación de los terminales y los nudos de cálculo que los reemplazan.
+Esto nos permitirá más tarde poder reasignar las ramas de cálculo a los nudos reducidos adecuados.
+
++----------+-----+-----------------+
+| Terminal | Bus | Nudo de cálculo |
++----------+-----+-----------------+
+| T1       | B1  | N1              |
++----------+-----+-----------------+
+| T2       | B2  | N2              |
++----------+-----+-----------------+
+| T3       | B1  | N1              |
++----------+-----+-----------------+
+| T4       | B2  | N2              |
++----------+-----+-----------------+
+| T5       | B2  | N2              |
++----------+-----+-----------------+
+| T6       | -   | N5              |
++----------+-----+-----------------+
+| T7       | -   | N6              |
++----------+-----+-----------------+
+| T8       | -   | N7              |
++----------+-----+-----------------+
+| T9       | -   | N8              |
++----------+-----+-----------------+
+| T10      | -   | N9              |
++----------+-----+-----------------+
+| T11      | -   | N10             |
++----------+-----+-----------------+
+| T12      | B3  | N3              |
++----------+-----+-----------------+
+| T13      | B4  | N4              |
++----------+-----+-----------------+
+| T14      | B4  | N4              |
++----------+-----+-----------------+
+| T15      | B4  | N4              |
++----------+-----+-----------------+
+| T16      | B5  | N5              |
++----------+-----+-----------------+
+
 Entonces, la sustitución de barras y terminales por nudos de cálculo (N) queda de la siguiente manera:
 
 .. image:: images/SE_Diagram2.png
@@ -909,7 +948,54 @@ Los grupos del ejemplo son:
     - N4: N4, N10, N11
     - N5: N5
 
+El modelo de cálculo resultante es el suiguiente:
+
+.. image:: images/SE_Diagram3.png
+
+
 **5. Reasignar los nudos reducidos a las ramas de cálculo**
 
 Como habíamos dicho, las ramas están asignadas a unos terminales, y lo que queremos en última instancia
 es que las ramas estén conectadas a los nudos de cálculo reducidos.
+
+Tras reasignar los nudos de cálculo sobre la tabla del apartado 1, queda así:
+
++----------+-----+-----------------+--------------------------+
+| Terminal | Bus | Nudo de cálculo | Nudo de cálculo reducido |
++----------+-----+-----------------+--------------------------+
+| T1       | B1  | N1              | N1                       |
++----------+-----+-----------------+--------------------------+
+| T2       | B2  | N2              | N1                       |
++----------+-----+-----------------+--------------------------+
+| T3       | B1  | N1              | N1                       |
++----------+-----+-----------------+--------------------------+
+| T4       | B2  | N2              | N1                       |
++----------+-----+-----------------+--------------------------+
+| T5       | B2  | N2              | N1                       |
++----------+-----+-----------------+--------------------------+
+| T6       | -   | N6              | N1                       |
++----------+-----+-----------------+--------------------------+
+| T7       | -   | N7              | N1                       |
++----------+-----+-----------------+--------------------------+
+| T8       | -   | N8              | N1                       |
++----------+-----+-----------------+--------------------------+
+| T9       | -   | N9              | N3                       |
++----------+-----+-----------------+--------------------------+
+| T10      | -   | N10             | N4                       |
++----------+-----+-----------------+--------------------------+
+| T11      | -   | N11             | N4                       |
++----------+-----+-----------------+--------------------------+
+| T12      | B3  | N3              | N3                       |
++----------+-----+-----------------+--------------------------+
+| T13      | B4  | N4              | N4                       |
++----------+-----+-----------------+--------------------------+
+| T14      | B4  | N4              | N4                       |
++----------+-----+-----------------+--------------------------+
+| T15      | B4  | N4              | N4                       |
++----------+-----+-----------------+--------------------------+
+| T16      | B5  | N5              | N5                       |
++----------+-----+-----------------+--------------------------+
+
+La forma de saber qué nudo de cálculo corresponde a cada terminal es:
+- Construir un mapeo entre terminales y su nudo de cálculo final.
+- Para cada rama, convertir sus terminales en el nudo de cálculo correspondiente.

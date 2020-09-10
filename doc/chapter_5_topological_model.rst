@@ -568,7 +568,7 @@ impedancia significativa.
 A continuación vamos a describir mediante un ejemplo el algorítmo desarrollado por un servidor para
 reducir las subestaciones. Para ello se asume la suiguiente manera de conectar elementos:
 
-- El elemento general de conecividad es la **terminal** (ó connectivity node en CIM)
+- El elemento general de conecividad es la **terminal** (`Terminal` en CIM)
 - Todas las ramas se conectan a dos terminales.
 - Las barras o buses de la subestación son un elemento más y no representan un nodo topológico a priori.
 
@@ -597,7 +597,7 @@ el nudo de cálculo. El primer paso del algorítmo será sustituir las barras y 
 nudos de cálculo iniciales, que más tarde reduciremos para obtener la red de cálculo.
 El proceso de sustitución es:
 
-- Cada barra se convierte en un nudo de cálculo.
+- Cada barra se convierte en un nudo de cálculo (`TopologicalNode` en CIM).
 - Las terminales asociadas a una barra desaparecen, recorando a qué nudo de cálculo quedan vinculados.
 - Las terminales que no están asociadas a una barra, se convierten en nudos de cálculo adicionales.
 

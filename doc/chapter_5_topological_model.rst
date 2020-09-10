@@ -555,6 +555,7 @@ Procesado topológico avanzado: Reducción de subestaciones y líneas con múlti
 
 La formulación nodal de las ecuaciones de Kirchoff (ecuaciones de inyecciones de corriente) no admite
 ramas de resistencia cero. Esto es así porque estas ramas hacen la matriz de admitancia singular.
+Otra forma de verlo, es que esos elementos de resistencia cero se comportan como corto circuitos.
 
 Por tanto, tenemos un problema con los interruptores y trozos de conexión muy cortos que se
 utilizan en las subestaciones; No podemos incluir la topología de las subestaciones en el modelo
@@ -997,5 +998,6 @@ Tras reasignar los nudos de cálculo sobre la tabla del apartado 1, queda así:
 +----------+-----+-----------------+--------------------------+
 
 La forma de saber qué nudo de cálculo corresponde a cada terminal es:
+
 - Construir un mapeo entre terminales y su nudo de cálculo final.
-- Para cada rama, convertir sus terminales en el nudo de cálculo correspondiente.
+- Para cada rama, convertir cada uno de sus terminales en el nudo de cálculo reducido correspondiente.

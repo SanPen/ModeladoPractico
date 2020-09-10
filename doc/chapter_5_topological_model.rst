@@ -640,7 +640,7 @@ Esto nos permitirá más tarde poder reasignar las ramas de cálculo a los nudos
 | T16      | B5  | N5              |
 +----------+-----+-----------------+
 
-Entonces, la sustitución de barras y terminales por nudos de cálculo (N) queda de la siguiente manera:
+Entonces, la sustitución de barras y terminales por nudos de cálculo (`N`) queda de la siguiente manera:
 
 .. image:: images/SE_Diagram2.png
 
@@ -650,16 +650,16 @@ fruto del estado (abierto / cerrado) los interruptores.
 
 **2. Matriz de adyacencia de interruptores**
 
-Ahora formamos la matriz de adyacencia (C) de los nudos de cálculo con los interruptores.
+Ahora formamos la matriz de adyacencia (`C`) de los nudos de cálculo con los interruptores.
 
 - Dimensionamos una matriz M de número de nudos por número de interruptores.
 - Para cada interruptor k
-    - Obtenemos los índices de los nudos de los extremos (f, t)
+    - Obtenemos los índices de los nudos de los extremos (f: from, t: to)
     - M[f, k] = 1 si el interruptor está cerrado, 0 si está abierto.
     - M[t, k] = 1 si el interruptor está cerrado, 0 si está abierto.
 - Calculamos :math:`C = M \times M^t`
 
-La matriz de conectividad nudos-interruptores es:
+La matriz de conectividad nudos-interruptores (`M`) es:
 
 .. code:: text
 
@@ -676,7 +676,7 @@ La matriz de conectividad nudos-interruptores es:
     N10    0    0    0    0    0    1    0
     N11    0    0    0    0    0    0    1
 
-La matriz C queda como:
+La matriz de adyacencia (`C`) queda como:
 
 .. code:: text
 
@@ -693,7 +693,7 @@ La matriz C queda como:
     N10   0   0   0   1   0   0   0   0   0    1    0
     N11   0   0   0   1   0   0   0   0   0    0    1
 
-La matriz de adyacencia (C) nos indica qué nudos estan conectados por interruptores en primera instancia.
+La matriz de adyacencia (`C`) nos indica qué nudos estan conectados por interruptores en primera instancia.
 No obstante, nosotros quremos saber qué nudos forman un grupo conectado al final.
 
 
@@ -704,10 +704,10 @@ modificada que si contenga los grupos de nudos.
 
 El algoritmo de este paso es el siguiente:
 
-- recorremos cada columna de índice c.
-- Para cada columna c, recorremos las filas de c+1 a N (número de nudos)
-- Si nos encontramos con un valor mayor a cero, sumamos a fila que estamos mirando, la fila de indice c.
-- Marcamos en un vector que la file r ha sido reducida.
+- recorremos cada columna de índice `c`.
+- Para cada columna `c`, recorremos las filas de `c+1` a N (número de nudos)
+- Si nos encontramos con un valor mayor a cero, sumamos a fila que estamos mirando, la fila de indice `c`.
+- Marcamos en un vector que la fila `r` ha sido reducida.
 
 El codigo python que recoge esto es:
 
@@ -919,8 +919,8 @@ son las de los nudos que se quedan sin reducir.
 En esta etapa, miramos la útima matriz de adyacencia modificada en aquellas columnas
 que se marcaron como no modificadas, es decir en las que tienen un cero en el vector "reduced"
 
-Entonces, en cada columna elegida, miramos si el elemento (r, c) para :math:`r \geq c` es mayor que cero.
-Si lo es, entonces significa que el nudo de indice "c", reduce al nudo de indice "r", por tanto
+Entonces, en cada columna elegida, miramos si el elemento (`r`: row, `c`: column) para :math:`r \geq c` es mayor que cero.
+Si lo es, entonces significa que el nudo de indice `c`, reduce al nudo de indice `r`, por tanto
 lo incluimos en el grupo.
 
 Alternativamente, si un nudo no reduce a nadie, al menos ha de reducirse a si mismo, por tanto tendremos un grupo de

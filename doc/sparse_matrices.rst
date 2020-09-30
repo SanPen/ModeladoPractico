@@ -52,9 +52,12 @@ de `data`.
 - `indices`: Indica el índice de las filas (longitud igual a la longitud de `data`)
 - `indptr`: La longitud es `columnas + 1`, guarda los índices iniciales que delimitan una columna.
             el índice final viene dado por el valor siguiente al actual.
-            i.e. the first column takes the indices and data from the positions 0 to 3-1, this is:
-            Por ejemplo; La primera columna (`j=0`) se relaciona con los datos de 0 a 3-1 de
+            Por ejemplo; La primera columna (`j=0`) se relaciona con los datos de 0 a (3-1) de
             los vectores `data` e `indices`:
+
+            indptr[j=0] = 0       -> principio de la columna en `data` e `indices`
+
+            indptr[j=0+1] = 3     -> final de la columna en `data` e `indices`
 
             column_idx = 0        -> Índice de la columna (j)
 

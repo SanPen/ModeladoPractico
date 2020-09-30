@@ -1,4 +1,4 @@
-Cálculo lineal: PTDF y OTDF
+Cálculo lineal: PTDF y LODF
 =====================================================
 
 Existen muchas situaciones en las que computar los flujos de potencia completos es computacionalmente muy costoso.
@@ -21,27 +21,66 @@ la fórmula para el PTDF nodal es la siguiente:
 
 .. math::
 
-    PTDF_{ij} = \frac{Flow_{0, j} - Flow_{j}}{\Delta P_i}
+    PTDF_{ij} = \frac{f_{0, j} - f_{j}}{\Delta P_i}
 
 Dónde:
 
-- :math:`Flow_{0, j}`: Flujo por la rama j en el estado sin modificar de la red. Este es un estado cualquiera que se elija.
-- :math:`Flow_{j}`: Flujo por la rama j en el estado modificado por :math:`\Delta P_i`.
+- :math:`f_{0, j}`: Flujo por la rama j en el estado sin modificar de la red. Este es un estado cualquiera que se elija.
+- :math:`f_{j}`: Flujo por la rama j en el estado modificado por :math:`\Delta P_i`.
 - :math:`\Delta P_i`: Variación de potencia en el nudo i.
+
+Esta fórmula está bien, pero implica calcular "N" flojos de potencia para poder calcular el PTDF.
+Existe sin embargo una manera analítica de calcular el PTDF que tarda varios ordenes de magnitud menos tiempo.
+
+**PTDF Analítico**
+
+
+.. math::
+
+    noref = arange(1, n)
+
+    B_{red} = B[pqpv, noref]
+
+    \Delta P = eye(n, n)
+
+    \Delta\theta_{red} = B_{red}^{-1} \times \Delta P_{red}
+
+    \theta = zeros(n, n)
+
+    \theta[pqpv, :] = \Delta\theta_{red}
+
+    PTDF = Bf \times \theta
+
+Si queremos distribuir el efecto del slack entre todos los nudos, debemos modificar
+la matrix :math:`\Delta P`:
+
+.. math::
+
+    c = -1 / (n - 1)
+
+    \Delta P = ones(n, n) \cdot c
+
+    \Delta P = \Delta P - diag(\Delta P) + eye(n, n)
+
+Lo que obtenemos en una matriz de n x n con todos los valores igual a "c",
+excepto la diagonal que la ponemos todo a 1. Con esto, logramos
+repartir el efecto del slack uniformemente en todos los nudos.
+
 
 El resultado para la red estándar IEEE 5-bus es la siguiente matriz:
 
-+-------+------------+------------+------------+------------+------------+------------+
-|       | Branch 0-1 | Branch 0-3 | Branch 0-4 | Branch 1-2 | Branch 2-3 | Branch 3-4 |
-+-------+------------+------------+------------+------------+------------+------------+
-| Bus 0 | -0.1939    | -0.4382    | -0.3679    | -0.1913    | -0.1915    | 0.3642     |
-+-------+------------+------------+------------+------------+------------+------------+
-| Bus 1 | 0.4792     | -0.2605    | -0.2187    | -0.5282    | -0.5292    | 0.2164     |
-+-------+------------+------------+------------+------------+------------+------------+
-| Bus 2 | 0.3507     | -0.1906    | -0.1601    | 0.3454     | -0.6544    | 0.1583     |
-+-------+------------+------------+------------+------------+------------+------------+
-| Bus 4 | -0.1590    | -0.3593    | 0.5183     | -0.1568    | -0.1570    | 0.4742     |
-+-------+------------+------------+------------+------------+------------+------------+
++------------+----------+----------+----------+----------+----------+
+|            | Bus 0    | Bus 1    | Bus 2    | Bus 3    | Bus 4    |
++============+==========+==========+==========+==========+==========+
+| Branch 0-1 | 0.36025  | -0.47701 | -0.31838 | 0.11786  | 0.31728  |
++------------+----------+----------+----------+----------+----------+
+| Branch 0-3 | 0.23564  | 0.01158  | -0.07453 | -0.31135 | 0.13866  |
++------------+----------+----------+----------+----------+----------+
+| Branch 1-2 | 0.11025  | 0.52299  | -0.56838 | -0.13214 | 0.06728  |
++------------+----------+----------+----------+----------+----------+
+| Branch 3-4 | -0.15411 | 0.03457  | 0.10709  | 0.30651  | -0.29406 |
++------------+----------+----------+----------+----------+----------+
+
 
 PTDF y series temporales
 ------------------------------
@@ -51,77 +90,116 @@ de potencia nodales. La fórmula es la siguiente:
 
 .. math::
 
-    Flow_{t,e} = Flow_{0, e} + PTDF_{i, e} \cdot \Delta P_{t,i}  \quad \forall e \in Ramas, i \in Nudos, t \in Tiempo
+    f_{t,e} = f_{0, e} + PTDF_{i, e} \cdot \Delta P_{t,i}  \quad \forall e \in Ramas, i \in Nudos, t \in Tiempo
 
 
 Lo que en forma matricial queda:
 
 .. math::
 
-    [Flow]_t = [Flow_{0}] + [PTDF] \times [\Delta P]_{t}  \quad \forall  t \in Tiempo
+    [Flow]_t = [f_{0}] + [PTDF] \times [\Delta P]_{t}  \quad \forall  t \in Tiempo
 
 Nótese que la operación resultante para obtener los flujos de potencia activa por las ramas es muy simple y
 computacionalmente muy eficiente al estar compuesta por operaciones vectoriales.
 
 
-OTDF
+LODF
 -------
 
-La matriz OTDF (Outage Transfer Distribution Factors) representa la variación de flujo por las ramas ante un fallo en
+La matriz LODF (Line Outage Distribution Factors) representa la variación de flujo por las ramas ante un fallo en
 una de las ramas de la red.
 
 La fórmula de cálculo es:
 
 .. math::
 
-    OTDF_{c, e} = \frac{Flow_{0, e} - Flow_{e}}{Flow_{0,c}}
+    LODF_{c, e} = \frac{f_{0, e} - f_{e}}{f_{0,c}}
 
 Dónde:
 
-- :math:`Flow_{0, e}`: Flujo por la rama *e* en el estado sin modificar de la red.
+- :math:`f_{0, e}`: Flujo por la rama *e* en el estado sin modificar de la red.
   Este es un estado cualquiera que se elija.
-- :math:`Flow_{e}`: Flujo por la rama *e* en el estado modificado por el fallo de la rama *c*.
-- :math:`Flow_{0,c}`: Potencia que fuía por la rama fallada en el estado inicial.
+- :math:`f_{e}`: Flujo por la rama *e* en el estado modificado por el fallo de la rama *c*.
+- :math:`f_{0,c}`: Potencia que fuía por la rama fallada en el estado inicial.
 
 
-Cada elemento de la matriz OTDF representa la proporción del flujo de la rama fallada que va a cada una de las otras
+Cada elemento de la matriz LODF representa la proporción del flujo de la rama fallada que va a cada una de las otras
 ramas de la red. Es signo positivo indica que la rama *e* absorbe flujo de la rama fallada *c*. El signo negativo
 indica que la rama *e* descarga parte de su flujo en otras ante el fallo de la rama *c*.
 
-+-------------+------------+------------+------------+------------+------------+------------+
-| Fallo/Flujo | Branch 0-1 | Branch 0-3 | Branch 0-4 | Branch 1-2 | Branch 2-3 | Branch 3-4 |
-+-------------+------------+------------+------------+------------+------------+------------+
-| Branch 0-1  | -0.9999    | 0.5541     | 0.4639     | -0.9994    | -1.0101    | -0.4585    |
-+-------------+------------+------------+------------+------------+------------+------------+
-| Branch 0-3  | 0.3491     | -0.9999    | 0.6529     | 0.3474     | 0.3440     | -0.6451    |
-+-------------+------------+------------+------------+------------+------------+------------+
-| Branch 0-4  | 0.3117     | 0.6953     | -1.0000    | 0.3101     | 0.3067     | 0.9844     |
-+-------------+------------+------------+------------+------------+------------+------------+
-| Branch 1-2  | -1.2429    | 0.8512     | 0.7128     | -1.0000    | -1.5618    | -0.7074    |
-+-------------+------------+------------+------------+------------+------------+------------+
-| Branch 2-3  | -1.0151    | 0.5452     | 0.4566     | -1.0101    | -1.0000    | -0.4530    |
-+-------------+------------+------------+------------+------------+------------+------------+
-| Branch 3-4  | -0.3130    | -0.6993    | 1.0020     | -0.3115    | -0.3085    | -1.0000    |
-+-------------+------------+------------+------------+------------+------------+------------+
+Al igual que el PTDF, existe una manera analítica de calcular el LODF, la cual no requiere realizar el N-1 de la red.
+
+.. math::
+
+    A = Cf - Ct
+
+    H = PTDF \times A^T
+
+    LODF = zeros(m, m)
+
+    div = 1 - diag(H)
+
+    LODF[:, j] = H[:, j] / div[j]  \quad \forall j \in range(m)
+
+    LODF[i, i] = - 1.0 \quad \forall i \in range(m)
 
 
-OTDF y series temporales
+El resultado del LODF para la red estándar IEEE 5 es:
+
++------------+----------+----------+----------+----------+----------+
+|            | Bus 0    | Bus 1    | Bus 2    | Bus 3    | Bus 4    |
++============+==========+==========+==========+==========+==========+
+| Branch 0-1 | 0.36025  | -0.47701 | -0.31838 | 0.11786  | 0.31728  |
++------------+----------+----------+----------+----------+----------+
+| Branch 0-3 | 0.23564  | 0.01158  | -0.07453 | -0.31135 | 0.13866  |
++------------+----------+----------+----------+----------+----------+
+| Branch 1-2 | 0.11025  | 0.52299  | -0.56838 | -0.13214 | 0.06728  |
++------------+----------+----------+----------+----------+----------+
+| Branch 3-4 | -0.15411 | 0.03457  | 0.10709  | 0.30651  | -0.29406 |
++------------+----------+----------+----------+----------+----------+
+
+LODF y series temporales
 -----------------------------------
 
-Hay algo aún más ambicioso que usar el PTDF para calcular series temporales, esto es usar PTDF y OTDF para calcular el
+Hay algo aún más ambicioso que usar el PTDF para calcular series temporales, esto es usar PTDF y LODF para calcular el
 cubo de flujos temporales ante la contingencia de las ramas de la red. Veamos como hacerlo;
 
 
-1. Primero calculamos las matrices PTDF y OTDF.
-2. Calculamos la serie temporal de flujos :math:`Flows` como hemos visto anteriormente.
+1. Primero calculamos las matrices PTDF y LODF.
+2. Calculamos la serie temporal de flujos :math:`f` como hemos visto anteriormente.
 3. Calculamos el cubo de flujos en contingencia N-1 con la siguiente fórmula:
 
 .. math::
 
-    Flows(N-1)_{t, e, c} = OTDF_{c, e} \cdot Flows_{t, c} + Flows_{t, e} \quad \forall t \in Tiempo, e \in Ramas, c \in Ramas \: en \: contingencia.
+    Flows(N-1)_{t, e, c} = LODF_{c, e} \cdot f_{t, c} + f_{t, e} \quad \forall t \in Tiempo, e \in Ramas, c \in Ramas \: en \: contingencia.
 
 Esta ecuación queda en forma matricial:
 
 .. math::
 
-    [Flows(N-1)]_{t} = [OTDF] \times [Flows]_{t} + [Flows]_{t} \quad \forall t \in Tiempo
+    [Flows(N-1)]_{t} = [LODF] \times [f]_{t} + [f]_{t} \quad \forall t \in Tiempo
+
+
+Fallo múltiple
+-----------------------------------
+
+Hemos visto que el LODF nos dá los flujos ante contingencias simples. También podemos utilizar el LODF
+para contingencias múltiples si aplicamos el principio de superposición.
+
+Para el fallo de un par de líneas :math:`\beta` y :math:`\delta`, podemos calcular los flujos afectados como:
+
+.. math::
+
+    \begin{bmatrix} \tilde{f}_{\beta} \\ \tilde{f}_{\delta} \end{bmatrix} = \begin{bmatrix}1 & -LODF_{\beta,\delta} \\ -LODF_{\delta,\beta} & 1 \end{bmatrix} \times \begin{bmatrix} f_{\beta} \\ f_{\delta} \end{bmatrix}
+
+Continuamos, calculando el incremento de flujo por una tercera línea no fallada :math:`\alpha`:
+
+.. math::
+
+    \Delta f_{\alpha} = \begin{bmatrix}-LODF_{\alpha,\beta} & -LODF_{\alpha,\delta}  \end{bmatrix} \times \begin{bmatrix} \tilde{f}_{\beta} \\ \tilde{f}_{\delta} \end{bmatrix}
+
+Siendo el flujo post-contingencia múltiple final por la línea :math:`\alpha`:
+
+.. math::
+
+    f'_{\alpha} = f_{\alpha} + \Delta f_{\alpha}

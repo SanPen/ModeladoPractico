@@ -51,8 +51,18 @@ Existe sin embargo una manera analítica de calcular el PTDF que tarda varios or
 
     PTDF = Bf \times \theta
 
+- :math:`n`: Número de nudos.
+- :math:`B`: Matriz de susceptancia.
+- :math:`Bf`: Matriz de susceptancia "from".
+- :math:`pqpv`: Lista de índices de los nudos PQ y PV (es decir, lista de indices de los nudos que no son slack)
+- :math:`noref`: Vector construido para saltarse el primer bus.
+- :math:`\Delta P`: Incremento de potencias; Se toma como una matriz diagonal de 1.
+- :math:`\theta`: Vector de ángulos de tensión. Sale de resolver el flujo de potencia DC para todos los
+        incrementos unitarios dados por :math:`\Delta P`.
+- :math:`PTDF`: Matriz PTDF calculada.
+
 Si queremos distribuir el efecto del slack entre todos los nudos, debemos modificar
-la matrix :math:`\Delta P`:
+la matriz :math:`\Delta P`:
 
 .. math::
 
@@ -62,12 +72,13 @@ la matrix :math:`\Delta P`:
 
     \Delta P = \Delta P - diag(\Delta P) + eye(n, n)
 
-Lo que obtenemos en una matriz de n x n con todos los valores igual a "c",
-excepto la diagonal que la ponemos todo a 1. Con esto, logramos
-repartir el efecto del slack uniformemente en todos los nudos.
+:math:`\Delta P` es una matriz de n x n con todos los valores igual a "c",
+excepto la diagonal que la ponemos todo a 1. :math:`c`, es un valor constante que equivale al peso unitario
+de reparto para cada nudo. Podríamos contemplar utilizar valores no uniformes de reparto del peso.
+No obstante, en el caso general tomamos que el reparto uniforme es suficiente.
 
 
-El resultado para la red estándar IEEE 5-bus es la siguiente matriz:
+El resultado del PTDF para la red estándar IEEE 5-bus es la siguiente matriz:
 
 +------------+----------+----------+----------+----------+----------+
 |            | Bus 0    | Bus 1    | Bus 2    | Bus 3    | Bus 4    |
@@ -143,8 +154,16 @@ Al igual que el PTDF, existe una manera analítica de calcular el LODF, la cual 
 
     LODF[i, i] = - 1.0 \quad \forall i \in range(m)
 
+Dónde:
 
-El resultado del LODF para la red estándar IEEE 5 es:
+- :math:`Cf`: Matriz de conectividad de ramas-nudos "from".
+- :math:`Ct`: Matriz de conectividad de ramas-nudos "to".
+- :math:`A`: Matriz de conectividad ramas-nudos.
+- :math:`PTDF`: Matriz PTDF calculado previamente.
+- :math:`LODF`: Matriz LODF.
+
+
+El resultado del LODF para la red estándar IEEE 5-bus es:
 
 +------------+----------+----------+----------+----------+----------+
 |            | Bus 0    | Bus 1    | Bus 2    | Bus 3    | Bus 4    |
@@ -202,4 +221,27 @@ Siendo el flujo post-contingencia múltiple final por la línea :math:`\alpha`:
 
 .. math::
 
-    f'_{\alpha} = f_{\alpha} + \Delta f_{\alpha}
+    f_{c,\alpha} = f_{\alpha} + \Delta f_{\alpha}
+
+Establecido el mecanismo, podemos generalizar esta formulación de la siguiente forma:
+
+.. math::
+
+    k = size(failed\_idx)
+
+    M = -LODF[failed\_idx, failed\_idx]
+
+    M = M - diag(M) + eye(k, k)
+
+    L = LODF[:, failed\_idx]
+
+    f_c = f + L \times (M^{-1} \times f[failed\_idx])
+
+Dónde:
+
+- :math:`failed\_idx`: lista de índices de las lineas falladas simultáneamente.
+- :math:`k`: Número de líneas falladas simultáneamente.
+- :math:`M`: Corresponde al -LODF de las líneas falladas, pero con 1 en la diagonal.
+- :math:`L`: matriz LODF para todas las líneas (filas) y las líneas falladas (columnas).
+- :math:`f`: Vector de flujos base por todas las líneas.
+- :math:`f_c`: Vector de flujos post contingencia múltiple.

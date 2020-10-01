@@ -189,7 +189,7 @@ Obsérvese que la rama fallada se muestra en las columnas, y los flujos de las r
 se ordenan en las filas.
 
 *Nota: Parece que generar el LODF con un PTDF con el slack distribuído lleva a  la
-aparición de valores sin fuera del rango [-1, 1].
+aparición de valores fuera del rango [-1, 1].
 
 LODF y series temporales
 -----------------------------------

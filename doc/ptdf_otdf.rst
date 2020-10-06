@@ -1,11 +1,11 @@
 Cálculo lineal: PTDF y LODF
 =====================================================
 
-Existen muchas situaciones en las que computar los flujos de potencia completos es computacionalmente muy costoso.
+Existen muchas situaciones en las que calcular los flujos de potencia completos es computacionalmente muy costoso.
 En esas situaciones debemos evaluar si es factible aceptar una solución menos precisa, a cambio de obtener la solución
 en menos tiempo.
 
-Tales situaciones pueden ser cálculos de series temporales de redes muy grandes, cálculos estocásticos, optimización
+Ejemplos de tales situaciones pueden ser los cálculos de series temporales de redes muy grandes, cálculos estocásticos, optimización
 de redes en el dominio temporal y otras muchas situaciones computacionalmente intensivas.
 
 PTDF
@@ -13,9 +13,10 @@ PTDF
 
 En estas situaciones, podemos calcular las matrices de sensibilidad de los parámetros y luego utilizarlas para predecir
 los estados futuros. Aquí entra en juego el concepto de PTDF (Power Transfer Distribution Factors). PTDF es una matriz
-que relaciona los cámbios en los flujos de las ramas con los cambios en las inyecciones nodales. Esta es la forma más
-general de PTDF, puesto que pueden existir multitud de versiones del mismo concepto como *variación de flujo-variación
-de generación* o  *variación de flujo-variación de cargas*
+que relaciona los cámbios en los flujos de las ramas con los cambios en las inyecciones nodales.
+
+Esta es la forma más general de PTDF, puesto que pueden existir multitud de versiones del mismo concepto
+como *variación de flujo-variación de generación* o  *variación de flujo-variación de cargas*
 
 la fórmula para el PTDF nodal es la siguiente:
 
@@ -29,11 +30,26 @@ Dónde:
 - :math:`f_{j}`: Flujo por la rama j en el estado modificado por :math:`\Delta P_i`.
 - :math:`\Delta P_i`: Variación de potencia en el nudo i.
 
-Esta fórmula está bien, pero implica calcular "N" flojos de potencia para poder calcular el PTDF.
+Esta fórmula es correcta, pero implica calcular "N" flujos de potencia para poder calcular el PTDF.
 Existe sin embargo una manera analítica de calcular el PTDF que tarda varios ordenes de magnitud menos tiempo.
 
 **PTDF Analítico**
 
+El PTDF analítico se construye utilizando el concepto de flujo de potencia lineal también conocido como DC.
+
+la formulación matemática es:
+
+.. math::
+
+    PTDF = B_f \times (B^{-1} \times \Delta P)
+
+La teoría indica que :math:`\Delta P` es una matriz casi vacía, dónde por cada columna, en las posiciones
+fuente va un 1 y en las posiciones sumidero va un -1. Normalmente se toma el nudo slack como sumidero, llendo
+entonces todos los -1 en la posicion del slack. Pero resulta que si reducimos la Matriz :math:`B` para que no
+sea singular, eliminando la fila y la columna del slack, eliminamos tambien los -1 de :math:`\Delta P`,
+quedándonos una matriz de unos en las posiciones de los nudos PQ y PV.
+
+La implementación práctica tiene algunas particularidades que se detallan a continuación:
 
 .. math::
 
@@ -74,9 +90,14 @@ la matriz :math:`\Delta P`:
 
 :math:`\Delta P` es una matriz de n x n con todos los valores igual a "c",
 excepto la diagonal que la ponemos todo a 1. :math:`c`, es un valor constante que equivale al peso unitario
-de reparto para cada nudo. Podríamos contemplar utilizar valores no uniformes de reparto del peso.
-No obstante, en el caso general tomamos que el reparto uniforme es suficiente.
+de reparto para cada nudo. Podríamos contemplar utilizar valores no uniformes de reparto del peso; En ese caso
+cada columna del vector :math:`c` es:
 
+.. math::
+
+    c_i = \frac{P_i}{\sum_i^N P_i}
+
+No obstante, en el caso general tomamos que el reparto uniforme es suficiente.
 
 El resultado del PTDF para la red estándar IEEE 5-bus es la siguiente matriz:
 
@@ -95,6 +116,35 @@ El resultado del PTDF para la red estándar IEEE 5-bus es la siguiente matriz:
 +------------+---------+---------+---------+--------+---------+
 | Branch 3-4 | -0.3685 | -0.2176 | -0.1595 | 0.0000 | -0.4805 |
 +------------+---------+---------+---------+--------+---------+
+
+AC PTDF
+-------------
+
+Existe otra variación del PTDF que se construye haciendo uso del Jacobiano que se usa en el
+flujo de potencia por Newton-Raphson. El resultado final es una matriz de las mismas dimensiones
+que la matriz PTDF vista anteriormente, dónde los valores se modifican ligeramente.
+
+la formulación matemática es:
+
+.. math::
+
+    PTDF = \begin{bmatrix}
+    \frac{\partial P_f}{\partial \theta} & \frac{\partial {P_f}}{\partial |V|} \\
+    \end{bmatrix} \times \left(
+    \begin{bmatrix}
+    \frac{\partial P}{\partial \theta} & \frac{\partial {P}}{\partial |V|} \\
+    \frac{\partial Q}{\partial \theta} & \frac{\partial {Q}}{\partial |V|} \\
+    \end{bmatrix}^{-1} \times \begin{bmatrix}\Delta P \\ \Delta Q \end{bmatrix}\right)
+
+Dónde:
+
+- :math:`\Delta P`: Es la misma matriz utilizada en el método PTDF anterior.
+- :math:`\Delta Q`: Todo ceros hasta tener las dimensiones compatibles.
+- Derivadas: Ver la sección de derivadas.
+
+Una consideración sobre este método de cálculo del PTDF es que depende de un estado particular de la red,
+puesto que la formulación implica calcular derivadas de la potencia, y estas requieren un valor de tensión.
+Esto viene en contraposición al PTDF anterior, que no depende del estado de la red, sino de la topología.
 
 
 PTDF y series temporales

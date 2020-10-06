@@ -65,11 +65,11 @@ La implementación práctica tiene algunas particularidades que se detallan a co
 
     \theta[pqpv, :] = \Delta\theta_{red}
 
-    PTDF = Bf \times \theta
+    PTDF = B_f \times \theta
 
 - :math:`n`: Número de nudos.
 - :math:`B`: Matriz de susceptancia.
-- :math:`Bf`: Matriz de susceptancia "from".
+- :math:`B_f`: Matriz de susceptancia "from".
 - :math:`pqpv`: Lista de índices de los nudos PQ y PV (es decir, lista de indices de los nudos que no son slack)
 - :math:`noref`: Vector construido para saltarse el primer bus.
 - :math:`\Delta P`: Incremento de potencias; Se toma como una matriz diagonal de 1.
@@ -128,7 +128,7 @@ la formulación matemática es:
 
 .. math::
 
-    PTDF = J_f \times (J^{-1} \times \Delta S
+    PTDF = J_f \times (J^{-1} \times \Delta S)
 
 Lo que expandido se convierte en:
 
@@ -145,10 +145,10 @@ Lo que expandido se convierte en:
 Dónde:
 
 - :math:`J_f`:  Jacobiano de las potencias activas de rama con respecto a la tensión.
-- :math:`J`: Jacobiano tal como se usa en el flujo de potencia Newton-Raphson.
+- :math:`J`: :ref:`Jacobiano <jacobian>` tal como se usa en el flujo de potencia Newton-Raphson.
 - :math:`\Delta P`: Es la misma matriz utilizada en el método PTDF anterior.
 - :math:`\Delta Q`: Todo ceros hasta tener las dimensiones compatibles.
-- Derivadas: Ver la sección de derivadas.
+- Derivadas: Ver la sección de :ref:`derivadas <derivatives>`.
 
 El resultado del PTDF para la red estándar IEEE 5-bus es la siguiente matriz:
 
@@ -231,7 +231,7 @@ Al igual que el PTDF, existe una manera analítica de calcular el LODF, la cual 
 
     div = 1 - diag(H)
 
-    LODF[:, j] = H[:, j] / div[j]  \quad \forall j \in range(m)
+    LODF[:, j] = \frac{H[:, j]}{div[j]}  \quad \forall j \in range(m)
 
     LODF[i, i] = - 1.0 \quad \forall i \in range(m)
 
@@ -265,7 +265,7 @@ El resultado del LODF para la red estándar IEEE 5-bus es:
 Obsérvese que la rama fallada se muestra en las columnas, y los flujos de las ramas
 se ordenan en las filas.
 
-*Nota: Parece que generar el LODF con un PTDF con el slack distribuído lleva a  la
+*Nota*: Parece que generar el LODF con un PTDF con el slack distribuído lleva a  la
 aparición de valores fuera del rango [-1, 1].
 
 LODF y series temporales
@@ -318,19 +318,25 @@ Establecido el mecanismo, podemos generalizar esta formulación de la siguiente 
 
 .. math::
 
-    k = size(failed\_idx)
+    f_c = f + L \times (M^{-1} \times f_{fallados})
 
-    M = -LODF[failed\_idx, failed\_idx]
+Los detalles de implementación son:
+
+.. math::
+
+    k = size(fallados)
+
+    M = -LODF[fallados, fallados]
 
     M = M - diag(M) + eye(k, k)
 
-    L = LODF[:, failed\_idx]
+    L = LODF[:, fallados]
 
-    f_c = f + L \times (M^{-1} \times f[failed\_idx])
+    f_c = f + L \times (M^{-1} \times f[fallados])
 
 Dónde:
 
-- :math:`failed\_idx`: lista de índices de las lineas falladas simultáneamente.
+- :math:`fallados`: lista de índices de las lineas falladas simultáneamente.
 - :math:`k`: Número de líneas falladas simultáneamente.
 - :math:`M`: Corresponde al -LODF de las líneas falladas, pero con 1 en la diagonal.
 - :math:`L`: matriz LODF para todas las líneas (filas) y las líneas falladas (columnas).

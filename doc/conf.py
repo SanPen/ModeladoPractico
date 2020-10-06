@@ -17,9 +17,11 @@ sys.path.insert(0, os.path.abspath('..'))
 sys.path.insert(0, os.path.join(os.path.abspath('..'), 'src'))
 
 # -- Project information -----------------------------------------------------
+import datetime
+now = datetime.datetime.now()
 
 project = 'Modelado Práctico de red'
-copyright = '2019, Santiago Peñate Vera, MIT License'
+copyright = str(now.year) + ', Santiago Peñate Vera, MIT License'
 author = 'Santiago Peñate Vera'
 release = '1.0'
 
@@ -30,7 +32,10 @@ master_doc = 'index'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.todo', 'sphinx.ext.viewcode', 'sphinx.ext.autodoc']
+extensions = ['sphinx.ext.todo',
+              'sphinx.ext.viewcode',
+              'sphinx.ext.autodoc',
+              'sphinx.ext.autosectionlabel']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -55,3 +60,6 @@ html_theme = 'haiku'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+
+autosectionlabel_prefix_document = True

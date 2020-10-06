@@ -128,6 +128,12 @@ la formulación matemática es:
 
 .. math::
 
+    PTDF = J_f \times (J^{-1} \times \Delta S
+
+Lo que expandido se convierte en:
+
+.. math::
+
     PTDF = \begin{bmatrix}
     \frac{\partial P_f}{\partial \theta} & \frac{\partial {P_f}}{\partial |V|} \\
     \end{bmatrix} \times \left(
@@ -138,9 +144,30 @@ la formulación matemática es:
 
 Dónde:
 
+- :math:`J_f`:  Jacobiano de las potencias activas de rama con respecto a la tensión.
+- :math:`J`: Jacobiano tal como se usa en el flujo de potencia Newton-Raphson.
 - :math:`\Delta P`: Es la misma matriz utilizada en el método PTDF anterior.
 - :math:`\Delta Q`: Todo ceros hasta tener las dimensiones compatibles.
 - Derivadas: Ver la sección de derivadas.
+
+El resultado del PTDF para la red estándar IEEE 5-bus es la siguiente matriz:
+
++------------+---------+---------+---------+--------+---------+
+|            | Bus 0   | Bus 1   | Bus 2   | Bus 3  | Bus 4   |
++============+=========+=========+=========+========+=========+
+| Branch 0-1 | 0.1939  | -0.4704 | -0.3490 | 0.0000 | 0.1595  |
++------------+---------+---------+---------+--------+---------+
+| Branch 0-3 | 0.4376  | 0.2583  | 0.1895  | 0.0000 | 0.3600  |
++------------+---------+---------+---------+--------+---------+
+| Branch 0-4 | 0.3685  | 0.2176  | 0.1595  | 0.0000 | -0.5195 |
++------------+---------+---------+---------+--------+---------+
+| Branch 1-2 | 0.1939  | 0.5098  | -0.3490 | 0.0000 | 0.1595  |
++------------+---------+---------+---------+--------+---------+
+| Branch 2-3 | 0.1939  | 0.5241  | 0.6510  | 0.0000 | 0.1595  |
++------------+---------+---------+---------+--------+---------+
+| Branch 3-4 | -0.3685 | -0.2176 | -0.1595 | 0.0000 | -0.4805 |
++------------+---------+---------+---------+--------+---------+
+
 
 Una consideración sobre este método de cálculo del PTDF es que depende de un estado particular de la red,
 puesto que la formulación implica calcular derivadas de la potencia, y estas requieren un valor de tensión.

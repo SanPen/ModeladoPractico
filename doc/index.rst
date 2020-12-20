@@ -24,6 +24,8 @@ Modelado práctico de red
 
    ptdf_otdf.rst
 
+   fubm_acdc_model.rst
+
    sparse_matrices.rst
 
    derivatives.rst

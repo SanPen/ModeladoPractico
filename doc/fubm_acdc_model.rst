@@ -46,17 +46,25 @@ Vector de error
 
 .. math::
 
-    \left[ \begin{matrix}
-        \Delta P  = \Re {\Delta S_{[pvpq]}}\\
-        \Delta Q  = \Im {\Delta S_{[pq]}}\\
-        \Delta Pfsh = \Re (Sf_{[iPfsh]}) - Pfset_{[iPfsh]}  \\
-        \Delta Qfma = \Im (Sf_{[iQfma]}) - Qfset_{[iQfma]}  \\
-        \Delta Beqz  = \Im (Sf_{[iBeqz]}) - 0 \\
-        \Delta Beqv  = \Im (\Delta S_{[VfBeqbus]}) \\
-        \Delta Vtma  = \Im (\Delta S_{[Vtmabus]}) \\
-        \Delta Qtma  = \Im (St_{[iQtma]}) - Qtset_{[iQtma]} \\
-        \Delta Pfdp  = -\Re {Sf_{[iPfdp]}} + Pfset_{[iPfdp]} + Kdp_{[iPfdp]} \cdot ( Vm_{[busF_{[iPfdp]}]} - Vmfset_{[iPfdp]} )
-    \end{matrix}  \right]
+
+    \Delta P  = \Re \left\{\Delta S_{[pvpq]}\right\}
+
+    \Delta Q  = \Im \left\{\Delta S_{[pq]}\right\}
+
+    \Delta Pfsh = \Re \left\{Sf_{[iPfsh]}\right\} - Pfset_{[iPfsh]}
+
+    \Delta Qfma = \Im \left\{Sf_{[iQfma]}\right\} - Qfset_{[iQfma]}
+
+    \Delta Beqz  = \Im \left\{Sf_{[iBeqz]}\right\} - 0
+
+    \Delta Beqv  = \Im \left\{\Delta S_{[VfBeqbus]}\right\}
+
+    \Delta Vtma  = \Im \left\{\Delta S_{[Vtmabus]}\right\}
+
+    \Delta Qtma  = \Im \left\{St_{[iQtma]}\right\} - Qtset_{[iQtma]}
+
+    \Delta Pfdp  = -\Re \left\{Sf_{[iPfdp]}\right\} + Pfset_{[iPfdp]} + Kdp_{[iPfdp]} \cdot ( Vm_{[busF_{[iPfdp]}]} - Vmfset_{[iPfdp]} )
+
 
 Dónde:
 
@@ -69,200 +77,300 @@ Jacobiano
 
 .. math::
 
-    j11 = \Re\{\frac{\partial Sbus}{\partial  Va}\}[pvpq,pvpq]
+    j11 = \Re\left\{\frac{\partial Sbus}{\partial Va}\right\} [pvpq,pvpq]
 
-    j12 = \Re\{\frac{\partial Sbus}{\partial Vm}\}[pvpq, pq]
+    j12 = \Re\left\{\frac{\partial Sbus}{\partial Vm}\right\}[pvpq, pq]
 
-    j13 = \Re\{\frac{\partial Sbus}{\partial Pfsh} \}[pvpq,:]
+    j13 = \Re\left\{\frac{\partial Sbus}{\partial Pfsh} \right\}[pvpq,:]
 
-    j14 = \Re\{\frac{\partial Sbus}{\partial Qfma}\}[pvpq,:]
+    j14 = \Re\left\{\frac{\partial Sbus}{\partial Qfma}\right\}[pvpq,:]
 
-    j15 = \Re\{\frac{\partial Sbus}{\partial Beqz}\}[pvpq,:]
+    j15 = \Re\left\{\frac{\partial Sbus}{\partial Beqz}\right\}[pvpq,:]
 
-    j16 = \Re\{\frac{\partial Sbus}{\partial Beqv}\}[pvpq,:]
+    j16 = \Re\left\{\frac{\partial Sbus}{\partial Beqv}\right\}[pvpq,:]
 
-    j17 = \Re\{\frac{\partial Sbus}{\partial Vtma}\}[pvpq,:]
+    j17 = \Re\left\{\frac{\partial Sbus}{\partial Vtma}\right\}[pvpq,:]
 
-    j18 = \Re\{\frac{\partial Sbus}{\partial Qtma}\}[pvpq,:]
+    j18 = \Re\left\{\frac{\partial Sbus}{\partial Qtma}\right\}[pvpq,:]
 
-    j19 = \Re\{\frac{\partial Sbus}{\partial Pfdp}\}[pvpq,:]
+    j19 = \Re\left\{\frac{\partial Sbus}{\partial Pfdp}\right\}_{[pvpq,:]}
 
 
 .. math::
 
-    j21 = \Im\{\frac{\partial Sbus}{\partial Va}\}[pq, pvpq]]
+    j21 = \Im\left\{\frac{\partial Sbus}{\partial Va}\right\}[pq, pvpq]]
 
-    j22 = \Im\{\frac{\partial Sbus}{\partial Vm}\}[pq, pq]
+    j22 = \Im\left\{\frac{\partial Sbus}{\partial Vm}\right\}[pq, pq]
 
-    j23 = \Im\{\frac{\partial Sbus}{\partial Pfsh}\}[pq,:]
+    j23 = \Im\left\{\frac{\partial Sbus}{\partial Pfsh}\right\}[pq,:]
 
-    j24 = \Im\{\frac{\partial Sbus}{\partial Qfma}\}[pq,:]
+    j24 = \Im\left\{\frac{\partial Sbus}{\partial Qfma}\right\}[pq,:]
 
-    j25 = \Im\{\frac{\partial Sbus}{\partial Beqz}\}[pq,:]
+    j25 = \Im\left\{\frac{\partial Sbus}{\partial Beqz}\right\}[pq,:]
 
-    j26 = \Im\{\frac{\partial Sbus}{\partial Beqv}\}[pq,:]
+    j26 = \Im\left\{\frac{\partial Sbus}{\partial Beqv}\right\}[pq,:]
 
-    j27 = \Im\{\frac{\partial Sbus}{\partial Vtma}\}[pq,:]
+    j27 = \Im\left\{\frac{\partial Sbus}{\partial Vtma}\right\}[pq,:]
 
-    j28 = \Im\{\frac{\partial Sbus}{\partial Qtma}\}[pq,:]
+    j28 = \Im\left\{\frac{\partial Sbus}{\partial Qtma}\right\}[pq,:]
 
-    j29 = \Im\{\frac{\partial Sbus}{\partial Pfdp}\}[pq,:]
+    j29 = \Im\left\{\frac{\partial Sbus}{\partial Pfdp}\right\}[pq,:]
 
 
 Only Pf control elements iPfsh:
 
 .. math::
 
-    j31 = \Re\{\frac{\partial Sf}{\partial Va}\}[iPfsh,pvpq]
+    j31 = \Re\left\{\frac{\partial Sf}{\partial Va}\right\}[iPfsh,pvpq]
 
-    j32 = \Re\{\frac{\partial Sf}{\partial Vm}\}[iPfsh,pq]
+    j32 = \Re\left\{\frac{\partial Sf}{\partial Vm}\right\}[iPfsh,pq]
 
-    j33 = \Re\{\frac{\partial Sf}{\partial Pfsh}\}[iPfsh,:]
+    j33 = \Re\left\{\frac{\partial Sf}{\partial Pfsh}\right\}[iPfsh,:]
 
-    j34 = \Re\{\frac{\partial Sf}{\partial Qfma}\}[iPfsh,:]
+    j34 = \Re\left\{\frac{\partial Sf}{\partial Qfma}\right\}[iPfsh,:]
 
-    j35 = \Re\{\frac{\partial Sf}{\partial Beqz}\}[iPfsh,:]
+    j35 = \Re\left\{\frac{\partial Sf}{\partial Beqz}\right\}[iPfsh,:]
 
-    j36 = \Re\{\frac{\partial Sf}{\partial Beqv}\}[iPfsh,:]
+    j36 = \Re\left\{\frac{\partial Sf}{\partial Beqv}\right\}[iPfsh,:]
 
-    j37 = \Re\{\frac{\partial Sf}{\partial Vtma}\}[iPfsh,:]
+    j37 = \Re\left\{\frac{\partial Sf}{\partial Vtma}\right\}[iPfsh,:]
 
-    j38 = \Re\{\frac{\partial Sf}{\partial Qtma}\}[iPfsh,:]
+    j38 = \Re\left\{\frac{\partial Sf}{\partial Qtma}\right\}[iPfsh,:]
 
-    j39 = \Re\{\frac{\partial Sf}{\partial Pfdp}\}[iPfsh,:]
+    j39 = \Re\left\{\frac{\partial Sf}{\partial Pfdp}\right\}[iPfsh,:]
 
 Only Qf control elements iQfma:
 
 .. math::
 
-    j41 = \Im\{\frac{\partial Sf}{\partial Va}\}[iQfma,pvpq]
+    j41 = \Im\left\{\frac{\partial Sf}{\partial Va}\right\}[iQfma,pvpq]
 
-    j42 = \Im\{\frac{\partial Sf}{\partial Vm}\}[iQfma,pq]
+    j42 = \Im\left\{\frac{\partial Sf}{\partial Vm}\right\}[iQfma,pq]
 
-    j43 = \Im\{\frac{\partial Sf}{\partial Pfsh}\}[iQfma,:]
+    j43 = \Im\left\{\frac{\partial Sf}{\partial Pfsh}\right\}[iQfma,:]
 
-    j44 = \Im\{\frac{\partial Sf}{\partial Qfma}\}[iQfma,:]
+    j44 = \Im\left\{\frac{\partial Sf}{\partial Qfma}\right\}[iQfma,:]
 
-    j45 = \Im\{\frac{\partial Sf}{\partial Beqz}\}[iQfma,:]
+    j45 = \Im\left\{\frac{\partial Sf}{\partial Beqz}\right\}[iQfma,:]
 
-    j46 = \Im\{\frac{\partial Sf}{\partial Beqv}\}[iQfma,:]
+    j46 = \Im\left\{\frac{\partial Sf}{\partial Beqv}\right\}[iQfma,:]
 
-    j47 = \Im\{\frac{\partial Sf}{\partial Vtma}\}[iQfma,:]
+    j47 = \Im\left\{\frac{\partial Sf}{\partial Vtma}\right\}[iQfma,:]
 
-    j48 = \Im\{\frac{\partial Sf}{\partial Qtma}\}[iQfma,:]
+    j48 = \Im\left\{\frac{\partial Sf}{\partial Qtma}\right\}[iQfma,:]
 
-    j49 = \Im\{\frac{\partial Sf}{\partial Pfdp}\}[iQfma,:]
+    j49 = \Im\left\{\frac{\partial Sf}{\partial Pfdp}\right\}[iQfma,:]
 
 Only Qf control elements iQfbeq:
 
 .. math::
 
-    j51 = \Im\{\frac{\partial Sf}{\partial Va}\}[iBeqz,pvpq]
+    j51 = \Im\left\{\frac{\partial Sf}{\partial Va}\right\}[iBeqz,pvpq]
 
-    j52 = \Im\{\frac{\partial Sf}{\partial Vm}\}[iBeqz,pq]
+    j52 = \Im\left\{\frac{\partial Sf}{\partial Vm}\right\}[iBeqz,pq]
 
-    j53 = \Im\{\frac{\partial Sf}{\partial Pfsh}\}[iBeqz,:]
+    j53 = \Im\left\{\frac{\partial Sf}{\partial Pfsh}\right\}[iBeqz,:]
 
-    j54 = \Im\{\frac{\partial Sf}{\partial Qfma}\}[iBeqz,:]
+    j54 = \Im\left\{\frac{\partial Sf}{\partial Qfma}\right\}[iBeqz,:]
 
-    j55 = \Im\{\frac{\partial Sf}{\partial Beqz}\}[iBeqz,:]
+    j55 = \Im\left\{\frac{\partial Sf}{\partial Beqz}\right\}[iBeqz,:]
 
-    j56 = \Im\{\frac{\partial Sf}{\partial Beqv}\}[iBeqz,:]
+    j56 = \Im\left\{\frac{\partial Sf}{\partial Beqv}\right\}[iBeqz,:]
 
-    j57 = \Im\{\frac{\partial Sf}{\partial Vtma}\}[iBeqz,:]
+    j57 = \Im\left\{\frac{\partial Sf}{\partial Vtma}\right\}[iBeqz,:]
 
-    j58 = \Im\{\frac{\partial Sf}{\partial Qtma}\}[iBeqz,:]
+    j58 = \Im\left\{\frac{\partial Sf}{\partial Qtma}\right\}[iBeqz,:]
 
-    j59 = \Im\{\frac{\partial Sf}{\partial Pfdp}\}[iBeqz,:]
+    j59 = \Im\left\{\frac{\partial Sf}{\partial Pfdp}\right\}[iBeqz,:]
 
 Only Vf control elements iVfbeq:
 
 .. math::
 
-    j61 = \Im\{\frac{\partial Sbus}{\partial Va}\}[VfBeqbus,pvpq]
+    j61 = \Im\left\{\frac{\partial Sbus}{\partial Va}\right\}[VfBeqbus,pvpq]
 
-    j62 = \Im\{\frac{\partial Sbus}{\partial Vm}\}[VfBeqbus,pq]
+    j62 = \Im\left\{\frac{\partial Sbus}{\partial Vm}\right\}[VfBeqbus,pq]
 
-    j63 = \Im\{\frac{\partial Sbus}{\partial Pfsh}\}[VfBeqbus,:]
+    j63 = \Im\left\{\frac{\partial Sbus}{\partial Pfsh}\right\}[VfBeqbus,:]
 
-    j64 = \Im\{\frac{\partial Sbus}{\partial Qfma}\}[VfBeqbus,:]
+    j64 = \Im\left\{\frac{\partial Sbus}{\partial Qfma}\right\}[VfBeqbus,:]
 
-    j65 = \Im\{\frac{\partial Sbus}{\partial Beqz}\}[VfBeqbus,:]
+    j65 = \Im\left\{\frac{\partial Sbus}{\partial Beqz}\right\}[VfBeqbus,:]
 
-    j66 = \Im\{\frac{\partial Sbus}{\partial Beqv}\}[VfBeqbus,:]
+    j66 = \Im\left\{\frac{\partial Sbus}{\partial Beqv}\right\}[VfBeqbus,:]
 
-    j67 = \Im\{\frac{\partial Sbus}{\partial Vtma}\}[VfBeqbus,:]
+    j67 = \Im\left\{\frac{\partial Sbus}{\partial Vtma}\right\}[VfBeqbus,:]
 
-    j68 = \Im\{\frac{\partial Sbus}{\partial Qtma}\}[VfBeqbus,:]
+    j68 = \Im\left\{\frac{\partial Sbus}{\partial Qtma}\right\}[VfBeqbus,:]
 
-    j69 = \Im\{\frac{\partial Sbus}{\partial Pfdp}\}[VfBeqbus,:]
+    j69 = \Im\left\{\frac{\partial Sbus}{\partial Pfdp}\right\}[VfBeqbus,:]
 
 
 Only Vt control elements iVtma:
 
 .. math::
 
-    j71 = \Im\{\frac{\partial Sbus}{\partial Va}\}[Vtmabus,pvpq]
+    j71 = \Im\left\{\frac{\partial Sbus}{\partial Va}\right\}[Vtmabus,pvpq]
 
-    j72 = \Im\{\frac{\partial Sbus}{\partial Vm}\}[Vtmabus,pq]
+    j72 = \Im\left\{\frac{\partial Sbus}{\partial Vm}\right\}[Vtmabus,pq]
 
-    j73 = \Im\{\frac{\partial Sbus}{\partial Pfsh}\}[Vtmabus,:]
+    j73 = \Im\left\{\frac{\partial Sbus}{\partial Pfsh}\right\}[Vtmabus,:]
 
-    j74 = \Im\{\frac{\partial Sbus}{\partial Qfma}\}[Vtmabus,:]
+    j74 = \Im\left\{\frac{\partial Sbus}{\partial Qfma}\right\}[Vtmabus,:]
 
-    j75 = \Im\{\frac{\partial Sbus}{\partial Beqz}\}[Vtmabus,:]
+    j75 = \Im\left\{\frac{\partial Sbus}{\partial Beqz}\right\}[Vtmabus,:]
 
-    j76 = \Im\{\frac{\partial Sbus}{\partial Beqv}\}[Vtmabus,:]
+    j76 = \Im\left\{\frac{\partial Sbus}{\partial Beqv}\right\}[Vtmabus,:]
 
-    j77 = \Im\{\frac{\partial Sbus}{\partial Vtma}\}[Vtmabus,:]
+    j77 = \Im\left\{\frac{\partial Sbus}{\partial Vtma}\right\}[Vtmabus,:]
 
-    j78 = \Im\{\frac{\partial Sbus}{\partial Qtma}\}[Vtmabus,:]
+    j78 = \Im\left\{\frac{\partial Sbus}{\partial Qtma}\right\}[Vtmabus,:]
 
-    j79 = \Im\{\frac{\partial Sbus}{\partial Pfdp}\}[Vtmabus,:]
+    j79 = \Im\left\{\frac{\partial Sbus}{\partial Pfdp}\right\}[Vtmabus,:]
 
 
 Only Qt control elements iQtma:
 
 .. math::
 
-    j81 = \Im\{\frac{\partial St}{\partial Va}\}[iQtma,pvpq]
+    j81 = \Im\left\{\frac{\partial St}{\partial Va}\right\}[iQtma,pvpq]
 
-    j82 = \Im\{\frac{\partial St}{\partial Vm}\}[iQtma,pq]
+    j82 = \Im\left\{\frac{\partial St}{\partial Vm}\right\}[iQtma,pq]
 
-    j83 = \Im\{\frac{\partial St}{\partial Pfsh}\}[iQtma,:]
+    j83 = \Im\left\{\frac{\partial St}{\partial Pfsh}\right\}[iQtma,:]
 
-    j84 = \Im\{\frac{\partial St}{\partial Qfma}\}[iQtma,:]
+    j84 = \Im\left\{\frac{\partial St}{\partial Qfma}\right\}[iQtma,:]
 
-    j85 = \Im\{\frac{\partial St}{\partial Beqz}\}[iQtma,:]
+    j85 = \Im\left\{\frac{\partial St}{\partial Beqz}\right\}[iQtma,:]
 
-    j86 = \Im\{\frac{\partial St}{\partial Beqv}\}[iQtma,:]
+    j86 = \Im\left\{\frac{\partial St}{\partial Beqv}\right\}[iQtma,:]
 
-    j87 = \Im\{\frac{\partial St}{\partial Vtma}\}[iQtma,:]
+    j87 = \Im\left\{\frac{\partial St}{\partial Vtma}\right\}[iQtma,:]
 
-    j88 = \Im\{\frac{\partial St}{\partial Qtma}\}[iQtma,:]
+    j88 = \Im\left\{\frac{\partial St}{\partial Qtma}\right\}[iQtma,:]
 
-    j89 = \Im\{\frac{\partial St}{\partial Pfdp}\}[iQtma,:]
+    j89 = \Im\left\{\frac{\partial St}{\partial Pfdp}\right\}[iQtma,:]
 
 
 Only Droop control elements iPfdp:
 
 .. math::
 
-    j91 =  \frac{\partial Pfdp}{\partial Va}\}[iPfdp, pvpq]
+    j91 =  \frac{\partial Pfdp}{\partial Va}[iPfdp, pvpq]
 
-    j92 =  \frac{\partial Pfdp}{\partial Vm}\}[iPfdp,pq]
+    j92 =  \frac{\partial Pfdp}{\partial Vm}[iPfdp,pq]
 
-    j93 =  \frac{\partial Pfdp}{\partial Pfsh}\}[iPfdp,:]
+    j93 =  \frac{\partial Pfdp}{\partial Pfsh}[iPfdp,:]
 
-    j94 =  \frac{\partial Pfdp}{\partial Qfma}\}[iPfdp,:]
+    j94 =  \frac{\partial Pfdp}{\partial Qfma}[iPfdp,:]
 
-    j95 =  \frac{\partial Pfdp}{\partial Beqz}\}[iPfdp,:]
+    j95 =  \frac{\partial Pfdp}{\partial Beqz}[iPfdp,:]
 
-    j96 =  \frac{\partial Pfdp}{\partial Beqv}\}[iPfdp,:]
+    j96 =  \frac{\partial Pfdp}{\partial Beqv}[iPfdp,:]
 
-    j97 =  \frac{\partial Pfdp}{\partial Vtma}\}[iPfdp,:]
+    j97 =  \frac{\partial Pfdp}{\partial Vtma}[iPfdp,:]
 
-    j98 =  \frac{\partial Pfdp}{\partial Qtma}\}[iPfdp,:]
+    j98 =  \frac{\partial Pfdp}{\partial Qtma}[iPfdp,:]
 
-    j99 =  \frac{\partial Pfdp}{\partial Pfdp}\}[iPfdp,:]
+    j99 =  \frac{\partial Pfdp}{\partial Pfdp}[iPfdp,:]
 
+Derivadas
+------------------
+
+Derivadas necesarias:
+
+.. math::
+
+    \frac{\partial Y}{\partial Pfsh} = ...
+
+
+Derivadas de potencias nodales:
+
+.. math::
+
+    \frac{\partial Sbus}{\partial Va} = j[V] \times (Y \times [V])^* + [V] \times (Y \times j[V])^*
+
+    \frac{\partial Sbus}{\partial Vm} = [E] \times (Y \times [V])^* + [V] \times (Y \times [E])^*
+
+    \frac{\partial Sbus}{\partial Pfsh} = [V] \times \left( \frac{\partial Y}{\partial Pfsh}  \times [V]\right)^*
+
+    \frac{\partial Sbus}{\partial Qfma} = ...
+
+    \frac{\partial Sbus}{\partial Beqz} = ...
+
+    \frac{\partial Sbus}{\partial Beqv} = ...
+
+    \frac{\partial Sbus}{\partial Vtma} = ...
+
+    \frac{\partial Sbus}{\partial Qtma} = ...
+
+    \frac{\partial Sbus}{\partial Pfdp} = ...
+
+
+Derivadas de potencias de rama desde el lado "from":
+
+.. math::
+
+    \frac{\partial Sf}{\partial Va} = ...
+
+    \frac{\partial Sf}{\partial Vm}\ = ...
+
+    \frac{\partial Sf}{\partial Pfsh} = ...
+
+    \frac{\partial Sf}{\partial Qfma} = ...
+
+    \frac{\partial Sf}{\partial Beqz} = ...
+
+    \frac{\partial Sf}{\partial Beqv} = ...
+
+    \frac{\partial Sf}{\partial Vtma} = ...
+
+    \frac{\partial Sf}{\partial Qtma} = ...
+
+    \frac{\partial Sf}{\partial Pfdp} = ...
+
+
+Derivadas de potencias de rama desde el lado "to":
+
+.. math::
+
+    \frac{\partial St}{\partial Va} = ...
+
+    \frac{\partial St}{\partial Vm}\ = ...
+
+    \frac{\partial St}{\partial Pfsh} = ...
+
+    \frac{\partial St}{\partial Qfma} = ...
+
+    \frac{\partial St}{\partial Beqz} = ...
+
+    \frac{\partial St}{\partial Beqv} = ...
+
+    \frac{\partial St}{\partial Vtma} = ...
+
+    \frac{\partial St}{\partial Qtma} = ...
+
+    \frac{\partial St}{\partial Pfdp} = ...
+
+
+Derivadas de la potencia "droop":
+
+.. math::
+
+    \frac{\partial Pfdp}{\partial Va} = ...
+
+    \frac{\partial Pfdp}{\partial Vm} = ...
+
+    \frac{\partial Pfdp}{\partial Pfsh} = ...
+
+    \frac{\partial Pfdp}{\partial Qfma} = ...
+
+    \frac{\partial Pfdp}{\partial Beqz} = ...
+
+    \frac{\partial Pfdp}{\partial Beqv} = ...
+
+    \frac{\partial Pfdp}{\partial Vtma} = ...
+
+    \frac{\partial Pfdp}{\partial Qtma} = ...
+
+    \frac{\partial Pfdp}{\partial Pfdp} = ...

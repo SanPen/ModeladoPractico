@@ -2,6 +2,22 @@
 Flujo de potencia AC/DC unificado (FUBM)
 =========================================
 
+Introducción
+---------------
+
+El modelo AC/DC unificado (FUBM: Flexible Unified Branch Model) fué desarrollado
+en [FUBM1]_ y [FUBM2]_
+
+El modelo general considera que todas las ramas de un sistema de potencia se pueden represnetar por el siguiente
+esquema:
+
+.. image:: images/FUBM.png
+   :height: 300px
+
+
+Sistema de ecuaciones
+------------------------
+
 .. math::
     \left[
         \begin{matrix}
@@ -15,7 +31,7 @@ Flujo de potencia AC/DC unificado (FUBM)
         \Delta m_a  \\
         \Delta \theta_{sh}
         \end{matrix}
-    \right] =  \left[
+    \right] = \left[
         \begin{matrix}
         J11 & J12 & J13 & J14 & J15 & J16 & J17 & J18 & J19 \\
         J21 & J22 & J23 & J24 & J25 & J26 & J27 & J28 & J29 \\
@@ -36,6 +52,129 @@ Flujo de potencia AC/DC unificado (FUBM)
         \Delta Beqz  \\
         \Delta Beqv  \\
         \Delta Vtma  \\
+        \Delta Qtma  \\
+        \Delta Pfdp
+        \end{matrix}
+    \right]
+
+Si vemos las derivadas que corponden a cada sub-matriz del Jacobiano, observamos que podemos
+dar un orden contiguo a las variables para que el sistema se computacionalmente mas eficiente
+al montar la matriz:
+
+.. math::
+    \left[
+        \begin{matrix}
+        \Delta Va  \\
+        \Delta Vm  \\
+        \Delta B_{eq}   \\
+        \Delta m_a  \\
+        \Delta \theta_{sh}  \\
+        \Delta m_a  \\
+        \Delta B_{eq}  \\
+        \Delta m_a  \\
+        \Delta \theta_{sh}
+        \end{matrix}
+    \right] = \left[
+        \begin{matrix}
+        \Re\left\{\frac{\partial Sbus}{\partial Va}\right\}_{[pvpq,pvpq]} &
+        \Re\left\{\frac{\partial Sbus}{\partial Vm}\right\}_{[pvpq, pq]} &
+        \Re\left\{\frac{\partial Sbus}{\partial Pfsh} \right\}_{[pvpq,:]} &
+        \Re\left\{\frac{\partial Sbus}{\partial Qfma}\right\}_{[pvpq,:]} &
+        \Re\left\{\frac{\partial Sbus}{\partial Beqz}\right\}_{[pvpq,:]} &
+        \Re\left\{\frac{\partial Sbus}{\partial Beqv}\right\}_{[pvpq,:]} &
+        \Re\left\{\frac{\partial Sbus}{\partial Vtma}\right\}_{[pvpq,:]} &
+        \Re\left\{\frac{\partial Sbus}{\partial Qtma}\right\}_{[pvpq,:]} &
+        \Re\left\{\frac{\partial Sbus}{\partial Pfdp}\right\}_{[pvpq,:]}
+        \\
+        \Im\left\{\frac{\partial Sbus}{\partial Va}\right\}_{[pq, pvpq]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Vm}\right\}_{[pq, pq]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Pfsh}\right\}_{[pq,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Qfma}\right\}_{[pq,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Beqz}\right\}_{[pq,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Beqv}\right\}_{[pq,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Vtma}\right\}_{[pq,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Qtma}\right\}_{[pq,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Pfdp}\right\}_{[pq,:]}
+        \\
+        \Im\left\{\frac{\partial Sbus}{\partial Va}\right\}_{[iVfBeqbus,pvpq]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Vm}\right\}_{[iVfBeqbus,pq]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Pfsh}\right\}_{[iVfBeqbus,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Qfma}\right\}_{[iVfBeqbus,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Beqz}\right\}_{[iVfBeqbus,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Beqv}\right\}_{[iVfBeqbus,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Vtma}\right\}_{[iVfBeqbus,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Qtma}\right\}_{[iVfBeqbus,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Pfdp}\right\}_{[iVfBeqbus,:]}
+        \\
+        \Im\left\{\frac{\partial Sbus}{\partial Va}\right\}_{[iVtmabus,pvpq]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Vm}\right\}_{[iVtmabus,pq]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Pfsh}\right\}_{[iVtmabus,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Qfma}\right\}_{[iVtmabus,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Beqz}\right\}_{[iVtmabus,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Beqv}\right\}_{[iVtmabus,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Vtma}\right\}_{[iVtmabus,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Qtma}\right\}_{[iVtmabus,:]} &
+        \Im\left\{\frac{\partial Sbus}{\partial Pfdp}\right\}_{[iVtmabus,:]}
+        \\
+        \Re\left\{\frac{\partial Sf}{\partial Va}\right\}_{[iPfsh,pvpq]} &
+        \Re\left\{\frac{\partial Sf}{\partial Vm}\right\}_{[iPfsh,pq]} &
+        \Re\left\{\frac{\partial Sf}{\partial Pfsh}\right\}_{[iPfsh,:]} &
+        \Re\left\{\frac{\partial Sf}{\partial Qfma}\right\}_{[iPfsh,:]} &
+        \Re\left\{\frac{\partial Sf}{\partial Beqz}\right\}_{[iPfsh,:]} &
+        \Re\left\{\frac{\partial Sf}{\partial Beqv}\right\}_{[iPfsh,:]} &
+        \Re\left\{\frac{\partial Sf}{\partial Vtma}\right\}_{[iPfsh,:]} &
+        \Re\left\{\frac{\partial Sf}{\partial Qtma}\right\}_{[iPfsh,:]} &
+        \Re\left\{\frac{\partial Sf}{\partial Pfdp}\right\}_{[iPfsh,:]}
+        \\
+        \Im\left\{\frac{\partial Sf}{\partial Va}\right\}_{[iQfma,pvpq]} &
+        \Im\left\{\frac{\partial Sf}{\partial Vm}\right\}_{[iQfma,pq]} &
+        \Im\left\{\frac{\partial Sf}{\partial Pfsh}\right\}_{[iQfma,:]} &
+        \Im\left\{\frac{\partial Sf}{\partial Qfma}\right\}_{[iQfma,:]} &
+        \Im\left\{\frac{\partial Sf}{\partial Beqz}\right\}_{[iQfma,:]} &
+        \Im\left\{\frac{\partial Sf}{\partial Beqv}\right\}_{[iQfma,:]} &
+        \Im\left\{\frac{\partial Sf}{\partial Vtma}\right\}_{[iQfma,:]} &
+        \Im\left\{\frac{\partial Sf}{\partial Qtma}\right\}_{[iQfma,:]} &
+        \Im\left\{\frac{\partial Sf}{\partial Pfdp}\right\}_{[iQfma,:]}
+        \\
+        \Im\left\{\frac{\partial Sf}{\partial Va}\right\}_{[iBeqz,pvpq]} &
+        \Im\left\{\frac{\partial Sf}{\partial Vm}\right\}_{[iBeqz,pq]} &
+        \Im\left\{\frac{\partial Sf}{\partial Pfsh}\right\}_{[iBeqz,:]} &
+        \Im\left\{\frac{\partial Sf}{\partial Qfma}\right\}_{[iBeqz,:]} &
+        \Im\left\{\frac{\partial Sf}{\partial Beqz}\right\}_{[iBeqz,:]} &
+        \Im\left\{\frac{\partial Sf}{\partial Beqv}\right\}_{[iBeqz,:]} &
+        \Im\left\{\frac{\partial Sf}{\partial Vtma}\right\}_{[iBeqz,:]} &
+        \Im\left\{\frac{\partial Sf}{\partial Qtma}\right\}_{[iBeqz,:]} &
+        \Im\left\{\frac{\partial Sf}{\partial Pfdp}\right\}_{[iBeqz,:]}
+        \\
+        \Im\left\{\frac{\partial St}{\partial Va}\right\}_{[iQtma,pvpq]} &
+        \Im\left\{\frac{\partial St}{\partial Vm}\right\}_{[iQtma,pq]} &
+        \Im\left\{\frac{\partial St}{\partial Pfsh}\right\}_{[iQtma,:]} &
+        \Im\left\{\frac{\partial St}{\partial Qfma}\right\}_{[iQtma,:]} &
+        \Im\left\{\frac{\partial St}{\partial Beqz}\right\}_{[iQtma,:]} &
+        \Im\left\{\frac{\partial St}{\partial Beqv}\right\}_{[iQtma,:]} &
+        \Im\left\{\frac{\partial St}{\partial Vtma}\right\}_{[iQtma,:]} &
+        \Im\left\{\frac{\partial St}{\partial Qtma}\right\}_{[iQtma,:]} &
+        \Im\left\{\frac{\partial St}{\partial Pfdp}\right\}_{[iQtma,:]}
+        \\
+        \frac{\partial Pfdp}{\partial Va}_{[iPfdp, pvpq]} &
+        \frac{\partial Pfdp}{\partial Vm}_{[iPfdp,pq]} &
+        \frac{\partial Pfdp}{\partial Pfsh}_{[iPfdp,:]} &
+        \frac{\partial Pfdp}{\partial Qfma}_{[iPfdp,:]} &
+        \frac{\partial Pfdp}{\partial Beqz}_{[iPfdp,:]} &
+        \frac{\partial Pfdp}{\partial Beqv}_{[iPfdp,:]} &
+        \frac{\partial Pfdp}{\partial Vtma}_{[iPfdp,:]} &
+        \frac{\partial Pfdp}{\partial Qtma}_{[iPfdp,:]} &
+        \frac{\partial Pfdp}{\partial Pfdp}_{[iPfdp,:]}
+        \end{matrix}
+    \right]^{-1}  \times \left[
+        \begin{matrix}
+        \Delta P \\
+        \Delta Q  \\
+        \Delta Beqv  \\
+        \Delta Vtma  \\
+        \Delta Pfsh  \\
+        \Delta Qfma  \\
+        \Delta Beqz  \\
         \Delta Qtma  \\
         \Delta Pfdp
         \end{matrix}
@@ -336,7 +475,7 @@ Derivadas de potencias de rama desde el lado "to":
 
     \frac{\partial St}{\partial Va} = ...
 
-    \frac{\partial St}{\partial Vm}\ = ...
+    \frac{\partial St}{\partial Vm} = ...
 
     \frac{\partial St}{\partial Pfsh} = ...
 
@@ -374,3 +513,10 @@ Derivadas de la potencia "droop":
     \frac{\partial Pfdp}{\partial Qtma} = ...
 
     \frac{\partial Pfdp}{\partial Pfdp} = ...
+
+.. [FUBM1] Flexible General Branch Model Unified Power Flow Algorithm for future flexible AC/DC Networks,
+            Abraham Álavarez Bustos and Behzah Kazemtabrizi, IEEE, 2018
+
+.. [FUBM2] Universal branch model for the solution of optimal power flows in hybrid AC/DC grids,
+           Abraham Álavarez Bustos, Behzah Kazemtabrizi, Mahmoud Shahbazi and Enrique Acha-Daza,
+           International Journal of Electrical and power and Energy Systems, 2021

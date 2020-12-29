@@ -170,11 +170,11 @@ al montar la matriz:
         \begin{matrix}
         \Delta P \\
         \Delta Q  \\
-        \Delta Beqv  \\
-        \Delta Vtma  \\
         \Delta Pfsh  \\
         \Delta Qfma  \\
         \Delta Beqz  \\
+        \Delta Beqv  \\
+        \Delta Vtma  \\
         \Delta Qtma  \\
         \Delta Pfdp
         \end{matrix}

@@ -2,20 +2,23 @@ Matrices Sparse
 =======================
 
 Las matrices Sparse o Dispersas son matrices que contienen muchos ceros.
-Debido a esto podemos representar estas matrices con estructuras que eviten almacerar los ceros que no aportan valor
-ya que si una posición no existe podemos asumir que en ella hay un cero.
+Debido a esto podemos representar estas matrices con estructuras que eviten
+almacerar los ceros que no aportan valor ya que si una posición no existe
+podemos asumir que en ella hay un cero.
 
-Existen varios formatos de representación de matrices Sparse. Cada uno de ellos obliga a representar las operaciones
-de su subespacio de manera diferente debido a las diferencias en cómo se almacena la información.
+Existen varios formatos de representación de matrices Sparse. Cada uno de
+ellos obliga a representar las operaciones de su subespacio de manera diferente
+debido a las diferencias en cómo se almacena la información.
 
 CSC
 -------------
 
-Existen varios formatos de almacenaje de matrices sparse. De entre ellos el Formato CSC (Compressed Sparse Column) y su
-análogo CSR (Compressed Sparse Row) son los más extendidos por su eficiencia computacional.
+Existen varios formatos de almacenaje de matrices sparse. De entre ellos el
+Formato CSC (Compressed Sparse Column) y su análogo CSR (Compressed Sparse Row)
+son los más extendidos por su eficiencia computacional.
 
-El formato CSC, tiene un vector de datos (`data`), un vector de punteros de columna (`indptr`) y un vector (`indices`)
-que indica el índice de las filas .
+El formato CSC, tiene un vector de datos (`data`), un vector de punteros de
+columna (`indptr`) y un vector (`indices`) que indica el índice de las filas .
 
 Esto es más sencillo de entender con un ejemplo:
 
@@ -40,17 +43,21 @@ Esto es más sencillo de entender con un ejemplo:
      indptr  = [0, 3, 7, 10]
 
 
-Obsérvese que en el ejemplo, el vector `data` contiene los elementos de la matriz insertados en orden columnar.
-Los otros dos vectores sirven de ayuda para saber las posiciones de fila y columna a la que corresponde cada valor
+Obsérvese que en el ejemplo, el vector `data` contiene los elementos de la
+matriz insertados en orden columnar. Los otros dos vectores sirven de ayuda
+para saber las posiciones de fila y columna a la que corresponde cada valor
 de `data`.
 
 - `data`: Almacena los datos en orden columnar.
 - `indices`: Indica el índice de las filas (longitud igual a la longitud de `data`)
 - `indptr`: La longitud es `columnas + 1`, guarda los índices iniciales que delimitan una columna.
             el índice final viene dado por el valor siguiente al actual.
-            i.e. the first column takes the indices and data from the positions 0 to 3-1, this is:
-            Por ejemplo; La primera columna (`j=0`) se relaciona con los datos de 0 a 3-1 de los vectores `data` e
-            `indices`:
+            Por ejemplo; La primera columna (`j=0`) se relaciona con los datos de 0 a (3-1) de
+            los vectores `data` e `indices`:
+
+            indptr[j=0] = 0       -> principio de la columna en `data` e `indices`
+
+            indptr[j=0+1] = 3     -> final de la columna en `data` e `indices`
 
             column_idx = 0        -> Índice de la columna (j)
 

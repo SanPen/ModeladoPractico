@@ -22,11 +22,15 @@ Modelado práctico de red
 
    chapter_6_power_flow.rst
 
+   fubm_acdc_model.rst
+
    ptdf_otdf.rst
 
    sparse_matrices.rst
 
    derivatives.rst
+
+   json_file.rst
 
 
 Indices and tables

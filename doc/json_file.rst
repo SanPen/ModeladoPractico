@@ -222,6 +222,7 @@ Bus
 - **type**: 			Nombre de la clase
 - **phases**: 			Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
 - **name**:				Nombre del bus
+- **name_code**:		Código secundario del bus (i.e. número PSSe etc.)
 - **active**:			Estado del bus (true / false)
 - **is_slack**:			Es slack?  (true / false)
 - **vnom**:				Tensión nominal en kV
@@ -362,6 +363,28 @@ Ejemplo:
                   (-8.05746899,41.936873),
                   (-8.060648726,41.93295244)]
 
+Table
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Tablas de valores, por ejemplo valores de taps, ángulos etc.
+
+- **id**:           Id única, prefentemente generada con UUIDv4
+- **type**:         Nombre de la clase
+- **name**:         Nombre de la tabla
+- **index**:        Índice de la tabla (números enteros)
+- **values**:       valores (números)
+
+Ejemplo:
+
+.. code:: text
+    {
+    "id": "068362caafde4ce4894baaff1a291fe7",
+    "type": "table",
+    "name": "Tap values 1",
+    "index": [-4,       -3,     -2,     -1,     0,       1,      2,      3,      4],
+    "values": [0.96,    0.97,   0.98,   0.99,  1.0,     1.01,    1.02,  1.03,  1.04]
+    }
+
 
 Transformer  (2-windings)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -388,20 +411,35 @@ Transformador de dos devanados.
 - **tap_module**:               Valor del tap ( por defecto 1.0)
 - **min_tap_module**:           Valor mínimo del tap ( por defecto 0.5)
 - **max_tap_module**:           Valor máximo del tap ( por defecto 1.5)
+- **id_tap_module_table**:      ID de la tabla de módulos de taps.
 
 - **tap_angle**:                Valor del ángulo ( por defecto 0.0 radianes)
 - **min_tap_angle**:            Valor mínimo del ángulo ( por defecto 0.0)
 - **max_tap_angle**:            Valor máximo del ángulo ( por defecto :math:`2\pi`)
+- **id_tap_angle_table**:       ID de la tabla de ángulos de taps.
 
-- **bus_to_regulated**:         ¿Está el bus "to" regulado por tensión?
-- **vset**:                     Tensión de regulación en caso de estar regulando (en p.u.).
-
-- **power_regulated**:          ¿Está regulando potencia?
-- **pset**:                     Nivel de potencia a regular en MW
+- **control_mode**:             Modo de conrol. Ver tabla de modos de control.
+- **vset**:                     Tensión de regulación (en p.u.).
+- **pset**:                     Nivel de potencia a regular (MW)
 
 - **base_temperature**:         Termperatura base del transformador
 - **operational_temperature**:  Temperatura operacional del transformador
 - **alpha**:                    Coeficiente térmico del transformador
+
+
+**Modos de control**
+
++------+--------------------------------------------------------+-----------+-----------+
+| Modo | Función                                                | Control 1 | Control 2 |
++======+========================================================+===========+===========+
+| 0    | Libre                                                  | -         | -         |
++------+--------------------------------------------------------+-----------+-----------+
+| 1    | Control de módulo de tensión "to"                      | Vac       | -         |
++------+--------------------------------------------------------+-----------+-----------+
+| 2    | Control de potencia alterna                            | Pac       | -         |
++------+--------------------------------------------------------+-----------+-----------+
+| 3    | Control de potencia activa y módulo de tensión alterna | Pac       | Vac       |
++------+--------------------------------------------------------+-----------+-----------+
 
 Ejemplo:
 
@@ -416,20 +454,24 @@ Ejemplo:
     "active": 0,
     "rate": 35.0,
     "r": 0.0,
-    "x": 0.3514299988746643,
+    "x": 0.35143,
     "g": 0.0,
     "b": 0.0,
-    "tap_module": 0.9428624930004166,
+
+    "tap_module": 0.982,
+    "min_tap_module": 0.96,
+    "max_tap_module": 1.04,
+    "id_tap_module_table": ""
+
     "tap_angle": 0.0,
-    "tap_position": 0,
-    "min_tap_position": -1,
-    "max_tap_position": 1,
-    "tap_inc_reg_down": 0.01,
-    "tap_inc_reg_up": 0.01,
-    "virtual_tap_from": 0.0,
-    "virtual_tap_to": 0.0,
-    "bus_to_regulated": false,
+    "min_tap_angle": -6.28,
+    "max_tap_angle": 6.28,
+    "id_tap_angle_table": "068362caafde4ce4894baaff1a291fe7"
+
+    "control_mode": 0,
     "vset": 1.0,
+    "pset": 0.0,
+
     "base_temperature": 20,
     "operational_temperature": 20,
     "alpha": 0.0033
@@ -574,6 +616,8 @@ la posibilidad de transformar AC->DC->AC con varios convertidores.
 +------+--------------------------------------------------------+-----------+-----------+
 | Modo | Función                                                | Control 1 | Control 2 |
 +======+========================================================+===========+===========+
+| 0    | Libre                                                  | -         | -         |
++------+--------------------------------------------------------+-----------+-----------+
 | 1    | Control de ángulo de fase y módulo de tensión alterna  | Ɵ         | Vac       |
 +------+--------------------------------------------------------+-----------+-----------+
 | 2    | Control de potencia alterna                            | Pac       | Qac       |
@@ -586,10 +630,9 @@ la posibilidad de transformar AC->DC->AC con varios convertidores.
 +------+--------------------------------------------------------+-----------+-----------+
 | 6    | Control droop P/Vdc y reactiva                         | Vdc_droop | Qac       |
 +------+--------------------------------------------------------+-----------+-----------+
-| 7    | Control droop P/Vdc y mḉodulo de tensión alterna       | Vdc_droop | Vac       |
+| 7    | Control droop P/Vdc y módulo de tensión alterna        | Vdc_droop | Vac       |
 +------+--------------------------------------------------------+-----------+-----------+
-| 8    | Libre                                                  | -         | -         |
-+------+--------------------------------------------------------+-----------+-----------+
+
 
 
 
@@ -681,17 +724,18 @@ Shunt
 
 Dispositivo en derivación como condensadores o reactancias.
 
-- **id**: 				Id única, prefentemente generada con UUIDv4
-- **type**:             Nombre de la clase
-- **phases**: 			Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
-- **name**:				Nombre del generador
-- **bus**:				Identificador del bus
-- **active**:			Estado de la carga (true / false, o 1 / 0)
-- **controlled**        Si es controlable o no (true / false, o 1 / 0)
-- **g**:                Conductancia, expresada como potencia equivalente a v=1.0 p.u.
-- **b**:                Susceptancia, expresada como potencia equivalente a v=1.0 p.u.
-- **bmax**:             Susceptancia máxima, expresada como potencia equivalente a v=1.0 p.u.
-- **bmin**:             Susceptancia mínima, expresada como potencia equivalente a v=1.0 p.u.
+- **id**: 				        Id única, prefentemente generada con UUIDv4
+- **type**:                     Nombre de la clase
+- **phases**: 			        Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
+- **name**:				        Nombre del generador
+- **bus**:				        Identificador del bus
+- **active**:			        Estado de la carga (true / false, o 1 / 0)
+- **controlled**                Si es controlable o no (true / false, o 1 / 0)
+- **g**:                        Conductancia, expresada como potencia equivalente a v=1.0 p.u.
+- **b**:                        Susceptancia, expresada como potencia equivalente a v=1.0 p.u.
+- **bmax**:                     Susceptancia máxima, expresada como potencia equivalente a v=1.0 p.u.
+- **bmin**:                     Susceptancia mínima, expresada como potencia equivalente a v=1.0 p.u.
+- **id_impedance_table**:       ID de la tabla de impedancia.
 
 Ejemplo:
 
@@ -708,6 +752,7 @@ Ejemplo:
     "b": 0.0
     "bmax": 5.0,
     "bmin": 0.0,
+    "id_impedance_table": "deb2195e03cf4070859b2059a3d17b1b"
 
 
 

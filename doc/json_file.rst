@@ -137,12 +137,12 @@ Ejemplo
 
    "fbase": 50,
    "phases": "ps",
-   "model_version": "",
-   "name": "ReePSSe",
+   "model_version": "1.3.0",
+   "name": "MyGrid",
    "sbase": 100,
-   "user_name": "",
+   "user_name": "User",
    "id": "efb91a32cbd84dd495001ead8acd857d",
-   "comments": ""
+   "comments": "This is a test grid"
 
 
 

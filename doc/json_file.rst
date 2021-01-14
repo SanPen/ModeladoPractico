@@ -201,20 +201,60 @@ Ejemplo:
     "code": "0"
 
 
-Technology
-^^^^^^^^^^^^^^
+- **technology_group**:       id de la tecnología para denominar al grupo de tenologías p.ej: "Ciclo Combinado" (referencia a la tabla de tecnologías)
+- **technology_category**:       id de la tecnología genérica, p.ej "Gas" (referencia a la tabla de tecnologías)
 
-Entrada de las tecnologías disponibles.
+
+Technology Category
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+La asociación mayor de grupos de tecnologías.
 
 - **id**: 				Id única, prefentemente generada con UUIDv4
-- **name**:				Nombre de la tecnología
+- **name**:				Nombre de la categoría de tecnología
 
 Ejemplo:
 
 .. code:: text
 
     "id": "299d71fd90e145f68e3cdc9ff03895d7",
-    "name": "default"
+    "name": "Gas"
+
+
+Technology Group
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Grupos de tecnologías.
+
+- **id**: 				        Id única, prefentemente generada con UUIDv4
+- **name**:				        Nombre de la categoría de tecnología
+- **id_technology_category**: 	Id de la categoría a la que pertenece
+
+Ejemplo:
+
+.. code:: text
+
+    "id": "299d71fd90e145f68e3cdc9ff03895456",
+    "name": "Ciclo combinado",
+    "id_technology_category": "299d71fd90e145f68e3cdc9ff03895d7"
+
+
+Technology
+^^^^^^^^^^^^^^
+
+Entrada de las tecnologías disponibles.
+
+- **id**: 				    Id única, prefentemente generada con UUIDv4
+- **name**:				    Nombre de la tecnología
+- **id_technology_group**: 	Id del grupo de tecnologías al que pertenece
+
+Ejemplo:
+
+.. code:: text
+
+    "id": "8aff71fd90e145f68e3cdc9ff03895d7",
+    "name": "default",
+    "id_technology_group": "299d71fd90e145f68e3cdc9ff03895456"
 
 
 Bus
@@ -662,8 +702,6 @@ Generador del sistema.
 - **pmax**:			    Potencia activa máxima (MW)
 - **cost**:             Coste por unidad de potencia (€/MWh)
 - **technology**:       id de la tecnología utilizada por el generador p.ej: "Mi Cico Combinado increíblemente específico" (referencia a la tabla de tecnologías)
-- **technology_group**:       id de la tecnología para denominar al grupo de tenologías p.ej: "Ciclo Combinado" (referencia a la tabla de tecnologías)
-- **technology_category**:       id de la tecnología genérica, p.ej "Gas" (referencia a la tabla de tecnologías)
 
 Ejemplo:
 
@@ -726,8 +764,6 @@ Batería del sistema.
 - **discharge_per_cycle**:      Potencia por unidad que admitir descargar en cada ciclo (p.u.)
 
 - **technology**:       id de la tecnología utilizada p.ej: "Mi Batería increíblemente específica" (referencia a la tabla de tecnologías)
-- **technology_group**:       id de la tecnología para denominar al grupo de tenologías p.ej: "Baterías" (referencia a la tabla de tecnologías)
-- **technology_category**:       id de la tecnología genérica, p.ej "Almacenamiento" (referencia a la tabla de tecnologías)
 
 Ejemplo:
 
@@ -768,8 +804,6 @@ Generador "estático" del sistema. Funciona opuestamente a una carga.
 - **p**:                Potencia activa
 - **q**:                Potencia reactiva
 - **technology**:       id de la tecnología utilizada p.ej: "Mi generador increíblemente específico" (referencia a la tabla de tecnologías)
-- **technology_group**:       id de la tecnología para denominar al grupo de tenologías p.ej: "Solar" (referencia a la tabla de tecnologías)
-- **technology_category**:       id de la tecnología genérica, p.ej "Renovable" (referencia a la tabla de tecnologías)
 
 Ejemplo:
 

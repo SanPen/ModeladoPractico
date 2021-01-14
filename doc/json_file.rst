@@ -15,6 +15,8 @@ El texto que debe contener es: `Grid Exchange Json File`
 
 **version**:    Versión del la especificación del archivo.
 
+**review**:    Versión del la revisión de la especificación del archivo.
+
 **software**:   Nombre del programa que creó el archivo.
 
 **units**:      Diccionario de unidades de las magnitudes, debe seguir la
@@ -531,7 +533,7 @@ la posibilidad de transformar AC->DC->AC con varios convertidores.
 - **id**: 				        Id única, prefentemente generada con UUIDv4
 - **type**: 			        Nombre de la clase
 - **name**:				        Nombre de la línea
-- **name_code**:                Código alternativo de la línea
+- **name_code**:                Código alternativo del convertidor
 - **bus_from**:                 id del bus "from", es el lado DC siempre.
 - **bus_to**:                   id del bus "to", es el lado AC siempre.
 - **active**:                   Estado de la línea (1: activo, 0: inactivo)
@@ -603,19 +605,22 @@ Generador del sistema.
 - **type**:             Nombre de la clase
 - **phases**: 			Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
 - **name**:				Nombre del generador
+- **name_code**:        Código alternativo del generador
 - **bus**:				Identificador del bus
 - **active**:			Estado del generador (true / false)
 - **is_controlled**:    Estado de control (true / false)
 - **p**:                Potencia activa
 - **pf**:               Factor de potencia a utilizar si el generador no es controlado
 - **vset**: 			Tensión de consigna en p.u.
-- **snom**:             Potencia nominal
-- **qmin**:		        Potencia reactiva mínima
-- **qmax**:				Potencia reactiva máxima
-- **pmin**:				Potencia activa mínima
-- **pmax**:			    Potencia activa máxima
-- **cost**:             Coste por unidad de potencia
-- **technology**:       id de la tecnología utilizada por el generador
+- **snom**:             Potencia nominal (MVA)
+- **qmin**:		        Potencia reactiva mínima (MVAr)
+- **qmax**:				Potencia reactiva máxima (MVAr)
+- **pmin**:				Potencia activa mínima (MW)
+- **pmax**:			    Potencia activa máxima (MW)
+- **cost**:             Coste por unidad de potencia (€/MWh)
+- **technology**:       id de la tecnología utilizada por el generador p.ej: "Mi Cico Combinado increíblemente específico" (referencia a la tabla de tecnologías)
+- **technology_group**:       id de la tecnología para denominar al grupo de tenologías p.ej: "Ciclo Combinado" (referencia a la tabla de tecnologías)
+- **technology_category**:       id de la tecnología genérica, p.ej "Gas" (referencia a la tabla de tecnologías)
 
 Ejemplo:
 
@@ -624,7 +629,72 @@ Ejemplo:
     "id": "c86d942555cb46bd9a8710442bddbfed",
     "type": "generator",
     "phases": "ps",
-    "name": "Lo-132 kV ALBARES-JBP1 1T",
+    "name": "Generador 1T",
+    "name_code": "Gen2345"
+    "bus": "596d19e0639f42e0be5d0887585b9a4e",
+    "active": 1,
+    "is_controlled": true,
+    "p": 24.446718215942383,
+    "pf": 0.9434666954838484,
+    "vset": 1.0251911878585815,
+    "snom": 43.06626510620117,
+    "qmin": -12.375,
+    "qmax": 12.375,
+    "pmin": 0.0,
+    "pmax": 41.25,
+    "cost": 0,
+    "technology": "38d4fa12ebff4e4a910f08397fa5ae06"
+
+Battery
+^^^^^^^^^^^^^^
+
+Batería del sistema.
+
+- **id**: 				Id única, prefentemente generada con UUIDv4
+- **type**:             Nombre de la clase
+- **phases**: 			Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
+- **name**:				Nombre del generador
+- **name_code**:        Código alternativo de la batería
+- **bus**:				Identificador del bus
+- **active**:			Estado del generador (true / false)
+- **is_controlled**:    Estado de control (true / false)
+
+- **p**:                Potencia activa
+- **pf**:               Factor de potencia a utilizar si el generador no es controlado
+- **vset**: 			Tensión de consigna (p.u.)
+
+- **snom**:             Potencia nominal (MVA)
+- **enom**:             Energía nominal (MWh)
+
+- **qmin**:		        Potencia reactiva mínima (MVAr)
+- **qmax**:				Potencia reactiva máxima (MVAr)
+- **pmin**:				Potencia activa mínima (MW)
+- **pmax**:			    Potencia activa máxima (MW)
+- **cost**:             Coste por unidad de potencia (€/MWh)
+
+- **charge_efficiency**:        Eficiencia de recarga (p.u.)
+- **discharge_efficiency**:     Eficiencia de descarga (p.u.)
+
+- **min_soc**:                  Mínimo estado de carga (p.u.)
+- **max_soc**:                  Máximo estado de carga (p.u.)
+- **soc_0**:                    Estado de carga (p.u.)
+- **min_soc_charge**:           Mínimo estado de carga para volver a cargar (p.u.)
+- **charge_per_cycle**:         Potencia por unidad que admitir cargar en cada ciclo (p.u.)
+- **discharge_per_cycle**:      Potencia por unidad que admitir descargar en cada ciclo (p.u.)
+
+- **technology**:       id de la tecnología utilizada p.ej: "Mi Batería increíblemente específica" (referencia a la tabla de tecnologías)
+- **technology_group**:       id de la tecnología para denominar al grupo de tenologías p.ej: "Baterías" (referencia a la tabla de tecnologías)
+- **technology_category**:       id de la tecnología genérica, p.ej "Almacenamiento" (referencia a la tabla de tecnologías)
+
+Ejemplo:
+
+.. code:: text
+
+    "id": "c86d942555cb46bd9a8710442bddbfed",
+    "type": "battery",
+    "phases": "ps",
+    "name": "Generador 1T",
+    "name_code": "Gen2345"
     "bus": "596d19e0639f42e0be5d0887585b9a4e",
     "active": 1,
     "is_controlled": true,
@@ -640,6 +710,38 @@ Ejemplo:
     "technology": "38d4fa12ebff4e4a910f08397fa5ae06"
 
 
+StaticGenerator
+^^^^^^^^^^^^^^^^^^^
+
+Generador "estático" del sistema. Funciona opuestamente a una carga.
+
+- **id**: 				Id única, prefentemente generada con UUIDv4
+- **type**:             Nombre de la clase
+- **phases**: 			Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
+- **name**:				Nombre del generador
+- **name_code**:	    Código del generador
+- **bus**:				Identificador del bus
+- **active**:			Estado de la carga (true / false)
+- **p**:                Potencia activa
+- **q**:                Potencia reactiva
+- **technology**:       id de la tecnología utilizada p.ej: "Mi generador increíblemente específico" (referencia a la tabla de tecnologías)
+- **technology_group**:       id de la tecnología para denominar al grupo de tenologías p.ej: "Solar" (referencia a la tabla de tecnologías)
+- **technology_category**:       id de la tecnología genérica, p.ej "Renovable" (referencia a la tabla de tecnologías)
+
+Ejemplo:
+
+.. code:: text
+
+    "id": "63f751f752d9429bb8780b9cbf3270cc",
+    "type": "static_generator",
+    "phases": "ps",
+    "name": "StaGen 2 ",
+    "name_code": "2000",
+    "bus": "16b003d418df4b97b9453f8b3291aec1",
+    "active": 1,
+    "p": 6.590253829956055,
+    "q": 2.257225275039673
+
 Load
 ^^^^^^^^^^^^^^
 
@@ -648,7 +750,8 @@ Carga del sistema.
 - **id**: 				Id única, prefentemente generada con UUIDv4
 - **type**:             Nombre de la clase
 - **phases**: 			Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
-- **name**:				Nombre del generador
+- **name**:				Nombre de la carga
+- **name_code**:	    Código de la carga
 - **bus**:				Identificador del bus
 - **active**:			Estado de la carga (true / false)
 - **g**:                Conductancia, expresada como potencia equivalente a v=1.0 p.u.
@@ -676,6 +779,9 @@ Ejemplo:
     "q": 2.257225275039673
 
 
+
+
+
 Shunt
 ^^^^^^^^^^^^^^
 
@@ -684,7 +790,8 @@ Dispositivo en derivación como condensadores o reactancias.
 - **id**: 				Id única, prefentemente generada con UUIDv4
 - **type**:             Nombre de la clase
 - **phases**: 			Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
-- **name**:				Nombre del generador
+- **name**:				Nombre del shunt
+- **name_code**:	    Código del shunt
 - **bus**:				Identificador del bus
 - **active**:			Estado de la carga (true / false, o 1 / 0)
 - **controlled**        Si es controlable o no (true / false, o 1 / 0)
@@ -711,12 +818,11 @@ Ejemplo:
 
 
 
-
-
-
 Profiles
 ----------------
 
+Tiene la misma estructura que "Devices" pero los objetos contienen sólo aquellas propiedades con perfiles.
+Además, los valores de cada propiedad es una lista de valores.
 
 
 Results  (Opcional)
@@ -730,21 +836,34 @@ Power Flow
 
 Resultados de flujo de potencia.
 
-Bus
+**Bus**
+
+- **va**: Angulo de tensión en radianes
+- **vm**: Módulo de tensión en p.u.
+
+**Branch**
+
+- **p**: Flujo de potencia activa desde el nudo "from" (MW)
+- **q**: Flujo de potencia reactiva desde el nudo "from" (MVAr)
+- **losses**: Pérdidas en MW
 
 .. code:: text
 
-    "596d19e0639f42e0be5d0887585b9a4e": {
-     "va": 0.1696540755070798,
-     "vm": 1.0251912065498907
-    }
+    "power_flow": {
+                    "bus": {
+                                "596d19e0639f42e0be5d0887585b9a4e": {
+                                                                     "va": 0.1696540755070798,
+                                                                     "vm": 1.0251912065498907
+                                                                    }, ...
+                           },
+                    "branch": {
+                                "096162cf5ade4ce4894baaff1a291fe7": {
+                                                                     "q": 8.60188102722168,
+                                                                     "p": 24.446718215942383,
+                                                                     "losses": 0.0
+                                                                     }, ...
+                              }
+                    }
 
-Branch
 
-.. code:: text
 
-    "096162cf5ade4ce4894baaff1a291fe7": {
-     "q": 8.60188102722168,
-     "p": 24.446718215942383,
-     "losses": 0.0
-    }

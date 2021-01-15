@@ -324,6 +324,9 @@ Line
 - **bus_to**:                   id del bus "to"
 - **active**:                   Estado de la línea (1: activo, 0: inactivo)
 - **rate**:                     Rating de potencia de la línea en MW
+- **contingency_factor1**:      Multiplicador del rate para contingencias tipo 1
+- **contingency_factor2**:      Multiplicador del rate para contingencias tipo 2
+- **contingency_factor3**:      Multiplicador del rate para contingencias tipo 3
 - **r**:                        Resistencia de la línea (p.u. del sistema)
 - **x**:                        Reactancia de la línea (p.u. del sistema)
 - **b**:                        susceptancia shunt total de la línea (p.u. del sistema)
@@ -373,6 +376,9 @@ DC Line
 - **bus_to**:                   id del bus "to"
 - **active**:                   Estado de la línea (1: activo, 0: inactivo)
 - **rate**:                     Rating de potencia de la línea en MW
+- **contingency_factor1**:      Multiplicador del rate para contingencias tipo 1
+- **contingency_factor2**:      Multiplicador del rate para contingencias tipo 2
+- **contingency_factor3**:      Multiplicador del rate para contingencias tipo 3
 - **r**:                        Resistencia de la línea (p.u. del sistema)
 - **length**:                   Longitud de la línea en km
 - **base_temperature**:         Termperatura base de la línea (ºC)
@@ -443,6 +449,9 @@ Transformador de dos devanados.
 - **bus_to**:                   id del bus "to"
 - **active**:                   Estado de la línea (1: activo, 0: inactivo)
 - **rate**:                     Rating de potencia de la línea
+- **contingency_factor1**:      Multiplicador del rate para contingencias tipo 1
+- **contingency_factor2**:      Multiplicador del rate para contingencias tipo 2
+- **contingency_factor3**:      Multiplicador del rate para contingencias tipo 3
 - **Vnomf**:                    Tensión nominal del lado "from" en kV
 - **Vnomt**:                    Tensión nominal del lado "to" en kV
 - **r**:                        Resistencia ( en p.u.)
@@ -540,6 +549,10 @@ Se modela como el equivalente en delta del modelo en estrella.
 - **x**:                Reactancia en p.u. del sistema
 - **g**:                Conductancia en p.u. del sistema
 - **b**:                Susceptancia en p.u. del sistema
+- **rate**:                     Rating de potencia de la bobina
+- **contingency_factor1**:      Multiplicador del rate para contingencias tipo 1
+- **contingency_factor2**:      Multiplicador del rate para contingencias tipo 2
+- **contingency_factor3**:      Multiplicador del rate para contingencias tipo 3
 
 
 
@@ -555,6 +568,9 @@ HVDC Line
 - **bus_to**:                   id del bus "to"
 - **active**:                   Estado de la línea (1: activo, 0: inactivo)
 - **rate**:                     Rating de potencia de la línea en MW
+- **contingency_factor1**:      Multiplicador del rate para contingencias tipo 1
+- **contingency_factor2**:      Multiplicador del rate para contingencias tipo 2
+- **contingency_factor3**:      Multiplicador del rate para contingencias tipo 3
 
 - **r**:                        Resistencia de la línea (p.u. del sistema)
 - **Pset**:                     Potencia establecida de "from" a "to" (MW)
@@ -590,6 +606,9 @@ dispositivos "FACTS" de forma genérica.
 - **bus_to**:           id del bus "to"
 - **active**:           Estado de la línea (1: activo, 0: inactivo)
 - **rate**:             Rating de potencia de la línea en MW
+- **contingency_factor1**:      Multiplicador del rate para contingencias tipo 1
+- **contingency_factor2**:      Multiplicador del rate para contingencias tipo 2
+- **contingency_factor3**:      Multiplicador del rate para contingencias tipo 3
 
 - **rl**:               Resistencia de la línea (p.u. del sistema)
 - **xl**:               Reactancia de la línea (p.u. del sistema)
@@ -620,6 +639,9 @@ la posibilidad de transformar AC->DC->AC con varios convertidores.
 - **bus_to**:                   id del bus "to", es el lado AC siempre.
 - **active**:                   Estado de la línea (1: activo, 0: inactivo)
 - **rate**:                     Rating de potencia de la línea en MW
+- **contingency_factor1**:      Multiplicador del rate para contingencias tipo 1
+- **contingency_factor2**:      Multiplicador del rate para contingencias tipo 2
+- **contingency_factor3**:      Multiplicador del rate para contingencias tipo 3
 
 - **r**:                        Resistencia que modela las pérdidas resistivas (p.u. del sistema)
 - **x**:                        Reactancia que modela las pérdidas magnéticas (p.u. del sistema)

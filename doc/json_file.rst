@@ -295,8 +295,8 @@ Ejemplo
     "active": 1,
     "is_slack": false,
     "vnom": 132.0,
-    "vmin": 0.8999999761581421,
-    "vmax": 1.100000023841858,
+    "vmin": 0.899,
+    "vmax": 1.100,
     "rf": 0,
     "xf": 0,
     "x": 0,
@@ -344,15 +344,15 @@ Ejemplo:
     "id": "096162cf5ade4ce4894baaff1a291fe7",
     "type": "line",
     "phases": "ps",
-    "name": "L-132\\132 kV ALBARES-JBP1-S.MARIN-JBP1 1",
-    "name_code": "1000_1147_1",
+    "name": "my line 1",
+    "name_code": "my code 001",
     "bus_from": "596d19e0639f42e0be5d0887585b9a4e",
     "bus_to": "054768f9518e465a9ecac721aa8c73de",
     "active": 1,
     "rate": 82.0,
-    "r": 0.020090000703930855,
-    "x": 0.03386000171303749,
-    "b": 0.006670000031590462,
+    "r": 0.020,
+    "x": 0.033,
+    "b": 0.006,
     "length": 0.0,
     "base_temperature": 20,
     "operational_temperature": 20,
@@ -394,13 +394,13 @@ Ejemplo:
     "id": "096162cf5ade4ce4894baaff1a291fe7",
     "type": "line",
     "phases": "ps",
-    "name": "L-132\\132 kV ALBARES-JBP1-S.MARIN-JBP1 1",
-    "name_code": "1000_1147_1",
+    "name": "my dc line 1",
+    "name_code": "my code 002",
     "bus_from": "596d19e0639f42e0be5d0887585b9a4e",
     "bus_to": "054768f9518e465a9ecac721aa8c73de",
     "active": 1,
-    "rate": 82.0,
-    "r": 0.020090000703930855,
+    "rate": 80.0,
+    "r": 0.020,
     "length": 0.0,
     "base_temperature": 20,
     "operational_temperature": 20,
@@ -499,17 +499,18 @@ Ejemplo:
     "id": "ec04b8678a324672acb5b7c95bf25aad",
     "type": "transformer",
     "phases": "ps",
-    "name": "T-132/11 kV 11 ARBON  -PB-G-ARBON  -JBP2",
+    "name": "my transformer",
+    "name_code": "my name code 003",
     "bus_from": "16b003d418df4b97b9453f8b3291aec1",
     "bus_to": "53a300acd0714636a54a97a8aa71a41a",
     "active": 0,
-    "rate": 35.0,
+    "rate": 60.0,
     "r": 0.0,
-    "x": 0.35143,
+    "x": 0.35,
     "g": 0.0,
     "b": 0.0,
 
-    "tap_module": 0.982,
+    "tap_module": 0.98,
     "min_tap_module": 0.96,
     "max_tap_module": 1.04,
     "id_tap_module_table": ""
@@ -732,19 +733,19 @@ Ejemplo:
     "id": "c86d942555cb46bd9a8710442bddbfed",
     "type": "generator",
     "phases": "ps",
-    "name": "Generador 1T",
+    "name": "Generador ",
     "name_code": "Gen2345"
     "bus": "596d19e0639f42e0be5d0887585b9a4e",
     "active": 1,
     "is_controlled": true,
-    "p": 24.446718215942383,
-    "pf": 0.9434666954838484,
-    "vset": 1.0251911878585815,
-    "snom": 43.06626510620117,
-    "qmin": -12.375,
-    "qmax": 12.375,
+    "p": 24.0,
+    "pf": 0.94,
+    "vset": 1.02,
+    "snom": 43.0,
+    "qmin": -12.0,
+    "qmax": 12.0,
     "pmin": 0.0,
-    "pmax": 41.25,
+    "pmax": 41.0,
     "cost": 0,
     "technology": "38d4fa12ebff4e4a910f08397fa5ae06"
 
@@ -794,19 +795,19 @@ Ejemplo:
     "id": "c86d942555cb46bd9a8710442bddbfed",
     "type": "battery",
     "phases": "ps",
-    "name": "Generador 1T",
-    "name_code": "Gen2345"
+    "name": "Battery",
+    "name_code": "Bat345"
     "bus": "596d19e0639f42e0be5d0887585b9a4e",
     "active": 1,
     "is_controlled": true,
-    "p": 24.446718215942383,
-    "pf": 0.9434666954838484,
-    "vset": 1.0251911878585815,
-    "snom": 43.06626510620117,
-    "qmin": -12.375,
-    "qmax": 12.375,
+    "p": 24.0,
+    "pf": 0.95,
+    "vset": 1.01,
+    "snom": 43.0,
+    "qmin": -12.0,
+    "qmax": 12.0,
     "pmin": 0.0,
-    "pmax": 41.25,
+    "pmax": 41.0,
     "cost": 0,
     "technology": "38d4fa12ebff4e4a910f08397fa5ae06"
 
@@ -838,8 +839,8 @@ Ejemplo:
     "name_code": "2000",
     "bus": "16b003d418df4b97b9453f8b3291aec1",
     "active": 1,
-    "p": 6.590253829956055,
-    "q": 2.257225275039673
+    "p": 6.5,
+    "q": 2.2
 
 Load
 ^^^^^^^^^^^^^^
@@ -867,15 +868,16 @@ Ejemplo:
     "id": "63f751f752d9429bb8780b9cbf3270cc",
     "type": "load",
     "phases": "ps",
-    "name": "Lo-132 kV ARBON  -JBP2 1 ",
+    "name": "Load 1",
+    "name_code": "my name code 004",
     "bus": "16b003d418df4b97b9453f8b3291aec1",
     "active": 1,
     "g": 0.0,
     "b": 0.0,
     "ir": 0.0,
     "ii": 0.0,
-    "p": 6.590253829956055,
-    "q": 2.257225275039673
+    "p": 6.2,
+    "q": 2.3
 
 
 
@@ -890,7 +892,7 @@ Dispositivo en derivación como condensadores o reactancias.
 - **type**:                     Nombre de la clase
 - **phases**: 			        Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
 - **name**:				        Nombre del shunt
-- **name_code**:	    Código del shunt
+- **name_code**:	            Código del shunt
 - **bus**:				        Identificador del bus
 - **active**:			        Estado de la carga (true / false, o 1 / 0)
 - **controlled**                Si es controlable o no (true / false, o 1 / 0)
@@ -907,7 +909,7 @@ Ejemplo:
     "id": "deb2195e03cf4070859b2059a3d17b1a",
     "type": "shunt",
     "phases": "ps",
-    "name": "SWSHT-132 kV ATIOS  -JBP2",
+    "name": "Shunt",
     "bus": "68adb547e8ca4218925cf7c400422eab",
     "active": 1,
     "controlled": 1,
@@ -953,18 +955,16 @@ Resultados de flujo de potencia.
     "power_flow": {
                     "bus": {
                                 "596d19e0639f42e0be5d0887585b9a4e": {
-                                                                     "va": 0.1696540755070798,
-                                                                     "vm": 1.0251912065498907
+                                                                     "va": 0.16,
+                                                                     "vm": 1.02
                                                                     }, ...
                            },
                     "branch": {
                                 "096162cf5ade4ce4894baaff1a291fe7": {
-                                                                     "q": 8.60188102722168,
-                                                                     "p": 24.446718215942383,
+                                                                     "q": 8.6,
+                                                                     "p": 24.4,
                                                                      "losses": 0.0
                                                                      }, ...
                               }
                     }
-
-
 

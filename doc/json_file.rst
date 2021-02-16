@@ -561,6 +561,10 @@ Se modela como el equivalente en delta del modelo en estrella.
 HVDC Line
 ^^^^^^^^^^^^^^
 
+Este es el modelo HVDC simple. Se modela internamente con dos generadores de tensión controlada
+y la línea en sí no se introduce. Si la línea de este modelo es la única ligazón entre dos sistemas,
+entonces en la propia simulación esos sistemas están aislados.
+
 - **id**: 				        Id única, prefentemente generada con UUIDv4
 - **type**: 			        Nombre de la clase
 - **name**:				        Nombre de la línea
@@ -592,8 +596,8 @@ HVDC Line
 
 
 
-UPFC
-^^^^^^^
+UPFC (Universal Power Flow Controller)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Unified Power Flow Controller (UPFC). este modelo se utiliza habitualmente para representar
 dispositivos "FACTS" de forma genérica.
@@ -621,12 +625,52 @@ dispositivos "FACTS" de forma genérica.
 - **xsh**:              Reactancia shunt del dispositivo (p.u. del sistema)
 - **vsh**:              Tensión se set point en en lado "from" (p.u. del sistema)
 
-- **Pfset**:            Potencia activa establecida de "envío" en el lado "from" (MW)
-- **Qfset**:            Potencia reactiva establecida de "envío" en el lado "from" (MW)
+- **Pset**:            Potencia activa establecida de "envío" en el lado "from" (MW)
+- **Qset**:            Potencia reactiva establecida de "envío" en el lado "from" (MW)
 
 
-VSC
-^^^^^^^
+SSSC (Static Synchronous Series Compensator)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Static Synchronous Series Compensator (SSSC).
+
+
+- **id**:               Id única, prefentemente generada con UUIDv4
+- **type**: 			Nombre de la clase
+- **name**:				Nombre de la línea
+- **name_code**:        Código alternativo de la línea
+- **bus_from**:         id del bus "from"
+- **bus_to**:           id del bus "to"
+- **active**:           Estado de la línea (1: activo, 0: inactivo)
+- **rate**:             Rating de potencia de la línea en MW
+- **contingency_factor1**:      Multiplicador del rate para contingencias tipo 1
+- **contingency_factor2**:      Multiplicador del rate para contingencias tipo 2
+- **contingency_factor3**:      Multiplicador del rate para contingencias tipo 3
+
+- **rs**:               Resistencia serie del dispositivo (p.u. del sistema)
+- **xs**:               Reactancia serie del dispositivo (p.u. del sistema)
+
+- **control_mode**:    Modo de conrol. Ver tabla de modos de control.
+- **vset**:            Tensión de consigna establecida de "envío" en el lado "from" (p.u.)
+- **Pset**:            Potencia activa establecida de "envío" en el lado "from" (MW)
+- **Qset**:            Potencia reactiva establecida de "envío" en el lado "from" (MW)
+
+**Modos de control**
+
++------+--------------------------------------------------------+-----------+-----------+
+| Modo | Función                                                | Control 1 | Control 2 |
++======+========================================================+===========+===========+
+| 0    | Libre                                                  | -         | -         |
++------+--------------------------------------------------------+-----------+-----------+
+| 1    | Control de módulo de tensión "to"                      | Vac       | -         |
++------+--------------------------------------------------------+-----------+-----------+
+| 2    | Control de potencia activa                             | P         | -         |
++------+--------------------------------------------------------+-----------+-----------+
+| 3    | Control de potencia reactiva                           | Q         | -         |
++------+--------------------------------------------------------+-----------+-----------+
+
+VSC (Voltage Source Converter)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Voltage Source Converter. Este dispositivo de utiliza para convertir corriente alterna a continua.
 Puede utilizarse para componer otros dispositivos de electrónica de potencia aprovechando

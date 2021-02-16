@@ -609,20 +609,20 @@ dispositivos "FACTS" de forma genérica.
 
 
 - **id**:               Id única, prefentemente generada con UUIDv4
-- **type**: 			Nombre de la clase
-- **name**:				Nombre de la línea
-- **name_code**:        Código alternativo de la línea
+- **type**: 			Nombre de la clase ("upfc")
+- **name**:				Nombre del dispositivo
+- **name_code**:        Código alternativo del dispositivo
 - **bus_from**:         id del bus "from"
 - **bus_to**:           id del bus "to"
-- **active**:           Estado de la línea (1: activo, 0: inactivo)
-- **rate**:             Rating de potencia de la línea en MW
+- **active**:           Estado del dispositivo (1: activo, 0: inactivo)
+- **rate**:             Rating de potencia del dispositivo (MW)
 - **contingency_factor1**:      Multiplicador del rate para contingencias tipo 1
 - **contingency_factor2**:      Multiplicador del rate para contingencias tipo 2
 - **contingency_factor3**:      Multiplicador del rate para contingencias tipo 3
 
-- **rl**:               Resistencia de la línea (p.u. del sistema)
-- **xl**:               Reactancia de la línea (p.u. del sistema)
-- **bl**:               Susceptancia de la línea (p.u. del sistema)
+- **rl**:               Resistencia del dispositivo (p.u. del sistema)
+- **xl**:               Reactancia del dispositivo (p.u. del sistema)
+- **bl**:               Susceptancia del dispositivo (p.u. del sistema)
 - **rs**:               Resistencia serie del dispositivo (p.u. del sistema)
 - **xs**:               Reactancia serie del dispositivo (p.u. del sistema)
 
@@ -640,7 +640,7 @@ SSSC (Static Synchronous Series Compensator)
 Static Synchronous Series Compensator (SSSC).
 
 - **id**:               Id única, prefentemente generada con UUIDv4
-- **type**: 			Nombre de la clase ("SSSC")
+- **type**: 			Nombre de la clase ("sssc")
 - **name**:				Nombre del SSSC
 - **name_code**:        Código alternativo
 - **bus_from**:         id del bus "from"
@@ -681,13 +681,13 @@ Puede utilizarse para componer otros dispositivos de electrónica de potencia ap
 la posibilidad de transformar AC->DC->AC con varios convertidores.
 
 - **id**: 				        Id única, prefentemente generada con UUIDv4
-- **type**: 			        Nombre de la clase
-- **name**:				        Nombre de la línea
+- **type**: 			        Nombre de la clase ("vsc")
+- **name**:				        Nombre del dispositivo
 - **name_code**:                Código alternativo del convertidor
 - **bus_from**:                 id del bus "from", es el lado DC siempre.
 - **bus_to**:                   id del bus "to", es el lado AC siempre.
-- **active**:                   Estado de la línea (1: activo, 0: inactivo)
-- **rate**:                     Rating de potencia de la línea en MW
+- **active**:                   Estado del dispositivo (1: activo, 0: inactivo)
+- **rate**:                     Rating de potencia del dispositivo en MW
 - **contingency_factor1**:      Multiplicador del rate para contingencias tipo 1
 - **contingency_factor2**:      Multiplicador del rate para contingencias tipo 2
 - **contingency_factor3**:      Multiplicador del rate para contingencias tipo 3

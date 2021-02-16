@@ -291,7 +291,8 @@ Ejemplo
     "id": "596d19e0639f42e0be5d0887585b9a4e",
     "type": 2,
     "phases": "ps",
-    "name": 1000,
+    "name": "My bus 1",
+    "name_code": "1001",
     "active": 1,
     "is_slack": false,
     "vnom": 132.0,
@@ -314,6 +315,8 @@ Ejemplo
 
 Line
 ^^^^^^^^^^^^^^
+
+Línea AC normal.
 
 - **id**: 				        Id única, prefentemente generada con UUIDv4
 - **type**: 			        Nombre de la clase
@@ -366,6 +369,8 @@ Ejemplo:
 
 DC Line
 ^^^^^^^^^^^^^^
+
+Línea DC.
 
 - **id**: 				        Id única, prefentemente generada con UUIDv4
 - **type**: 			        Nombre de la clase
@@ -634,15 +639,14 @@ SSSC (Static Synchronous Series Compensator)
 
 Static Synchronous Series Compensator (SSSC).
 
-
 - **id**:               Id única, prefentemente generada con UUIDv4
-- **type**: 			Nombre de la clase
-- **name**:				Nombre de la línea
-- **name_code**:        Código alternativo de la línea
+- **type**: 			Nombre de la clase ("SSSC")
+- **name**:				Nombre del SSSC
+- **name_code**:        Código alternativo
 - **bus_from**:         id del bus "from"
 - **bus_to**:           id del bus "to"
-- **active**:           Estado de la línea (1: activo, 0: inactivo)
-- **rate**:             Rating de potencia de la línea en MW
+- **active**:           Estado del dispositivo (1: activo, 0: inactivo)
+- **rate**:             Rating del dispositivo (MW)
 - **contingency_factor1**:      Multiplicador del rate para contingencias tipo 1
 - **contingency_factor2**:      Multiplicador del rate para contingencias tipo 2
 - **contingency_factor3**:      Multiplicador del rate para contingencias tipo 3

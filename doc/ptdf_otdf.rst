@@ -342,3 +342,21 @@ Dónde:
 - :math:`L`: matriz LODF para todas las líneas (filas) y las líneas falladas (columnas).
 - :math:`f`: Vector de flujos base por todas las líneas.
 - :math:`f_c`: Vector de flujos post contingencia múltiple.
+
+OTDF
+-------
+
+El valor de OTDF (Outage Transfer Distribution Factors) representa la variación de una línea 'k' ante
+el fallo de una línea 'l' reaccionando a una inyección en el bus 'j'.
+
+.. math::
+
+    OTDF[k, l, j] = PTDF[k, j] + LODF[k, l] \cdot PTDF[l, j]
+
+Podemos reducir el cubo a una matriz que elija la peor sensibilidad a las inyecciones en los buses.
+Esto es, reducir la tercera dimensión eligiendo aquellas entradas que son mayores en valor absoluto,
+pero recordando su signo:
+
+.. math::
+
+    OTDF[k, l] = \frac{OTDF[k, l]}{|OTDF[k, l]|} \cdot max(|OTDF[k, l, j]|, |OTDF[k, l]|)

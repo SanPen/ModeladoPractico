@@ -585,8 +585,8 @@ entonces en la propia simulación esos sistemas están aislados.
 - **r**:                        Resistencia de la línea (p.u. del sistema)
 - **Pset**:                     Potencia establecida de "from" a "to" (MW)
 - **loss_factor**:              factor de pérdidas (p.u.)
-- **vset_from**:                Tensión se set point en en lado "from" (p.u. del sistema)
-- **vset_to**:                  Tensión se set point en en lado "to" (p.u. del sistema)
+- **vset_from**:                Tensión de set point en en lado "from" (p.u. del sistema)
+- **vset_to**:                  Tensión de set point en en lado "to" (p.u. del sistema)
 
 - **min_firing_angle_f**:       Mínimo ángulo de disparo del convertidor "from" (radianes)
 - **min_firing_angle_t**:       Mínimo ángulo de disparo del convertidor "to" (radianes)
@@ -628,7 +628,7 @@ dispositivos "FACTS" de forma genérica.
 
 - **rsh**:              Resistencia shunt del dispositivo (p.u. del sistema)
 - **xsh**:              Reactancia shunt del dispositivo (p.u. del sistema)
-- **vsh**:              Tensión se set point en en lado "from" (p.u. del sistema)
+- **vsh**:              Tensión de set point en en lado "from" (p.u. del sistema)
 
 - **Pset**:            Potencia activa establecida de "envío" en el lado "from" (MW)
 - **Qset**:            Potencia reactiva establecida de "envío" en el lado "from" (MW)
@@ -721,7 +721,7 @@ la posibilidad de transformar AC->DC->AC con varios convertidores.
 - **vac_set**:                  Tensión establecida en el control de tensión AC. (p.u.)
 - **vdc_set**:                  Tensión establecida en el control de tensión DC. (p.u.)
 
-- **mode**:                     Modo de control. Ver la tabla adjunta.
+- **control_mode**:             Modo de control. Ver la tabla adjunta.
 
 
 **Modos de control**

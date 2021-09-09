@@ -240,6 +240,7 @@ Dónde:
 - :math:`Cf`: Matriz de conectividad de ramas-nudos "from".
 - :math:`Ct`: Matriz de conectividad de ramas-nudos "to".
 - :math:`A`: Matriz de conectividad ramas-nudos.
+- :math:`H`: PTDF de ramas-ramas.
 - :math:`PTDF`: Matriz PTDF calculado previamente.
 - :math:`LODF`: Matriz LODF.
 

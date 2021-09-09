@@ -44,7 +44,7 @@ la formulación matemática es:
     PTDF = B_f \times (B^{-1} \times \Delta P)
 
 La teoría indica que :math:`\Delta P` es una matriz casi vacía, dónde por cada columna, en las posiciones
-fuente va un 1 y en las posiciones sumidero va un -1. Normalmente se toma el nudo slack como sumidero, llendo
+fuente va un 1 y en las posiciones sumidero va un -1. Normalmente se toma el nudo slack como sumidero, yendo
 entonces todos los -1 en la posicion del slack. Pero resulta que si reducimos la Matriz :math:`B` para que no
 sea singular, eliminando la fila y la columna del slack, eliminamos tambien los -1 de :math:`\Delta P`,
 quedándonos una matriz de unos en las posiciones de los nudos PQ y PV.

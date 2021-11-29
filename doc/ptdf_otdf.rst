@@ -49,28 +49,34 @@ entonces todos los -1 en la posicion del slack. Pero resulta que si reducimos la
 sea singular, eliminando la fila y la columna del slack, eliminamos tambien los -1 de :math:`\Delta P`,
 quedándonos una matriz de unos en las posiciones de los nudos PQ y PV.
 
-La implementación práctica tiene algunas particularidades que se detallan a continuación:
+La implementación práctica requiere eliminar la influencia de los nudos slack para que la inversión de :math:`B`
+sea posible. Además, si no deseamos modificar la influencia de los nudos podemos prescindir del uso de :math:`\Delta P`,
+obteniendo la siguiente expresión:
 
 .. math::
 
-    noref = arange(1, n)
+    PTDF = B_f \times B^{-1}
 
-    B_{red} = B[pqpv, noref]
+Aquí :math:`B_f` es la matriz de susceptancias de cada rama para con el nudo from. :math:`B` es la matriz de susceptancia.
+Para poder realizar esta operación debemos eliminar las columnas de los nudos slack en :math:`B_f`, y las
+columnas y filas de los nudos slack en :math:`B`, tal que nos queda:
 
-    \Delta P = eye(n, n)
+.. math::
 
-    \Delta\theta_{red} = B_{red}^{-1} \times \Delta P_{red}
+    PTDF[:, pqpv] = B_f[:, qpv] \times B^{-1}[pqpv, pqpv]
 
-    \theta = zeros(n, n)
 
-    \theta[pqpv, :] = \Delta\theta_{red}
+Alternativamente, si queremos utilizar :math:`\Delta P` nos queda:
 
-    PTDF = B_f \times \theta
+.. math::
+
+    PTDF[:, pqpv] = B_f[:, qpv] \times (B^{-1}[pqpv, pqpv]  \times \Delta P[pqpv])
+
 
 - :math:`n`: Número de nudos.
 - :math:`B`: Matriz de susceptancia.
 - :math:`B_f`: Matriz de susceptancia "from".
-- :math:`pqpv`: Lista de índices de los nudos PQ y PV (es decir, lista de indices de los nudos que no son slack)
+- :math:`pqpv`: Lista de índices de los nudos PQ y PV (es decir, lista de indices de los nudos que no son slack) debe estar ordenada.
 - :math:`noref`: Vector construido para saltarse el primer bus.
 - :math:`\Delta P`: Incremento de potencias; Se toma como una matriz diagonal de 1.
 - :math:`\theta`: Vector de ángulos de tensión. Sale de resolver el flujo de potencia DC para todos los
@@ -361,3 +367,24 @@ pero recordando su signo:
 .. math::
 
     OTDF[k, l] = \frac{OTDF[k, l]}{|OTDF[k, l]|} \cdot max(|OTDF[k, l, j]|, |OTDF[k, l]|)
+
+
+PSDF
+-------
+
+En el caso de existir transformadores desfasadores de ángulo, es útil calcular el PSDF (Phase Shift Distribution Factors)
+Esta Matriz indica el cambio en el flujo de las ramas ante el cambio de ángulo de cualquier rama (idealmente desfasadores de ángulo)
+La formulación completa se indica en [DCPF]_.
+
+.. math::
+
+    PSDF = Bd - PTDF * (Bd \times A)^\top
+
+Dónde:
+- :math:`Bd`: Matrix diagonal de reactancias  (número de ramas, Número de ramas).
+- :math:`PTDF`: Matriz PTDF calculada previamente.
+- :math:`A`: Matriz de conectividad rama-nudo (número de ramas, Número de nudos)
+
+
+
+.. [DCPF] DC power flow in unit commitment models

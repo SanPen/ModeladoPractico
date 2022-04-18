@@ -8,6 +8,26 @@ en menos tiempo.
 Ejemplos de tales situaciones pueden ser los cálculos de series temporales de redes muy grandes, cálculos estocásticos, optimización
 de redes en el dominio temporal y otras muchas situaciones computacionalmente intensivas.
 
+Para los ejemplos, los datos de red son los siguientes:
+
++--------+----------+--------+---+-----+---+
+| name   | bus_from | bus_to | R | X   | B |
++--------+----------+--------+---+-----+---+
+| Line 1 | 1        | 2      | 0 | 0.5 | 0 |
++--------+----------+--------+---+-----+---+
+| Line 2 | 1        | 3      | 0 | 0.5 | 0 |
++--------+----------+--------+---+-----+---+
+| Line 3 | 2        | 4      | 0 | 0.5 | 0 |
++--------+----------+--------+---+-----+---+
+| Line 4 | 3        | 4      | 0 | 0.5 | 0 |
++--------+----------+--------+---+-----+---+
+| Line 5 | 3        | 5      | 0 | 0.5 | 0 |
++--------+----------+--------+---+-----+---+
+| Line 6 | 4        | 5      | 0 | 0.5 | 0 |
++--------+----------+--------+---+-----+---+
+
+El bus slack es el bus 3.
+
 PTDF
 -------
 
@@ -44,38 +64,62 @@ la formulación matemática es:
     PTDF = B_f \times (B^{-1} \times \Delta P)
 
 La teoría indica que :math:`\Delta P` es una matriz casi vacía, dónde por cada columna, en las posiciones
-fuente va un 1 y en las posiciones sumidero va un -1. Normalmente se toma el nudo slack como sumidero, llendo
+fuente va un 1 y en las posiciones sumidero va un -1. Normalmente se toma el nudo slack como sumidero, yendo
 entonces todos los -1 en la posicion del slack. Pero resulta que si reducimos la Matriz :math:`B` para que no
 sea singular, eliminando la fila y la columna del slack, eliminamos tambien los -1 de :math:`\Delta P`,
 quedándonos una matriz de unos en las posiciones de los nudos PQ y PV.
 
-La implementación práctica tiene algunas particularidades que se detallan a continuación:
+La implementación práctica requiere eliminar la influencia de los nudos slack para que la inversión de :math:`B`
+sea posible. Además, si no deseamos modificar la influencia de los nudos podemos prescindir del uso de :math:`\Delta P`,
+obteniendo la siguiente expresión:
 
 .. math::
 
-    noref = arange(1, n)
+    PTDF = B_f \times B^{-1}
 
-    B_{red} = B[pqpv, noref]
+Aquí :math:`B_f` es la matriz de susceptancias de cada rama para con el nudo from. :math:`B` es la matriz de susceptancia.
+Para poder realizar esta operación debemos eliminar las columnas de los nudos slack en :math:`B_f`, y las
+columnas y filas de los nudos slack en :math:`B`, tal que nos queda:
 
-    \Delta P = eye(n, n)
+.. math::
 
-    \Delta\theta_{red} = B_{red}^{-1} \times \Delta P_{red}
+    PTDF[:, pqpv] = B_f[:, qpv] \times B^{-1}[pqpv, pqpv]
 
-    \theta = zeros(n, n)
 
-    \theta[pqpv, :] = \Delta\theta_{red}
+Alternativamente, si queremos utilizar :math:`\Delta P` nos queda:
 
-    PTDF = B_f \times \theta
+.. math::
+
+    PTDF[:, pqpv] = B_f[:, qpv] \times (B^{-1}[pqpv, pqpv]  \times \Delta P[pqpv])
+
 
 - :math:`n`: Número de nudos.
 - :math:`B`: Matriz de susceptancia.
 - :math:`B_f`: Matriz de susceptancia "from".
-- :math:`pqpv`: Lista de índices de los nudos PQ y PV (es decir, lista de indices de los nudos que no son slack)
+- :math:`pqpv`: Lista de índices de los nudos PQ y PV (es decir, lista de indices de los nudos que no son slack) debe estar ordenada.
 - :math:`noref`: Vector construido para saltarse el primer bus.
 - :math:`\Delta P`: Incremento de potencias; Se toma como una matriz diagonal de 1.
 - :math:`\theta`: Vector de ángulos de tensión. Sale de resolver el flujo de potencia DC para todos los
         incrementos unitarios dados por :math:`\Delta P`.
 - :math:`PTDF`: Matriz PTDF calculada.
+
+El PTDF para los valores de red de ejemplo:
+
++--------+---------+---------+--------+---------+---------+
+|        | 1       | 2       | 3      | 4       | 5       |
++--------+---------+---------+--------+---------+---------+
+| Line 1 | 0.2727  | -0.4545 | 0.0000 | -0.1818 | -0.0909 |
++--------+---------+---------+--------+---------+---------+
+| Line 2 | 0.7273  | 0.4545  | 0.0000 | 0.1818  | 0.0909  |
++--------+---------+---------+--------+---------+---------+
+| Line 3 | 0.2727  | 0.5455  | 0.0000 | -0.1818 | -0.0909 |
++--------+---------+---------+--------+---------+---------+
+| Line 4 | -0.1818 | -0.3636 | 0.0000 | -0.5455 | -0.2727 |
++--------+---------+---------+--------+---------+---------+
+| Line 5 | -0.0909 | -0.1818 | 0.0000 | -0.2727 | -0.6364 |
++--------+---------+---------+--------+---------+---------+
+| Line 6 | 0.0909  | 0.1818  | 0.0000 | 0.2727  | -0.3636 |
++--------+---------+---------+--------+---------+---------+
 
 Si queremos distribuir el efecto del slack entre todos los nudos, debemos modificar
 la matriz :math:`\Delta P`:
@@ -101,21 +145,21 @@ No obstante, en el caso general tomamos que el reparto uniforme es suficiente.
 
 El resultado del PTDF para la red estándar IEEE 5-bus es la siguiente matriz:
 
-+------------+---------+---------+---------+--------+---------+
-|            | Bus 0   | Bus 1   | Bus 2   | Bus 3  | Bus 4   |
-+============+=========+=========+=========+========+=========+
-| Branch 0-1 | 0.1939  | -0.4759 | -0.3490 | 0.0000 | 0.1595  |
-+------------+---------+---------+---------+--------+---------+
-| Branch 0-3 | 0.4376  | 0.2583  | 0.1895  | 0.0000 | 0.3600  |
-+------------+---------+---------+---------+--------+---------+
-| Branch 0-4 | 0.3685  | 0.2176  | 0.1595  | 0.0000 | -0.5195 |
-+------------+---------+---------+---------+--------+---------+
-| Branch 1-2 | 0.1939  | 0.5241  | -0.3490 | 0.0000 | 0.1595  |
-+------------+---------+---------+---------+--------+---------+
-| Branch 2-3 | 0.1939  | 0.5241  | 0.6510  | 0.0000 | 0.1595  |
-+------------+---------+---------+---------+--------+---------+
-| Branch 3-4 | -0.3685 | -0.2176 | -0.1595 | 0.0000 | -0.4805 |
-+------------+---------+---------+---------+--------+---------+
++--------+--------+---------+---------+---------+---------+
+|        | 1      | 2       | 3       | 4       | 5       |
++--------+--------+---------+---------+---------+---------+
+| Line 1 | 0.4545 | -0.4545 | 0.1136  | -0.1136 | 0.0000  |
++--------+--------+---------+---------+---------+---------+
+| Line 2 | 0.5455 | 0.2045  | -0.3636 | -0.1364 | -0.2500 |
++--------+--------+---------+---------+---------+---------+
+| Line 3 | 0.2045 | 0.5455  | -0.1364 | -0.3636 | -0.2500 |
++--------+--------+---------+---------+---------+---------+
+| Line 4 | 0.1136 | -0.1136 | 0.3409  | -0.3409 | 0.0000  |
++--------+--------+---------+---------+---------+---------+
+| Line 5 | 0.1818 | 0.0682  | 0.2955  | -0.0455 | -0.5000 |
++--------+--------+---------+---------+---------+---------+
+| Line 6 | 0.0682 | 0.1818  | -0.0455 | 0.2955  | -0.5000 |
++--------+--------+---------+---------+---------+---------+
 
 AC PTDF
 -------------
@@ -150,24 +194,7 @@ Dónde:
 - :math:`\Delta Q`: Todo ceros hasta tener las dimensiones compatibles.
 - Derivadas: Ver la sección de :ref:`derivadas <derivatives>`.
 
-El resultado del PTDF para la red estándar IEEE 5-bus es la siguiente matriz:
-
-+------------+---------+---------+---------+--------+---------+
-|            | Bus 0   | Bus 1   | Bus 2   | Bus 3  | Bus 4   |
-+============+=========+=========+=========+========+=========+
-| Branch 0-1 | 0.1939  | -0.4704 | -0.3490 | 0.0000 | 0.1595  |
-+------------+---------+---------+---------+--------+---------+
-| Branch 0-3 | 0.4376  | 0.2583  | 0.1895  | 0.0000 | 0.3600  |
-+------------+---------+---------+---------+--------+---------+
-| Branch 0-4 | 0.3685  | 0.2176  | 0.1595  | 0.0000 | -0.5195 |
-+------------+---------+---------+---------+--------+---------+
-| Branch 1-2 | 0.1939  | 0.5098  | -0.3490 | 0.0000 | 0.1595  |
-+------------+---------+---------+---------+--------+---------+
-| Branch 2-3 | 0.1939  | 0.5241  | 0.6510  | 0.0000 | 0.1595  |
-+------------+---------+---------+---------+--------+---------+
-| Branch 3-4 | -0.3685 | -0.2176 | -0.1595 | 0.0000 | -0.4805 |
-+------------+---------+---------+---------+--------+---------+
-
+El resultado del PTDF para la red propuesta es igual al PTDF ya mostrado.
 
 Una consideración sobre este método de cálculo del PTDF es que depende de un estado particular de la red,
 puesto que la formulación implica calcular derivadas de la potencia, y estas requieren un valor de tensión.
@@ -240,27 +267,28 @@ Dónde:
 - :math:`Cf`: Matriz de conectividad de ramas-nudos "from".
 - :math:`Ct`: Matriz de conectividad de ramas-nudos "to".
 - :math:`A`: Matriz de conectividad ramas-nudos.
+- :math:`H`: PTDF de ramas-ramas.
 - :math:`PTDF`: Matriz PTDF calculado previamente.
 - :math:`LODF`: Matriz LODF.
 
 
-El resultado del LODF para la red estándar IEEE 5-bus es:
+El resultado del LODF para la red de datos de ejemplo:
 
-+------------+-------------+-------------+-------------+-------------+-------------+-------------+
-|            | #Branch 0-1 | #Branch 0-3 | #Branch 0-4 | #Branch 1-2 | #Branch 2-3 | #Branch 3-4 |
-+============+=============+=============+=============+=============+=============+=============+
-| Branch 0-1 | -1.0000     | 0.3448      | 0.3071      | -1.0000     | -1.0000     | -0.3071     |
-+------------+-------------+-------------+-------------+-------------+-------------+-------------+
-| Branch 0-3 | 0.5429      | -1.0000     | 0.6929      | 0.5429      | 0.5429      | -0.6929     |
-+------------+-------------+-------------+-------------+-------------+-------------+-------------+
-| Branch 0-4 | 0.4571      | 0.6552      | -1.0000     | 0.4571      | 0.4571      | 1.0000      |
-+------------+-------------+-------------+-------------+-------------+-------------+-------------+
-| Branch 1-2 | -1.0000     | 0.3448      | 0.3071      | -1.0000     | -1.0000     | -0.3071     |
-+------------+-------------+-------------+-------------+-------------+-------------+-------------+
-| Branch 2-3 | -1.0000     | 0.3448      | 0.3071      | -1.0000     | -1.0000     | -0.3071     |
-+------------+-------------+-------------+-------------+-------------+-------------+-------------+
-| Branch 3-4 | -0.4571     | -0.6552     | 1.0000      | -0.4571     | -0.4571     | -1.0000     |
-+------------+-------------+-------------+-------------+-------------+-------------+-------------+
++--------+---------+---------+---------+---------+---------+---------+
+|        | #Line 1 | #Line 2 | #Line 3 | #Line 4 | #Line 5 | #Line 6 |
++--------+---------+---------+---------+---------+---------+---------+
+| Line 1 | -1.0000 | 1.0000  | -1.0000 | 0.4000  | 0.2500  | -0.2500 |
++--------+---------+---------+---------+---------+---------+---------+
+| Line 2 | 1.0000  | -1.0000 | 1.0000  | -0.4000 | -0.2500 | 0.2500  |
++--------+---------+---------+---------+---------+---------+---------+
+| Line 3 | -1.0000 | 1.0000  | -1.0000 | 0.4000  | 0.2500  | -0.2500 |
++--------+---------+---------+---------+---------+---------+---------+
+| Line 4 | 0.6667  | -0.6667 | 0.6667  | -1.0000 | 0.7500  | -0.7500 |
++--------+---------+---------+---------+---------+---------+---------+
+| Line 5 | 0.3333  | -0.3333 | 0.3333  | 0.6000  | -1.0000 | 1.0000  |
++--------+---------+---------+---------+---------+---------+---------+
+| Line 6 | -0.3333 | 0.3333  | -0.3333 | -0.6000 | 1.0000  | -1.0000 |
++--------+---------+---------+---------+---------+---------+---------+
 
 Obsérvese que la rama fallada se muestra en las columnas, y los flujos de las ramas
 se ordenan en las filas.
@@ -342,3 +370,43 @@ Dónde:
 - :math:`L`: matriz LODF para todas las líneas (filas) y las líneas falladas (columnas).
 - :math:`f`: Vector de flujos base por todas las líneas.
 - :math:`f_c`: Vector de flujos post contingencia múltiple.
+
+OTDF
+-------
+
+El valor de OTDF (Outage Transfer Distribution Factors) representa la variación de una línea 'k' ante
+el fallo de una línea 'l' reaccionando a una inyección en el bus 'j'.
+
+.. math::
+
+    OTDF[k, l, j] = PTDF[k, j] + LODF[k, l] \cdot PTDF[l, j]
+
+Podemos reducir el cubo a una matriz que elija la peor sensibilidad a las inyecciones en los buses.
+Esto es, reducir la tercera dimensión eligiendo aquellas entradas que son mayores en valor absoluto,
+pero recordando su signo:
+
+.. math::
+
+    OTDF[k, l] = \frac{OTDF[k, l]}{|OTDF[k, l]|} \cdot max(|OTDF[k, l, j]|, |OTDF[k, l]|)
+
+
+PSDF
+-------
+
+En el caso de existir transformadores desfasadores de ángulo, es útil calcular el PSDF (Phase Shift Distribution Factors)
+Esta Matriz indica el cambio en el flujo de las ramas ante el cambio de ángulo de cualquier rama (idealmente desfasadores de ángulo)
+La formulación completa se indica en [DCPF]_.
+
+.. math::
+
+    PSDF = Bd - PTDF \times (Bd \times A)^\top
+
+Dónde:
+
+- :math:`Bd`: Matrix diagonal de reactancias  (número de ramas, Número de ramas).
+- :math:`PTDF`: Matriz PTDF calculada previamente.
+- :math:`A`: Matriz de conectividad rama-nudo (número de ramas, Número de nudos)
+
+
+
+.. [DCPF] DC power flow in unit commitment models

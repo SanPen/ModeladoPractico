@@ -1,102 +1,30 @@
 ===========================================================
-Especificación Json Eléctrico (v.3.0)
+Especificación Json Eléctrico (v.4.0)
 ===========================================================
+
+La versión 4.0 especifica un formato de datos de red híbrido en el que se guardan de manera indistinta datos
+en formato bus-branch como en formato node-breaker.
 
 Raíz de documento
 -------------------------
 
 La estructura raíz hospeda un diccionario con las siguientes entradas:
 
+- **type**: Describe el tipo de archivo JSON, sirve para indicar que este json no es un archivo común y que su uso es para intercambio de red. El texto que debe contener es: `Grid Exchange Json File`
 
-**type**:       Describe el tipo de archivo JSON, sirve para indicar que este json no es un archivo común
-                y que su uso es para intercambio de red.
+- **version**: Versión del la especificación del archivo.
 
-El texto que debe contener es: `Grid Exchange Json File`
+- **review**: Versión del la revisión de la especificación del archivo.
 
-**version**:    Versión del la especificación del archivo.
+- **software**: Nombre del programa que creó el archivo.
 
-**review**:    Versión del la revisión de la especificación del archivo.
+- **devices**:  Diccionario de dispositivos. Sólo los datos de diseño.
 
-**software**:   Nombre del programa que creó el archivo.
+- **data**: Datos operacionales con perfil de tiempo; misma estructura que devices. Opcional.
 
-**units**:      Diccionario de unidades de las magnitudes, debe seguir la
-misma estructura que devices, pero de manera que hay una entrada de unidades por cada tipo de dispositivo.
-De esa forma se declaran las unidades de cada parámatro de cada dispositivo.
+- **topology**: Datos sobre el procesado topológico. Contiene las correspondencias de los nudos de conectividad a los nudos de cálculo. Opcional.
 
-
-Por ejemplo:
-
-.. code:: text
-
-    "units": {
-      "Circuit": {
-       "time": "Milliseconds since 1/1/1970 (Unix time in ms)"
-      },
-      "Bus": {
-       "vnom": "kV",
-       "vmin": "p.u.",
-       "vmax": "p.u.",
-       "rf": "p.u.",
-       "xf": "p.u.",
-       "x": "px",
-       "y": "px",
-       "h": "px",
-       "w": "px",
-       "lat": "degrees",
-       "lon": "degrees",
-       "alt": "meters"
-      },
-      "Generator": {
-       "p": "MW",
-       "vset": "p.u.",
-       "pf": "p.u.",
-       "snom": "MVA",
-       "enom": "MWh",
-       "qmin": "MVAr",
-       "qmax": "MVAr",
-       "pmin": "MW",
-       "pmax": "MW",
-       "cost": "\u20ac/MWh"
-      },
-      "Load": {
-       "g": "MVAr at V=1 p.u.",
-       "b": "MVAr at V=1 p.u.",
-       "ir": "MVAr at V=1 p.u.",
-       "ii": "MVAr at V=1 p.u.",
-       "p": "MW",
-       "q": "MVAr"
-      },
-      "Shunt": {
-       "g": "MVAr at V=1 p.u.",
-       "b": "MVAr at V=1 p.u."
-      },
-      "Line": {
-       "rate": "MW",
-       "r": "p.u.",
-       "x": "p.u.",
-       "b": "p.u.",
-       "length": "km",
-       "base_temperature": "\u00baC",
-       "operational_temperature": "\u00baC",
-       "alpha": "1/\u00baC"
-      },
-      "Transformer": {
-       "rate": "MW",
-       "r": "p.u.",
-       "x": "p.u.",
-       "b": "p.u.",
-       "g": "p.u.",
-       "base_temperature": "\u00baC",
-       "operational_temperature": "\u00baC",
-       "alpha": "1/\u00baC"
-      }
-    }
-
-**devices**:    Diccionario de dispositivos.
-
-**profiles**:   Diccionario de perfiles; misma estructura que devices.
-
-**results**:    Diccionario de resultados.
+- **results**: Diccionario de resultados. Opcional.
 
 
 Con el contenido colapsado, debe tener el siguiente aspecto:
@@ -105,11 +33,12 @@ Con el contenido colapsado, debe tener el siguiente aspecto:
 
     {
         "type": "Grid Exchange Json File",
-        "version":   3.0,
+        "version": 4.0,
         "software": "GridCal",
         "units": {...},
         "devices": {...},
-        "profiles": {...},
+        "data": {...},
+        "topology": {...},
         "results": {...}
     }
 
@@ -125,6 +54,7 @@ diccionario con los parámetros del circuito.
 
 
 - **id**: 				Id única, prefentemente generada con UUIDv4
+- **id_parent**: 		Id única del modelo padre. Puede estar vacío.
 - **phases**: 			Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
 - **name**: 			Nombre
 - **sbase**: 			potencia base (MVA)
@@ -137,14 +67,14 @@ Ejemplo
 
 .. code:: text
 
-   "fbase": 50,
-   "phases": "ps",
-   "model_version": "1.3.0",
-   "name": "MyGrid",
-   "sbase": 100,
-   "user_name": "User",
-   "id": "efb91a32cbd84dd495001ead8acd857d",
-   "comments": "This is a test grid"
+    "id": "efb91a32cbd84dd495001ead8acd857d",
+    "phases": "ps",
+    "fbase": 50,
+    "model_version": "1.3.0",
+    "name": "MyGrid",
+    "sbase": 100,
+    "user_name": "User",
+    "comments": "This is a test grid"
 
 
 
@@ -257,28 +187,61 @@ Ejemplo:
     "id_technology_group": "299d71fd90e145f68e3cdc9ff03895456"
 
 
-Bus
-^^^^^^^^
+
+Substation
+^^^^^^^^^^^^^^^^^^
+
+Representa una subestación.
 
 - **id**: 				Id única, prefentemente generada con UUIDv4
-- **type**: 			Nombre de la clase
-- **phases**: 			Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
-- **name**:				Nombre del bus
-- **name_code**:		Código secundario del bus (i.e. número PSSe etc.)
-- **active**:			Estado del bus (true / false)
+- **name**:				Nombre
+
+VoltageLevel
+^^^^^^^^^^^^^^^^^^
+
+Representa el nivel de tensión (parque) de una subestación.
+
+- **id**: 				Id única, prefentemente generada con UUIDv4
+- **id_voltage_level**: Id de la subestación a la que pertenece.
+- **vnom**:             Tensión nominal (kV)
+- **name**:				Nombre
+
+
+ConnectivityNode
+^^^^^^^^^^^^^^^^^^
+
+Representa un nudo de conectividad.
+
+- **id**: 				Id única, prefentemente generada con UUIDv4
+- **id_voltage_level**  Id del nivel de tensión al que pertenece. Puede estar vacío.
+- **name**:				Nombre
+- **x**: 				Posición x para su representación dentro del nivel de tensión (pixels)
+- **y**:				Posición y para su representación dentro del nivel de tensión (pixels)
+
+CalcNode
+^^^^^^^^^
+
+Representa un nudo de cálculo. Puede no existir en el modelo si no se ha realizado el procesamiento topológico.
+
+- **id**: 				Id única, prefentemente generada con UUIDv4
+- **secondary_id**:     Id secundario y posiblemente no único, es para concoordancia con otros formatos.(i.e. número PSSe etc.)
+- **name**:				Nombre
+- **active**:			Estado de actividad del nudo (true / false). Si procede del procesado topológico, por definición estará activo, pero si procede de la conversión de un modelo bus-branch es posible que no.
 - **is_slack**:			Es slack?  (true / false)
+- **is_dc**:			Es de corriente contínua?  (true / false)
 - **vnom**:				Tensión nominal en kV
 - **vmin**:				Tensión mínima en p.u.
 - **vmax**:				Tensión máxima en p.u.
 - **rf**:				Resistencia de cortocircuito en p.u.
 - **xf**:				Reactancia de cortocircuito en p.u.
-- **x**: 				posición x para su representación en pixels
-- **y**:				posición y para su representación en pixels
-- **h**: 				alto su representación en pixels
-- **w**: 				ancho para su representación en pixels
-- **lat**:				latitud en grados decimales
-- **lon**:				longitud en grados decimales
-- **alt**:              altitud en metros
+- **x**: 				Posición x para su representación (pixels)
+- **y**:				Posición y para su representación (pixels)
+- **h**: 				Alto su representación (pixels)
+- **w**: 				Ancho para su representación (pixels)
+- **rot**:              Rotación para su representación (radianes)
+- **lat**:				Latitud en grados decimales
+- **lon**:				Longitud en grados decimales
+- **alt**:              Altitud en metros
 - **area**:				ID del área
 - **zone**:				ID de la zona
 - **country**:          ID del país de pertenencia
@@ -289,11 +252,11 @@ Ejemplo
 .. code:: text
 
     "id": "596d19e0639f42e0be5d0887585b9a4e",
-    "type": 2,
-    "phases": "ps",
-    "name": 1000,
-    "active": 1,
+    "secondary_id": 1000,
+    "name": "Bus 1000",
+    "active": true,
     "is_slack": false,
+    "is_dc": false,
     "vnom": 132.0,
     "vmin": 0.8999999761581421,
     "vmax": 1.100000023841858,
@@ -303,6 +266,7 @@ Ejemplo
     "y": 0,
     "h": 0,
     "w": 0,
+    "rot": 0,
     "lat": 0,
     "lon": 0,
     "alt": 0,
@@ -320,6 +284,8 @@ Line
 - **phases**: 			        Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
 - **name**:				        Nombre de la línea
 - **name_code**:                Código alternativo de la línea
+- **cn_from**:                  id del nudo de conectividad "from"
+- **cn_to**:                    id del nudo de conectividad "to"
 - **bus_from**:                 id del bus "from"
 - **bus_to**:                   id del bus "to"
 - **active**:                   Estado de la línea (1: activo, 0: inactivo)
@@ -369,6 +335,8 @@ DC Line
 - **phases**: 			        Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
 - **name**:				        Nombre de la línea
 - **name_code**:                Código alternativo de la línea
+- **cn_from**:                  id del nudo de conectividad "from"
+- **cn_to**:                    id del nudo de conectividad "to"
 - **bus_from**:                 id del bus "from"
 - **bus_to**:                   id del bus "to"
 - **active**:                   Estado de la línea (1: activo, 0: inactivo)
@@ -440,6 +408,8 @@ Transformador de dos devanados.
 - **phases**: 			        Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
 - **name**:				        Nombre del transformador
 - **name_code**:                Código alternativo del transformador
+- **cn_from**:                  id del nudo de conectividad "from"
+- **cn_to**:                    id del nudo de conectividad "to"
 - **bus_from**:                 id del bus "from"
 - **bus_to**:                   id del bus "to"
 - **active**:                   Estado de la línea (1: activo, 0: inactivo)
@@ -532,9 +502,14 @@ Se modela como el equivalente en delta del modelo en estrella.
 - **name**:				Nombre del transformador
 - **windings**:         Lista de dispositivos de bobinado "delta" equivalente
 
-**Winding**
+Winding
+^^^^^^^^^
+
+Representa un devanado de transformador
 
 - **id**:               ID del bobinado
+- **cn_from**:          id del nudo de conectividad "from"
+- **cn_to**:            id del nudo de conectividad "to"
 - **bus1**:             ID del bus 1
 - **bus2**:             ID del bus 2
 - **r**:                Resistencia en p.u. del sistema
@@ -552,6 +527,8 @@ HVDC Line
 - **type**: 			        Nombre de la clase
 - **name**:				        Nombre de la línea
 - **name_code**:                Código alternativo de la línea
+- **cn_from**:                  id del nudo de conectividad "from"
+- **cn_to**:                    id del nudo de conectividad "to"
 - **bus_from**:                 id del bus "from"
 - **bus_to**:                   id del bus "to"
 - **active**:                   Estado de la línea (1: activo, 0: inactivo)
@@ -587,6 +564,8 @@ dispositivos "FACTS" de forma genérica.
 - **type**: 			Nombre de la clase
 - **name**:				Nombre de la línea
 - **name_code**:        Código alternativo de la línea
+- **cn_from**:          id del nudo de conectividad "from"
+- **cn_to**:            id del nudo de conectividad "to"
 - **bus_from**:         id del bus "from"
 - **bus_to**:           id del bus "to"
 - **active**:           Estado de la línea (1: activo, 0: inactivo)
@@ -617,6 +596,8 @@ la posibilidad de transformar AC->DC->AC con varios convertidores.
 - **type**: 			        Nombre de la clase
 - **name**:				        Nombre de la línea
 - **name_code**:                Código alternativo del convertidor
+- **cn_from**:                  id del nudo de conectividad "from"
+- **cn_to**:                    id del nudo de conectividad "to"
 - **bus_from**:                 id del bus "from", es el lado DC siempre.
 - **bus_to**:                   id del bus "to", es el lado AC siempre.
 - **active**:                   Estado de la línea (1: activo, 0: inactivo)
@@ -690,6 +671,7 @@ Generador del sistema.
 - **phases**: 			Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
 - **name**:				Nombre del generador
 - **name_code**:        Código alternativo del generador
+- **cn**:               id del nudo de conectividad
 - **bus**:				Identificador del bus
 - **active**:			Estado del generador (true / false)
 - **is_controlled**:    Estado de control (true / false)
@@ -737,6 +719,7 @@ Batería del sistema.
 - **phases**: 			Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
 - **name**:				Nombre del generador
 - **name_code**:        Código alternativo de la batería
+- **cn**:               id del nudo de conectividad
 - **bus**:				Identificador del bus
 - **active**:			Estado del generador (true / false)
 - **is_controlled**:    Estado de control (true / false)
@@ -800,6 +783,7 @@ Generador "estático" del sistema. Funciona opuestamente a una carga.
 - **phases**: 			Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
 - **name**:				Nombre del generador
 - **name_code**:	    Código del generador
+- **cn**:               id del nudo de conectividad
 - **bus**:				Identificador del bus
 - **active**:			Estado de la carga (true / false)
 - **p**:                Potencia activa
@@ -830,6 +814,7 @@ Carga del sistema.
 - **phases**: 			Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
 - **name**:				Nombre de la carga
 - **name_code**:	    Código de la carga
+- **cn**:               id del nudo de conectividad
 - **bus**:				Identificador del bus
 - **active**:			Estado de la carga (true / false)
 - **g**:                Conductancia, expresada como potencia equivalente a v=1.0 p.u.
@@ -869,7 +854,8 @@ Dispositivo en derivación como condensadores o reactancias.
 - **type**:                     Nombre de la clase
 - **phases**: 			        Tipo de modelos de fases ("ps": positive sequence, "3p": three phase)
 - **name**:				        Nombre del shunt
-- **name_code**:	    Código del shunt
+- **name_code**:	            Código del shunt
+- **cn**:                       id del nudo de conectividad
 - **bus**:				        Identificador del bus
 - **active**:			        Estado de la carga (true / false, o 1 / 0)
 - **controlled**                Si es controlable o no (true / false, o 1 / 0)
@@ -898,11 +884,27 @@ Ejemplo:
 
 
 
-Profiles
+Data
 ----------------
 
 Tiene la misma estructura que "Devices" pero los objetos contienen sólo aquellas propiedades con perfiles.
 Además, los valores de cada propiedad es una lista de valores.
+
+
+Ejemplo:
+
+.. code:: text
+    {
+     "data": {
+         "time": [1, 2, 3, 4, 5]  # list of time steps in unix time
+         "load": [  # list of loads
+                    {
+                        "id": "63f751f752d9429bb8780b9cbf3270cc"
+                        "P": [2.2, 2.3, 3.1, 2.6, 2.0]
+                    },
+                ]
+         }
+    }
 
 
 Results  (Opcional)
@@ -930,19 +932,21 @@ Resultados de flujo de potencia.
 .. code:: text
 
     "power_flow": {
-                    "bus": {
-                                "596d19e0639f42e0be5d0887585b9a4e": {
-                                                                     "va": 0.1696540755070798,
-                                                                     "vm": 1.0251912065498907
-                                                                    }, ...
-                           },
-                    "branch": {
-                                "096162cf5ade4ce4894baaff1a291fe7": {
-                                                                     "q": 8.60188102722168,
-                                                                     "p": 24.446718215942383,
-                                                                     "losses": 0.0
-                                                                     }, ...
-                              }
+                    "time": [1, 2, 3, 4, 5]  # list of time steps in unix time
+                    "bus": [
+                              { "id": "596d19e0639f42e0be5d0887585b9a4e",
+                                "va": [0.1696, 0.1823, 0.1425, 0.2365, 0.1147],
+                                "vm": [1.0252, 1.0301, 1.0199, 1.0201, 1.0114],
+                              }, ...
+                           ],
+                    "branch": [
+                                {
+                                 "id": "096162cf5ade4ce4894baaff1a291fe7",
+                                 "q": [8.6019, 8.7562, 8.6352, 8.9863, 8.6547]
+                                 "p": [24.4467, 23.6541, 25.3654, 24.8963, 24.5637]
+                                 "losses": [0.0, 0.0, 0.0, 0.0, 0.0]
+                                }, ...
+                              ]
                     }
 
 

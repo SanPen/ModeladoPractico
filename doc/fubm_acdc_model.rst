@@ -180,6 +180,9 @@ al montar la matriz:
         \end{matrix}
     \right]
 
+
+
+
 Vector de error
 ---------------------------
 
@@ -496,23 +499,23 @@ Derivadas de la potencia "droop":
 
 .. math::
 
-    \frac{\partial Pfdp}{\partial Va} = ...
+    \frac{\partial Pfdp}{\partial Va} = -\Re\left\{\frac{\partial Sf}{\partial Va}\right\}
 
-    \frac{\partial Pfdp}{\partial Vm} = ...
+    \frac{\partial Pfdp}{\partial Vm} = -\Re\left\{\frac{\partial Sf}{\partial Vm}\right\} + diag(Kdp) \times Cf
 
-    \frac{\partial Pfdp}{\partial Pfsh} = ...
+    \frac{\partial Pfdp}{\partial Pfsh} = -\Re\left\{\frac{\partial Sf}{\partial Pfsh}\right\}
 
-    \frac{\partial Pfdp}{\partial Qfma} = ...
+    \frac{\partial Pfdp}{\partial Qfma} = -\Re\left\{\frac{\partial Sf}{\partial Qtma}\right\}
 
-    \frac{\partial Pfdp}{\partial Beqz} = ...
+    \frac{\partial Pfdp}{\partial Beqz} = -\Re\left\{\frac{\partial Sf}{\partial Beqz}\right\}
 
-    \frac{\partial Pfdp}{\partial Beqv} = ...
+    \frac{\partial Pfdp}{\partial Beqv} = -\Re\left\{\frac{\partial Sf}{\partial Beqv}\right\}
 
-    \frac{\partial Pfdp}{\partial Vtma} = ...
+    \frac{\partial Pfdp}{\partial Vtma} = -\Re\left\{\frac{\partial Sf}{\partial Vtma}\right\}
 
-    \frac{\partial Pfdp}{\partial Qtma} = ...
+    \frac{\partial Pfdp}{\partial Qtma} = -\Re\left\{\frac{\partial Sf}{\partial Qtma}\right\}
 
-    \frac{\partial Pfdp}{\partial Pfdp} = ...
+    \frac{\partial Pfdp}{\partial Pfdp} = -\Re\left\{\frac{\partial Sf}{\partial Pfdp}\right\}
 
 .. [FUBM1] Flexible General Branch Model Unified Power Flow Algorithm for future flexible AC/DC Networks,
             Abraham Álavarez Bustos and Behzah Kazemtabrizi, IEEE, 2018

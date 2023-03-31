@@ -204,7 +204,7 @@ Esto viene en contraposición al PTDF anterior, que no depende del estado de la 
 PTDF y series temporales
 ------------------------------
 
-Una vez obtenida la matriz PTDF poemod extrapolar los efectos de la variación en los flujos dadas unas inyecciones
+Una vez obtenida la matriz PTDF podemos extrapolar los efectos de la variación en los flujos dadas unas inyecciones
 de potencia nodales. La fórmula es la siguiente:
 
 .. math::
